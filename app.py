@@ -137,33 +137,51 @@ STAMP_SVG = """
 
 def send_email(to_email, subject, html_body):
     if not GMAIL_USER or not GMAIL_APP_PASSWORD:
-        return False, "Email credentials not configured. Add GMAIL_USER and GMAIL_APP_PASSWORD in Railway Variables."
+        return False, "GMAIL_USER or GMAIL_APP_PASSWORD not set in Railway Variables."
     try:
         msg = MIMEMultipart('alternative')
         msg['Subject'] = subject
-        msg['From'] = f"Graphics & Trends Solutions <{GMAIL_USER}>"
-        msg['To'] = to_email
-        msg.attach(MIMEText(html_body, 'html'))
-        with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
-            smtp.ehlo()
-            smtp.starttls()
-            smtp.ehlo()
-            smtp.login(GMAIL_USER, GMAIL_APP_PASSWORD)
-            smtp.sendmail(GMAIL_USER, to_email, msg.as_string())
-        return True, f"Email sent successfully to {to_email}!"
-    except smtplib.SMTPAuthenticationError:
-        return False, "Gmail authentication failed. Check your App Password in Railway Variables — make sure there are no spaces."
+        msg['From'] = f"GNT Solutions <{GMAIL_USER.strip()}>"
+        msg['To'] = to_email.strip()
+        msg.attach(MIMEText(html_body, 'html', 'utf-8'))
+        server = smtplib.SMTP('smtp.gmail.com', 587, timeout=30)
+        server.set_debuglevel(0)
+        server.ehlo()
+        server.starttls()
+        server.ehlo()
+        server.login(GMAIL_USER.strip(), GMAIL_APP_PASSWORD.strip())
+        server.sendmail(GMAIL_USER.strip(), to_email.strip(), msg.as_string())
+        server.quit()
+        return True, f"Email sent to {to_email}!"
+    except smtplib.SMTPAuthenticationError as e:
+        return False, f"Gmail auth failed: {str(e)}. Regenerate App Password."
+    except smtplib.SMTPConnectError as e:
+        return False, f"Cannot connect to Gmail SMTP: {str(e)}"
     except smtplib.SMTPException as e:
         return False, f"SMTP error: {str(e)}"
     except Exception as e:
-        return False, f"Error: {str(e)}"
+        return False, f"Unexpected error: {type(e).__name__}: {str(e)}"
 
 @app.route('/api/email/test', methods=['GET'])
 @login_required
 def test_email_config():
-    if not GMAIL_USER or not GMAIL_APP_PASSWORD:
-        return jsonify({'ok': False, 'message': 'GMAIL_USER or GMAIL_APP_PASSWORD not set in Railway Variables'})
-    return jsonify({'ok': True, 'gmail_user': GMAIL_USER, 'password_length': len(GMAIL_APP_PASSWORD)})
+    user = GMAIL_USER.strip() if GMAIL_USER else ''
+    pwd = GMAIL_APP_PASSWORD.strip() if GMAIL_APP_PASSWORD else ''
+    if not user or not pwd:
+        return jsonify({'ok': False, 'message': 'Credentials missing'})
+    # Try actual connection
+    try:
+        server = smtplib.SMTP('smtp.gmail.com', 587, timeout=15)
+        server.ehlo()
+        server.starttls()
+        server.ehlo()
+        server.login(user, pwd)
+        server.quit()
+        return jsonify({'ok': True, 'message': 'Connection and login successful!', 'gmail_user': user, 'password_length': len(pwd)})
+    except smtplib.SMTPAuthenticationError as e:
+        return jsonify({'ok': False, 'message': f'Auth failed: {str(e)}', 'gmail_user': user, 'password_length': len(pwd)})
+    except Exception as e:
+        return jsonify({'ok': False, 'message': f'{type(e).__name__}: {str(e)}', 'gmail_user': user, 'password_length': len(pwd)})
 
 def build_offer_html(emp, joining_date, address, city, pin, ref):
     return f"""
@@ -303,10 +321,11 @@ def add_employee():
     num = int(get_meta('next_emp_num'))
     emp_id = f"GNT-{num:03d}"
     db = get_db()
-    db.execute('''INSERT INTO employees(id,name,desig,dept,doj,salary,phone,email,bank,bank_name,ifsc,acc_name,cl,sl,el,status)
-        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''',
+    db.execute('''INSERT INTO employees(id,name,desig,dept,doj,salary,phone,email,address,city,pin,bank,bank_name,ifsc,acc_name,cl,sl,el,status)
+        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''',
         (emp_id, d['name'], d['desig'], d.get('dept','General'), d.get('doj'),
          float(d.get('salary',0)), d.get('phone',''), d.get('email',''),
+         d.get('address',''), d.get('city',''), d.get('pin',''),
          d.get('bank',''), d.get('bankName',''), d.get('ifsc',''),
          d.get('accName', d['name']),
          int(d.get('cl',12)), int(d.get('sl',6)), int(d.get('el',15)), 'Active'))
@@ -321,9 +340,10 @@ def update_employee(emp_id):
     d = request.json
     db = get_db()
     db.execute('''UPDATE employees SET name=?,desig=?,dept=?,doj=?,salary=?,phone=?,email=?,
-        bank=?,bank_name=?,ifsc=?,acc_name=?,cl=?,sl=?,el=? WHERE id=?''',
+        address=?,city=?,pin=?,bank=?,bank_name=?,ifsc=?,acc_name=?,cl=?,sl=?,el=? WHERE id=?''',
         (d['name'], d['desig'], d.get('dept','General'), d.get('doj'),
          float(d.get('salary',0)), d.get('phone',''), d.get('email',''),
+         d.get('address',''), d.get('city',''), d.get('pin',''),
          d.get('bank',''), d.get('bankName',''), d.get('ifsc',''),
          d.get('accName', d['name']),
          int(d.get('cl',12)), int(d.get('sl',6)), int(d.get('el',15)), emp_id))

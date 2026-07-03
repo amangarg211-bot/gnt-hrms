@@ -317,17 +317,19 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     </div>
     <div class="grid-2">
       <div class="form-group"><label>Email ID</label><input id="emp-email" type="email" placeholder="rahul@example.com"></div>
-      <div class="form-group"><label>Bank Account No.</label><input id="emp-bank" placeholder="Account number"></div>
+      <div class="form-group"><label>Address</label><input id="emp-address" placeholder="House No., Street, Colony"></div>
     </div>
     <div class="grid-2">
-      <div class="form-group"><label>Bank Name</label><input id="emp-bankname" placeholder="State Bank of India"></div>
-      <div class="form-group"><label>IFSC Code</label><input id="emp-ifsc" placeholder="SBIN0001234"></div>
+      <div class="form-group"><label>City</label><input id="emp-city" placeholder="Delhi"></div>
+      <div class="form-group"><label>Pin Code</label><input id="emp-pin" placeholder="110001"></div>
     </div>
-    <div class="form-group"><label>Account Holder Name</label><input id="emp-accname" placeholder="Auto-filled from name"></div>
-    <div class="grid-3">
-      <div class="form-group"><label>Casual Leave/yr</label><input id="emp-cl" type="number" value="12"></div>
-      <div class="form-group"><label>Sick Leave/yr</label><input id="emp-sl" type="number" value="6"></div>
-      <div class="form-group"><label>Earned Leave/yr</label><input id="emp-el" type="number" value="15"></div>
+    <div class="grid-2">
+      <div class="form-group"><label>Bank Account No.</label><input id="emp-bank" placeholder="Account number"></div>
+      <div class="form-group"><label>Bank Name</label><input id="emp-bankname" placeholder="State Bank of India"></div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group"><label>IFSC Code</label><input id="emp-ifsc" placeholder="SBIN0001234"></div>
+      <div class="form-group"><label>Account Holder Name</label><input id="emp-accname" placeholder="Auto-filled from name"></div>
     </div>
   </div>
   <div class="modal-footer">
@@ -626,19 +628,21 @@ async function addEmployee(){
     name,desig,dept:document.getElementById('emp-dept').value||'General',doj,salary,
     phone:document.getElementById('emp-phone').value,
     email:document.getElementById('emp-email').value,
+    address:document.getElementById('emp-address').value,
+    city:document.getElementById('emp-city').value,
+    pin:document.getElementById('emp-pin').value,
     bank:document.getElementById('emp-bank').value,
     bankName:document.getElementById('emp-bankname').value,
     ifsc:document.getElementById('emp-ifsc').value,
     accName:document.getElementById('emp-accname').value||name,
-    cl:document.getElementById('emp-cl').value,
-    sl:document.getElementById('emp-sl').value,
-    el:document.getElementById('emp-el').value
+    cl:12, sl:6, el:15
   });
   if(res&&res.ok){
     showToast('Employee added!');
     employees=await api('GET','/api/employees')||[];
     closeModal('modal-add-emp');renderEmployees();renderDashboard();
-    ['emp-name','emp-desig','emp-dept','emp-doj','emp-salary','emp-phone','emp-email','emp-bank','emp-bankname','emp-ifsc','emp-accname'].forEach(i=>document.getElementById(i).value='');
+    ['emp-name','emp-desig','emp-dept','emp-doj','emp-salary','emp-phone','emp-email',
+     'emp-address','emp-city','emp-pin','emp-bank','emp-bankname','emp-ifsc','emp-accname'].forEach(i=>document.getElementById(i).value='');
     document.getElementById('emp-accname').dataset.edited='';
   }
 }
@@ -728,9 +732,9 @@ function openOfferModal(id){
   document.getElementById('offer-salary').value=rupee(e.salary);
   document.getElementById('offer-ref').value=e.id;
   document.getElementById('offer-joining-date').value=e.doj||'';
-  document.getElementById('offer-address').value='';
-  document.getElementById('offer-city').value='';
-  document.getElementById('offer-pin').value='';
+  document.getElementById('offer-address').value=e.address||'';
+  document.getElementById('offer-city').value=e.city||'';
+  document.getElementById('offer-pin').value=e.pin||'';
   openModal('modal-offer-letter');
 }
 
