@@ -319,6 +319,45 @@ input:focus,select:focus,textarea:focus{border-color:#888}
 </div>
 </div>
 
+<div class="modal-overlay" id="modal-edit-emp">
+<div class="modal">
+  <div class="modal-header"><h3>Edit Employee</h3><button class="btn btn-sm" id="close-edit-emp-modal">✕</button></div>
+  <div class="modal-body">
+    <input type="hidden" id="edit-emp-id">
+    <div class="grid-2">
+      <div class="form-group"><label>Full Name *</label><input id="edit-emp-name" placeholder="Rahul Kumar"></div>
+      <div class="form-group"><label>Designation *</label><input id="edit-emp-desig" placeholder="Site Supervisor"></div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group"><label>Department</label><input id="edit-emp-dept" placeholder="Operations"></div>
+      <div class="form-group"><label>Date of Joining</label><input id="edit-emp-doj" type="date"></div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group"><label>Base Monthly Salary (₹) *</label><input id="edit-emp-salary" type="number"></div>
+      <div class="form-group"><label>Phone</label><input id="edit-emp-phone"></div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group"><label>Email ID</label><input id="edit-emp-email" type="email"></div>
+      <div class="form-group"><label>Bank Account No.</label><input id="edit-emp-bank"></div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group"><label>Bank Name</label><input id="edit-emp-bankname"></div>
+      <div class="form-group"><label>IFSC Code</label><input id="edit-emp-ifsc"></div>
+    </div>
+    <div class="form-group"><label>Account Holder Name</label><input id="edit-emp-accname"></div>
+    <div class="grid-3">
+      <div class="form-group"><label>Casual Leave/yr</label><input id="edit-emp-cl" type="number"></div>
+      <div class="form-group"><label>Sick Leave/yr</label><input id="edit-emp-sl" type="number"></div>
+      <div class="form-group"><label>Earned Leave/yr</label><input id="edit-emp-el" type="number"></div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" id="cancel-edit-emp-modal">Cancel</button>
+    <button class="btn btn-primary" id="submit-edit-emp">Save Changes</button>
+  </div>
+</div>
+</div>
+
 <div class="modal-overlay" id="modal-add-leave">
 <div class="modal">
   <div class="modal-header"><h3>Apply Leave</h3><button class="btn btn-sm" id="close-leave-modal">✕</button></div>
@@ -530,16 +569,67 @@ function renderEmployees(filter=''){
     <td><span class="chip">CL:${e.cl-e.cl_used}</span><span class="chip">SL:${e.sl-e.sl_used}</span></td>
     <td><span class="badge ${e.status==='Active'?'badge-green':'badge-red'}">${e.status}</span></td>
     <td style="display:flex;gap:4px">
+      <button class="btn btn-sm edit-emp-btn" data-empid="${e.id}">Edit</button>
       <button class="btn btn-sm toggle-btn" data-empid="${e.id}">${e.status==='Active'?'Deactivate':'Activate'}</button>
       <button class="btn btn-sm btn-danger del-emp-btn" data-empid="${e.id}" data-name="${e.name}">Delete</button>
     </td>
   </tr>`).join('');
+  tb.querySelectorAll('.edit-emp-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>openEditModal(btn.dataset.empid));
+  });
   tb.querySelectorAll('.toggle-btn').forEach(btn=>{
     btn.addEventListener('click',()=>toggleStatus(btn.dataset.empid));
   });
   tb.querySelectorAll('.del-emp-btn').forEach(btn=>{
     btn.addEventListener('click',()=>deleteEmployee(btn.dataset.empid, btn.dataset.name));
   });
+}
+
+function openEditModal(id){
+  const e=employees.find(x=>x.id===id);if(!e)return;
+  document.getElementById('edit-emp-id').value=e.id;
+  document.getElementById('edit-emp-name').value=e.name||'';
+  document.getElementById('edit-emp-desig').value=e.desig||'';
+  document.getElementById('edit-emp-dept').value=e.dept||'';
+  document.getElementById('edit-emp-doj').value=e.doj||'';
+  document.getElementById('edit-emp-salary').value=e.salary||'';
+  document.getElementById('edit-emp-phone').value=e.phone||'';
+  document.getElementById('edit-emp-email').value=e.email||'';
+  document.getElementById('edit-emp-bank').value=e.bank||'';
+  document.getElementById('edit-emp-bankname').value=e.bank_name||'';
+  document.getElementById('edit-emp-ifsc').value=e.ifsc||'';
+  document.getElementById('edit-emp-accname').value=e.acc_name||'';
+  document.getElementById('edit-emp-cl').value=e.cl||12;
+  document.getElementById('edit-emp-sl').value=e.sl||6;
+  document.getElementById('edit-emp-el').value=e.el||15;
+  openModal('modal-edit-emp');
+}
+async function saveEditEmployee(){
+  const id=document.getElementById('edit-emp-id').value;
+  const name=document.getElementById('edit-emp-name').value.trim();
+  const desig=document.getElementById('edit-emp-desig').value.trim();
+  const salary=document.getElementById('edit-emp-salary').value;
+  if(!name||!desig||!salary){alert('Fill required fields.');return;}
+  const res=await api('PUT',`/api/employees/${id}`,{
+    name,desig,
+    dept:document.getElementById('edit-emp-dept').value||'General',
+    doj:document.getElementById('edit-emp-doj').value,
+    salary,
+    phone:document.getElementById('edit-emp-phone').value,
+    email:document.getElementById('edit-emp-email').value,
+    bank:document.getElementById('edit-emp-bank').value,
+    bankName:document.getElementById('edit-emp-bankname').value,
+    ifsc:document.getElementById('edit-emp-ifsc').value,
+    accName:document.getElementById('edit-emp-accname').value||name,
+    cl:document.getElementById('edit-emp-cl').value,
+    sl:document.getElementById('edit-emp-sl').value,
+    el:document.getElementById('edit-emp-el').value
+  });
+  if(res&&res.ok){
+    showToast('Employee updated!');
+    employees=await api('GET','/api/employees')||[];
+    closeModal('modal-edit-emp');renderEmployees();renderDashboard();
+  } else showToast('Update failed.',false);
 }
 
 async function deleteEmployee(id, name){
@@ -985,6 +1075,12 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // Nav
   pages.forEach(p=>document.getElementById('nav-'+p).addEventListener('click',()=>showPage(p)));
+
+  // Edit employee modal
+  document.getElementById('close-edit-emp-modal').addEventListener('click',()=>closeModal('modal-edit-emp'));
+  document.getElementById('cancel-edit-emp-modal').addEventListener('click',()=>closeModal('modal-edit-emp'));
+  document.getElementById('submit-edit-emp').addEventListener('click',saveEditEmployee);
+  document.getElementById('modal-edit-emp').addEventListener('click',function(e){if(e.target===this)closeModal('modal-edit-emp');});
 
   // Employees
   document.getElementById('btn-add-emp').addEventListener('click',()=>openModal('modal-add-emp'));

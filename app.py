@@ -361,3 +361,20 @@ def delete_employee(emp_id):
     db.commit()
     db.close()
     return jsonify({'ok': True})
+
+@app.route('/api/employees/<emp_id>', methods=['PUT'])
+@login_required
+def update_employee(emp_id):
+    d = request.json
+    db = get_db()
+    db.execute('''UPDATE employees SET name=?,desig=?,dept=?,doj=?,salary=?,phone=?,email=?,
+        bank=?,bank_name=?,ifsc=?,acc_name=?,cl=?,sl=?,el=? WHERE id=?''',
+        (d['name'], d['desig'], d.get('dept','General'), d.get('doj'),
+         float(d.get('salary',0)), d.get('phone',''), d.get('email',''),
+         d.get('bank',''), d.get('bankName',''), d.get('ifsc',''),
+         d.get('accName', d['name']),
+         int(d.get('cl',12)), int(d.get('sl',6)), int(d.get('el',15)),
+         emp_id))
+    db.commit()
+    db.close()
+    return jsonify({'ok': True})
