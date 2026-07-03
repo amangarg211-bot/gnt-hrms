@@ -7,6 +7,18 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,sans-serif;background:#f5f5f0;color:#1a1a18;font-size:14px}
+#login-screen{display:flex;position:fixed;inset:0;background:#1a1a18;z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:0}
+#login-screen.hidden{display:none}
+.login-box{background:#222;border:1px solid #333;border-radius:14px;padding:40px 36px;width:340px;display:flex;flex-direction:column;align-items:center;gap:20px}
+.login-logo{font-size:22px;font-weight:700;color:#fff;letter-spacing:1px;text-align:center}
+.login-sub{font-size:12px;color:#888;text-align:center;margin-top:-12px}
+.login-box input[type=password]{width:100%;padding:10px 14px;border-radius:8px;border:1px solid #444;background:#2a2a28;color:#fff;font-size:14px;outline:none;letter-spacing:2px}
+.login-box input[type=password]:focus{border-color:#d4a843}
+.login-box input[type=password]::placeholder{letter-spacing:0;color:#555}
+.login-btn{width:100%;padding:10px;background:#d4a843;color:#1a1a18;font-weight:700;font-size:14px;border:none;border-radius:8px;cursor:pointer;transition:background 0.15s}
+.login-btn:hover{background:#c49a30}
+.login-error{color:#e24b4a;font-size:12px;display:none;text-align:center}
+.login-error.show{display:block}
 .app{display:flex;height:100vh;overflow:hidden}
 .sidebar{width:210px;background:#1a1a18;color:#fff;display:flex;flex-direction:column;flex-shrink:0}
 .logo{padding:18px 16px 14px;border-bottom:1px solid #333}
@@ -100,6 +112,17 @@ input:focus,select:focus,textarea:focus{border-color:#888}
 </style>
 </head>
 <body>
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">GNT HRMS</div>
+    <div class="login-sub">Graphics & Trends Solutions</div>
+    <input type="password" id="login-pass" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
+    <div class="login-error" id="login-error">Incorrect password. Please try again.</div>
+    <button class="login-btn" onclick="doLogin()">Login</button>
+  </div>
+</div>
+
 <div class="app">
 <div class="sidebar">
   <div class="logo">
@@ -119,7 +142,10 @@ input:focus,select:focus,textarea:focus{border-color:#888}
 <div class="main">
   <div class="topbar">
     <div class="page-title" id="topbar-title">Dashboard</div>
-    <span style="font-size:12px;color:#888" id="topbar-date"></span>
+    <div style="display:flex;align-items:center;gap:16px">
+      <span style="font-size:12px;color:#888" id="topbar-date"></span>
+      <button class="btn btn-sm" onclick="doLogout()" style="font-size:12px">🔒 Logout</button>
+    </div>
   </div>
 
   <div class="page active" id="page-dashboard">
@@ -858,6 +884,34 @@ function renderDashboard(){
     <div class="progress-bar"><div class="progress-fill" style="width:${emps.length?Math.round(paid/emps.length*100):0}%"></div></div>
     <div style="font-size:11px;color:#888;margin-top:3px">${emps.length?Math.round(paid/emps.length*100):0}% paid</div>
   </div>`;
+}
+
+// ---- LOGIN ----
+const APP_PASSWORD = 'gnt@2024';
+
+function doLogin(){
+  const val=document.getElementById('login-pass').value;
+  const err=document.getElementById('login-error');
+  if(val===APP_PASSWORD){
+    document.getElementById('login-screen').classList.add('hidden');
+    sessionStorage.setItem('gnt-auth','1');
+    err.classList.remove('show');
+    renderDashboard();
+  } else {
+    err.classList.add('show');
+    document.getElementById('login-pass').value='';
+    document.getElementById('login-pass').focus();
+  }
+}
+function doLogout(){
+  sessionStorage.removeItem('gnt-auth');
+  document.getElementById('login-pass').value='';
+  document.getElementById('login-error').classList.remove('show');
+  document.getElementById('login-screen').classList.remove('hidden');
+}
+// Check if already logged in this session
+if(sessionStorage.getItem('gnt-auth')==='1'){
+  document.getElementById('login-screen').classList.add('hidden');
 }
 
 document.getElementById('emp-name').addEventListener('input',function(){const f=document.getElementById('emp-accname');if(!f.dataset.edited)f.value=this.value;});
