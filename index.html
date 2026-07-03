@@ -117,9 +117,9 @@ input:focus,select:focus,textarea:focus{border-color:#888}
   <div class="login-box">
     <div class="login-logo">GNT HRMS</div>
     <div class="login-sub">Graphics & Trends Solutions</div>
-    <input type="password" id="login-pass" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
+    <input type="password" id="login-pass" placeholder="Enter password">
     <div class="login-error" id="login-error">Incorrect password. Please try again.</div>
-    <button class="login-btn" onclick="doLogin()">Login</button>
+    <button class="login-btn" id="login-btn">Login</button>
   </div>
 </div>
 
@@ -129,13 +129,13 @@ input:focus,select:focus,textarea:focus{border-color:#888}
 <div class="sidebar">
   <div class="logo"><div class="logo-title">GNT HRMS</div><div class="logo-sub">Graphics & Trends Solutions</div></div>
   <nav class="nav">
-    <div class="nav-item active" onclick="showPage('dashboard')">⊞ Dashboard</div>
-    <div class="nav-item" onclick="showPage('employees')">👥 Employees</div>
-    <div class="nav-item" onclick="showPage('attendance')">📅 Attendance</div>
-    <div class="nav-item" onclick="showPage('leaves')">🌿 Leave Management</div>
-    <div class="nav-item" onclick="showPage('payroll')">💰 Payroll</div>
-    <div class="nav-item" onclick="showPage('ledger')">📒 Employee Ledger</div>
-    <div class="nav-item" onclick="showPage('slips')">📄 Salary Slips</div>
+    <div class="nav-item active" id="nav-dashboard">⊞ Dashboard</div>
+    <div class="nav-item" id="nav-employees">👥 Employees</div>
+    <div class="nav-item" id="nav-attendance">📅 Attendance</div>
+    <div class="nav-item" id="nav-leaves">🌿 Leave Management</div>
+    <div class="nav-item" id="nav-payroll">💰 Payroll</div>
+    <div class="nav-item" id="nav-ledger">📒 Employee Ledger</div>
+    <div class="nav-item" id="nav-slips">📄 Salary Slips</div>
   </nav>
 </div>
 <div class="main">
@@ -143,11 +143,10 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     <div class="page-title" id="topbar-title">Dashboard</div>
     <div style="display:flex;align-items:center;gap:14px">
       <span style="font-size:12px;color:#888" id="topbar-date"></span>
-      <button class="btn btn-sm" onclick="doLogout()">🔒 Logout</button>
+      <button class="btn btn-sm" id="logout-btn">🔒 Logout</button>
     </div>
   </div>
 
-  <!-- DASHBOARD -->
   <div class="page active" id="page-dashboard">
     <div class="grid-4" style="margin-bottom:16px">
       <div class="stat-card"><div class="stat-label">Total Employees</div><div class="stat-value" id="dash-total">0</div><div class="stat-sub">Active</div></div>
@@ -166,11 +165,10 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     </div>
   </div>
 
-  <!-- EMPLOYEES -->
   <div class="page" id="page-employees">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-      <input class="search-bar" placeholder="Search employees..." oninput="filterEmployees(this.value)">
-      <button class="btn btn-primary" onclick="openModal('modal-add-emp')">+ Add Employee</button>
+      <input class="search-bar" id="emp-search" placeholder="Search employees...">
+      <button class="btn btn-primary" id="btn-add-emp">+ Add Employee</button>
     </div>
     <div class="card" style="padding:0">
       <table><thead><tr><th>Name</th><th>Designation</th><th>Dept</th><th>DOJ</th><th>Base Salary</th><th>Leave Bal.</th><th>Status</th><th></th></tr></thead>
@@ -178,17 +176,16 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     </div>
   </div>
 
-  <!-- ATTENDANCE -->
   <div class="page" id="page-attendance">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
       <div class="month-nav">
-        <button onclick="changeAttMonth(-1)">&#8249;</button>
+        <button id="att-prev">&#8249;</button>
         <div class="month-label" id="att-month-label"></div>
-        <button onclick="changeAttMonth(1)">&#8250;</button>
+        <button id="att-next">&#8250;</button>
       </div>
       <div style="display:flex;gap:8px">
-        <button class="btn" onclick="markAllPresent()">Mark All Present</button>
-        <button class="btn btn-primary" onclick="saveAttendance()">Save Attendance</button>
+        <button class="btn" id="btn-mark-all">Mark All Present</button>
+        <button class="btn btn-primary" id="btn-save-att">Save Attendance</button>
       </div>
     </div>
     <div class="att-note"><strong>Sunday rule:</strong> Sundays are paid holidays. Click <strong>—</strong> to mark <strong>OT</strong> (worked Sunday = +1 OT day).</div>
@@ -205,11 +202,10 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     </div>
   </div>
 
-  <!-- LEAVES -->
   <div class="page" id="page-leaves">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
       <span style="font-size:15px;font-weight:600">Leave Management</span>
-      <button class="btn btn-primary" onclick="openModal('modal-add-leave')">+ Apply Leave</button>
+      <button class="btn btn-primary" id="btn-add-leave">+ Apply Leave</button>
     </div>
     <div class="card"><div class="card-title">Leave Balances</div>
       <table><thead><tr><th>Employee</th><th>Casual Leave</th><th>Sick Leave</th><th>Earned Leave</th><th>Total Availed</th></tr></thead>
@@ -221,17 +217,16 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     </div>
   </div>
 
-  <!-- PAYROLL -->
   <div class="page" id="page-payroll">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
       <div class="month-nav">
-        <button onclick="changePayMonth(-1)">&#8249;</button>
+        <button id="pay-prev">&#8249;</button>
         <div class="month-label" id="pay-month-label"></div>
-        <button onclick="changePayMonth(1)">&#8250;</button>
+        <button id="pay-next">&#8250;</button>
       </div>
       <div style="display:flex;gap:8px">
-        <button class="btn" onclick="generatePayroll()">Calculate Payroll</button>
-        <button class="btn btn-primary" onclick="openModal('modal-bulk-pay')">Mark Payments</button>
+        <button class="btn" id="btn-calc-payroll">Calculate Payroll</button>
+        <button class="btn btn-primary" id="btn-mark-payments">Mark Payments</button>
       </div>
     </div>
     <div class="card" style="padding:0;overflow-x:auto">
@@ -241,7 +236,6 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     <div class="att-note" style="margin-top:10px"><strong>Formula:</strong> Gross = (Present Days / Weekdays in month) × Base Salary + OT pay.</div>
   </div>
 
-  <!-- LEDGER -->
   <div class="page" id="page-ledger">
     <div style="display:flex;gap:16px;height:calc(100vh - 120px)">
       <div style="width:220px;flex-shrink:0;background:#fff;border:1px solid #e0ddd5;border-radius:10px;overflow-y:auto">
@@ -254,8 +248,8 @@ input:focus,select:focus,textarea:focus{border-color:#888}
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div id="ledger-emp-name" style="font-size:15px;font-weight:600;color:#888">Select an employee</div>
           <div style="display:flex;gap:8px">
-            <button class="btn" onclick="openModal('modal-add-advance')">+ Advance Salary</button>
-            <button class="btn btn-primary" onclick="openModal('modal-add-ledger-exp')">+ Add Expenses</button>
+            <button class="btn" id="btn-add-advance">+ Advance Salary</button>
+            <button class="btn btn-primary" id="btn-add-exp">+ Add Expenses</button>
           </div>
         </div>
         <div class="grid-3" id="ledger-summary" style="display:none">
@@ -270,17 +264,16 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     </div>
   </div>
 
-  <!-- SALARY SLIPS -->
   <div class="page" id="page-slips">
     <div style="display:flex;gap:12px;margin-bottom:14px;align-items:center;flex-wrap:wrap">
-      <select id="slip-emp-select" style="width:200px" onchange="generateSlip()"><option value="">Select Employee</option></select>
+      <select id="slip-emp-select" style="width:200px"><option value="">Select Employee</option></select>
       <div class="month-nav">
-        <button onclick="changeSlipMonth(-1)">&#8249;</button>
+        <button id="slip-prev">&#8249;</button>
         <div class="month-label" id="slip-month-label"></div>
-        <button onclick="changeSlipMonth(1)">&#8250;</button>
+        <button id="slip-next">&#8250;</button>
       </div>
-      <button class="btn btn-primary" onclick="generateSlip()">Generate Slip</button>
-      <button class="btn" onclick="printSlip()">🖨 Print</button>
+      <button class="btn btn-primary" id="btn-gen-slip">Generate Slip</button>
+      <button class="btn" id="btn-print-slip">🖨 Print</button>
     </div>
     <div id="slip-container" style="max-width:520px"></div>
   </div>
@@ -290,7 +283,7 @@ input:focus,select:focus,textarea:focus{border-color:#888}
 <!-- MODALS -->
 <div class="modal-overlay" id="modal-add-emp">
 <div class="modal">
-  <div class="modal-header"><h3>Add Employee</h3><button class="btn btn-sm" onclick="closeModal('modal-add-emp')">✕</button></div>
+  <div class="modal-header"><h3>Add Employee</h3><button class="btn btn-sm" id="close-emp-modal">✕</button></div>
   <div class="modal-body">
     <div class="grid-2">
       <div class="form-group"><label>Full Name *</label><input id="emp-name" placeholder="Rahul Kumar"></div>
@@ -320,15 +313,15 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     </div>
   </div>
   <div class="modal-footer">
-    <button class="btn" onclick="closeModal('modal-add-emp')">Cancel</button>
-    <button class="btn btn-primary" onclick="addEmployee()">Add Employee</button>
+    <button class="btn" id="cancel-emp-modal">Cancel</button>
+    <button class="btn btn-primary" id="submit-emp">Add Employee</button>
   </div>
 </div>
 </div>
 
 <div class="modal-overlay" id="modal-add-leave">
 <div class="modal">
-  <div class="modal-header"><h3>Apply Leave</h3><button class="btn btn-sm" onclick="closeModal('modal-add-leave')">✕</button></div>
+  <div class="modal-header"><h3>Apply Leave</h3><button class="btn btn-sm" id="close-leave-modal">✕</button></div>
   <div class="modal-body">
     <div class="form-group"><label>Employee *</label><select id="leave-emp"><option value="">Select</option></select></div>
     <div class="grid-2">
@@ -342,26 +335,26 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     <div class="form-group"><label>Reason</label><textarea id="leave-reason" rows="2"></textarea></div>
   </div>
   <div class="modal-footer">
-    <button class="btn" onclick="closeModal('modal-add-leave')">Cancel</button>
-    <button class="btn btn-primary" onclick="addLeave()">Submit</button>
+    <button class="btn" id="cancel-leave-modal">Cancel</button>
+    <button class="btn btn-primary" id="submit-leave">Submit</button>
   </div>
 </div>
 </div>
 
 <div class="modal-overlay" id="modal-bulk-pay">
 <div class="modal">
-  <div class="modal-header"><h3>Mark Salary Payments</h3><button class="btn btn-sm" onclick="closeModal('modal-bulk-pay')">✕</button></div>
+  <div class="modal-header"><h3>Mark Salary Payments</h3><button class="btn btn-sm" id="close-bulkpay-modal">✕</button></div>
   <div class="modal-body">
     <table><thead><tr><th>Employee</th><th>Net Pay</th><th>Status</th><th>Mark</th></tr></thead>
     <tbody id="bulk-pay-table"></tbody></table>
   </div>
-  <div class="modal-footer"><button class="btn" onclick="closeModal('modal-bulk-pay')">Close</button></div>
+  <div class="modal-footer"><button class="btn" id="cancel-bulkpay-modal">Close</button></div>
 </div>
 </div>
 
 <div class="modal-overlay" id="modal-add-advance">
 <div class="modal">
-  <div class="modal-header"><h3>Advance Salary</h3><button class="btn btn-sm" onclick="closeModal('modal-add-advance')">✕</button></div>
+  <div class="modal-header"><h3>Advance Salary</h3><button class="btn btn-sm" id="close-advance-modal">✕</button></div>
   <div class="modal-body">
     <div class="att-note">Advance = debit entry. Money paid out early, reduces future payable balance.</div>
     <div class="grid-2" style="margin-top:12px">
@@ -374,15 +367,15 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     </div>
   </div>
   <div class="modal-footer">
-    <button class="btn" onclick="closeModal('modal-add-advance')">Cancel</button>
-    <button class="btn btn-primary" onclick="addAdvance()">Post Advance</button>
+    <button class="btn" id="cancel-advance-modal">Cancel</button>
+    <button class="btn btn-primary" id="submit-advance">Post Advance</button>
   </div>
 </div>
 </div>
 
 <div class="modal-overlay" id="modal-add-ledger-exp">
 <div class="modal modal-wide">
-  <div class="modal-header"><h3>Add Expense Entries</h3><button class="btn btn-sm" onclick="closeModal('modal-add-ledger-exp')">✕</button></div>
+  <div class="modal-header"><h3>Add Expense Entries</h3><button class="btn btn-sm" id="close-exp-modal">✕</button></div>
   <div class="modal-body">
     <div class="grid-2" style="margin-bottom:12px">
       <div class="form-group"><label>Date *</label><input id="lexp-date" type="date"></div>
@@ -393,21 +386,21 @@ input:focus,select:focus,textarea:focus{border-color:#888}
         <span>Description *</span><span>Type</span><span>Amount *</span><span>Effect</span><span></span>
       </div>
       <div id="exp-lines"></div>
-      <button class="btn btn-sm" style="margin-top:8px" onclick="addExpLine()">+ Add Line</button>
+      <button class="btn btn-sm" id="btn-add-exp-line" style="margin-top:8px">+ Add Line</button>
     </div>
     <div style="margin-top:12px;padding:10px 12px;background:#f0ede5;border-radius:6px;display:flex;justify-content:space-between">
       <span>Total</span><strong id="lexp-total">₹0</strong>
     </div>
   </div>
   <div class="modal-footer">
-    <button class="btn" onclick="closeModal('modal-add-ledger-exp')">Cancel</button>
-    <button class="btn btn-primary" onclick="submitLedgerExpenses()">Post to Ledger</button>
+    <button class="btn" id="cancel-exp-modal">Cancel</button>
+    <button class="btn btn-primary" id="submit-exp">Post to Ledger</button>
   </div>
 </div>
 </div>
 
 <script>
-// ── state ────────────────────────────────────────────────────────────────────
+// ── state ─────────────────────────────────────────────────────────────────
 let employees=[], allLeaves=[], payrollData={}, ledgerCache={};
 let attMonth=new Date(); attMonth.setDate(1);
 let payMonth=new Date(); payMonth.setDate(1);
@@ -417,64 +410,68 @@ let selectedLedgerEmp=null;
 let expLineCount=0;
 
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
-function fmtMonth(d){return MONTHS[d.getMonth()]+' '+d.getFullYear();}
-function monthKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
-function rupee(n){return '₹'+Math.abs(Math.round(n)).toLocaleString('en-IN');}
-function today(){return new Date().toISOString().split('T')[0];}
-function activeEmps(){return employees.filter(e=>e.status==='Active');}
+const fmtMonth=d=>MONTHS[d.getMonth()]+' '+d.getFullYear();
+const monthKey=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+const rupee=n=>'₹'+Math.abs(Math.round(n)).toLocaleString('en-IN');
+const todayStr=()=>new Date().toISOString().split('T')[0];
+const activeEmps=()=>employees.filter(e=>e.status==='Active');
+const getDaysInMonth=d=>new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
 
 function showToast(msg,ok=true){
   const t=document.getElementById('toast');
-  t.textContent=msg;t.style.background=ok?'#1a1a18':'#e24b4a';
-  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);
+  t.textContent=msg; t.style.background=ok?'#1a1a18':'#e24b4a';
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500);
 }
 
-// ── api ──────────────────────────────────────────────────────────────────────
-async function api(method, url, body){
+// ── api ───────────────────────────────────────────────────────────────────
+async function api(method,url,body){
   const opts={method,headers:{'Content-Type':'application/json'}};
-  if(body)opts.body=JSON.stringify(body);
+  if(body) opts.body=JSON.stringify(body);
   const res=await fetch(url,opts);
   if(res.status===401){showLoginScreen();return null;}
   return res.json();
 }
 
-// ── auth ─────────────────────────────────────────────────────────────────────
+// ── auth ──────────────────────────────────────────────────────────────────
 function showLoginScreen(){
   document.getElementById('login-screen').classList.remove('hidden');
   document.getElementById('login-pass').value='';
+  document.getElementById('login-error').classList.remove('show');
 }
 function hideLoginScreen(){document.getElementById('login-screen').classList.add('hidden');}
 
 async function doLogin(){
   const pass=document.getElementById('login-pass').value;
-  const err=document.getElementById('login-error');
   const res=await api('POST','/api/login',{password:pass});
-  if(res&&res.ok){hideLoginScreen();err.classList.remove('show');await loadAll();}
-  else{err.classList.add('show');document.getElementById('login-pass').value='';}
+  if(res&&res.ok){hideLoginScreen();await loadAll();}
+  else{
+    document.getElementById('login-error').classList.add('show');
+    document.getElementById('login-pass').value='';
+    document.getElementById('login-pass').focus();
+  }
 }
-async function doLogout(){
-  await api('POST','/api/logout');showLoginScreen();
-}
+async function doLogout(){await api('POST','/api/logout');showLoginScreen();}
 async function checkAuth(){
   const res=await api('GET','/api/check-auth');
   if(res&&res.logged_in){hideLoginScreen();await loadAll();}
 }
 
-// ── load all ─────────────────────────────────────────────────────────────────
 async function loadAll(){
   employees=await api('GET','/api/employees')||[];
   document.getElementById('topbar-date').textContent=new Date().toDateString();
   renderDashboard();
 }
 
-// ── nav ──────────────────────────────────────────────────────────────────────
+// ── nav ───────────────────────────────────────────────────────────────────
+const pages=['dashboard','employees','attendance','leaves','payroll','ledger','slips'];
 const pageTitles={dashboard:'Dashboard',employees:'Employees',attendance:'Attendance',leaves:'Leave Management',payroll:'Payroll',ledger:'Employee Ledger',slips:'Salary Slips'};
+
 function showPage(p){
-  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
-  document.getElementById('page-'+p).classList.add('active');
+  pages.forEach(x=>{
+    document.getElementById('page-'+x).classList.toggle('active',x===p);
+    document.getElementById('nav-'+x).classList.toggle('active',x===p);
+  });
   document.getElementById('topbar-title').textContent=pageTitles[p];
-  document.querySelectorAll('.nav-item').forEach(x=>{if(x.textContent.trim().toLowerCase().startsWith(pageTitles[p].substring(0,4).toLowerCase()))x.classList.add('active');});
   if(p==='attendance')loadAttendance();
   if(p==='payroll')loadPayroll();
   if(p==='employees')renderEmployees();
@@ -483,25 +480,17 @@ function showPage(p){
   if(p==='slips'){populateSlipSelect();renderSlipMonth();}
   if(p==='dashboard')renderDashboard();
 }
-function openModal(id){
-  document.getElementById(id).classList.add('open');
-  if(id==='modal-add-leave')populateLeaveDropdown();
-  if(id==='modal-bulk-pay')renderBulkPay();
-  if(id==='modal-add-ledger-exp'){initExpLines();document.getElementById('lexp-date').value=today();}
-  if(id==='modal-add-advance')document.getElementById('adv-date').value=today();
-}
+
+function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 
-// ── months ───────────────────────────────────────────────────────────────────
+// ── month nav ─────────────────────────────────────────────────────────────
 function renderAttMonth(){document.getElementById('att-month-label').textContent=fmtMonth(attMonth);}
 function renderPayMonth(){document.getElementById('pay-month-label').textContent=fmtMonth(payMonth);document.getElementById('dash-month-label').textContent=fmtMonth(payMonth);}
 function renderSlipMonth(){document.getElementById('slip-month-label').textContent=fmtMonth(slipMonth);}
-function changeAttMonth(d){attMonth.setMonth(attMonth.getMonth()+d);renderAttMonth();loadAttendance();}
-function changePayMonth(d){payMonth.setMonth(payMonth.getMonth()+d);renderPayMonth();loadPayroll();}
-function changeSlipMonth(d){slipMonth.setMonth(slipMonth.getMonth()+d);renderSlipMonth();generateSlip();}
 renderAttMonth();renderPayMonth();renderSlipMonth();
 
-// ── employees ────────────────────────────────────────────────────────────────
+// ── employees ─────────────────────────────────────────────────────────────
 async function addEmployee(){
   const name=document.getElementById('emp-name').value.trim();
   const desig=document.getElementById('emp-desig').value.trim();
@@ -510,19 +499,25 @@ async function addEmployee(){
   if(!name||!desig||!doj||!salary){alert('Fill required fields.');return;}
   const res=await api('POST','/api/employees',{
     name,desig,dept:document.getElementById('emp-dept').value||'General',doj,salary,
-    phone:document.getElementById('emp-phone').value,email:document.getElementById('emp-email').value,
-    bank:document.getElementById('emp-bank').value,bankName:document.getElementById('emp-bankname').value,
+    phone:document.getElementById('emp-phone').value,
+    email:document.getElementById('emp-email').value,
+    bank:document.getElementById('emp-bank').value,
+    bankName:document.getElementById('emp-bankname').value,
     ifsc:document.getElementById('emp-ifsc').value,
     accName:document.getElementById('emp-accname').value||name,
-    cl:document.getElementById('emp-cl').value,sl:document.getElementById('emp-sl').value,el:document.getElementById('emp-el').value
+    cl:document.getElementById('emp-cl').value,
+    sl:document.getElementById('emp-sl').value,
+    el:document.getElementById('emp-el').value
   });
   if(res&&res.ok){
     showToast('Employee added!');
     employees=await api('GET','/api/employees')||[];
     closeModal('modal-add-emp');renderEmployees();renderDashboard();
     ['emp-name','emp-desig','emp-dept','emp-doj','emp-salary','emp-phone','emp-email','emp-bank','emp-bankname','emp-ifsc','emp-accname'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('emp-accname').dataset.edited='';
   }
 }
+
 function renderEmployees(filter=''){
   const tb=document.getElementById('emp-table');
   const emps=employees.filter(e=>!filter||e.name.toLowerCase().includes(filter.toLowerCase()));
@@ -534,28 +529,32 @@ function renderEmployees(filter=''){
     <td>${rupee(e.salary)}</td>
     <td><span class="chip">CL:${e.cl-e.cl_used}</span><span class="chip">SL:${e.sl-e.sl_used}</span></td>
     <td><span class="badge ${e.status==='Active'?'badge-green':'badge-red'}">${e.status}</span></td>
-    <td><button class="btn btn-sm" onclick="toggleStatus('${e.id}')">${e.status==='Active'?'Deactivate':'Activate'}</button></td>
+    <td><button class="btn btn-sm" data-empid="${e.id}">${e.status==='Active'?'Deactivate':'Activate'}</button></td>
   </tr>`).join('');
+  tb.querySelectorAll('button[data-empid]').forEach(btn=>{
+    btn.addEventListener('click',()=>toggleStatus(btn.dataset.empid));
+  });
 }
-function filterEmployees(v){renderEmployees(v);}
+
 async function toggleStatus(id){
   await api('POST',`/api/employees/${id}/status`);
   employees=await api('GET','/api/employees')||[];
   renderEmployees();
 }
+
 function populateLeaveDropdown(){
   const el=document.getElementById('leave-emp');
   el.innerHTML='<option value="">Select</option>'+activeEmps().map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
 }
 
-// ── attendance ───────────────────────────────────────────────────────────────
+// ── attendance ────────────────────────────────────────────────────────────
 async function loadAttendance(){
   const mk=monthKey(attMonth);
   const res=await api('GET',`/api/attendance/${mk}`);
   attCache=res||{attendance:{},ot:{}};
   renderAttendance();
 }
-function getDaysInMonth(d){return new Date(d.getFullYear(),d.getMonth()+1,0).getDate();}
+
 function renderAttendance(){
   const emps=activeEmps(),cont=document.getElementById('att-container');
   if(!emps.length){cont.innerHTML='<div class="no-data">No active employees</div>';return;}
@@ -576,27 +575,33 @@ function renderAttendance(){
       const key=`${emp.id}-${d}`,stored=attCache.attendance[key]||'';
       if(sun){
         const isOT=stored==='OT';if(isOT)sundayOT++;
-        html+=`<td style="text-align:center;background:#f8f5ff"><button class="att-btn" style="${isOT?'background:#eedcfe;color:#3c3489;border-color:#afa9ec':'background:#e8e8f0;color:#999;border-color:#ccc'};font-size:10px;padding:2px 5px" onclick="toggleSunday('${key}','${stored}')">${isOT?'OT':'—'}</button></td>`;
+        html+=`<td style="text-align:center;background:#f8f5ff"><button class="att-btn" data-key="${key}" data-sun="1" data-cur="${stored}" style="${isOT?'background:#eedcfe;color:#3c3489;border-color:#afa9ec':'background:#e8e8f0;color:#999;border-color:#ccc'};font-size:10px;padding:2px 5px">${isOT?'OT':'—'}</button></td>`;
       } else {
         const s=stored||'A';
         if(s==='P')present++;else if(s==='H')present+=0.5;else if(s==='L')present++;
-        html+=`<td style="text-align:center"><button class="att-btn ${s}" onclick="cycleAtt('${key}','${s}')">${s}</button></td>`;
+        html+=`<td style="text-align:center"><button class="att-btn ${s}" data-key="${key}" data-sun="0" data-cur="${s}">${s}</button></td>`;
       }
     }
     const extraOT=parseFloat(attCache.ot[emp.id]||0);
     html+=`<td style="text-align:center;font-weight:600">${present}</td>
       <td style="text-align:center;color:#534ab7;font-weight:600">${sundayOT}</td>
-      <td style="text-align:center"><input type="number" value="${extraOT}" min="0" step="0.5" style="width:48px;text-align:center;font-size:12px" onchange="setOT('${emp.id}',this.value)"></td></tr>`;
+      <td style="text-align:center"><input type="number" value="${extraOT}" min="0" step="0.5" data-empid="${emp.id}" class="ot-input" style="width:48px;text-align:center;font-size:12px"></td></tr>`;
   });
-  html+='</tbody></table>';cont.innerHTML=html;
+  html+='</tbody></table>';
+  cont.innerHTML=html;
+  cont.querySelectorAll('.att-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const key=btn.dataset.key,cur=btn.dataset.cur,sun=btn.dataset.sun==='1';
+      if(sun){attCache.attendance[key]=cur==='OT'?'':'OT';}
+      else{const c=['A','P','H','L'];attCache.attendance[key]=c[(c.indexOf(cur)+1)%c.length];}
+      renderAttendance();
+    });
+  });
+  cont.querySelectorAll('.ot-input').forEach(inp=>{
+    inp.addEventListener('change',()=>{attCache.ot[inp.dataset.empid]=parseFloat(inp.value)||0;});
+  });
 }
-function cycleAtt(key,cur){
-  const c=['A','P','H','L'];
-  attCache.attendance[key]=c[(c.indexOf(cur)+1)%c.length];
-  renderAttendance();
-}
-function toggleSunday(key,cur){attCache.attendance[key]=cur==='OT'?'':'OT';renderAttendance();}
-function setOT(empId,val){attCache.ot[empId]=parseFloat(val)||0;}
+
 function markAllPresent(){
   const emps=activeEmps(),days=getDaysInMonth(attMonth);
   emps.forEach(emp=>{
@@ -607,61 +612,66 @@ function markAllPresent(){
   });
   renderAttendance();
 }
+
 async function saveAttendance(){
   const mk=monthKey(attMonth);
   const res=await api('POST','/api/attendance',{month_key:mk,attendance:attCache.attendance,ot:attCache.ot});
   if(res&&res.ok)showToast('Attendance saved for '+fmtMonth(attMonth));
 }
 
-// ── payroll ──────────────────────────────────────────────────────────────────
+// ── payroll ───────────────────────────────────────────────────────────────
 async function loadPayroll(){
   const mk=monthKey(payMonth);
   const rows=await api('GET',`/api/payroll/${mk}`)||[];
   payrollData={};rows.forEach(r=>payrollData[r.emp_id]=r);
   renderPayroll();
 }
+
 async function generatePayroll(){
-  const mk=monthKey(payMonth);
-  const res=await api('POST','/api/payroll/calculate',{month_key:mk});
+  const res=await api('POST','/api/payroll/calculate',{month_key:monthKey(payMonth)});
   if(res&&res.ok){showToast('Payroll calculated!');await loadPayroll();}
 }
+
 function renderPayroll(){
   document.getElementById('pay-month-label').textContent=fmtMonth(payMonth);
   const emps=activeEmps(),tb=document.getElementById('payroll-table');
   if(!emps.length){tb.innerHTML='<tr><td colspan="11" class="no-data">No active employees</td></tr>';return;}
   tb.innerHTML=emps.map(emp=>{
     const pr=payrollData[emp.id];
-    if(!pr)return `<tr><td>${emp.name}</td><td>${rupee(emp.salary)}</td><td colspan="8" style="color:#aaa">Not calculated</td><td><button class="btn btn-sm" onclick="generatePayroll()">Calc</button></td></tr>`;
+    if(!pr)return `<tr><td>${emp.name}</td><td>${rupee(emp.salary)}</td><td colspan="9" style="color:#aaa">Not calculated — click Calculate Payroll</td></tr>`;
     const badge=pr.paid==='Paid'?'badge-green':pr.paid==='Partial'?'badge-amber':'badge-red';
-    const ledgerBtn=pr.posted_to_ledger?'<span class="badge badge-green">Posted</span>':`<button class="btn btn-sm btn-success" onclick="postToLedger('${emp.id}')">Post</button>`;
+    const ledgerBtn=pr.posted_to_ledger
+      ?'<span class="badge badge-green">Posted</span>'
+      :`<button class="btn btn-sm btn-success post-btn" data-empid="${emp.id}">Post</button>`;
     return `<tr>
       <td><strong>${emp.name}</strong><br><span style="font-size:11px;color:#888">${emp.id}</span></td>
-      <td>${rupee(emp.salary)}</td>
-      <td>${pr.present}/${pr.weekdays}</td>
-      <td style="color:#534ab7">${pr.sunday_ot}</td>
-      <td>${pr.extra_ot}</td>
+      <td>${rupee(emp.salary)}</td><td>${pr.present}/${pr.weekdays}</td>
+      <td style="color:#534ab7">${pr.sunday_ot}</td><td>${pr.extra_ot}</td>
       <td>${rupee(pr.gross)}</td>
       <td style="color:#e24b4a">${pr.ledger_deduct>0?'-'+rupee(pr.ledger_deduct):'—'}</td>
       <td><strong>${rupee(pr.net)}</strong></td>
       <td>${ledgerBtn}</td>
       <td><span class="badge ${badge}">${pr.paid}</span>${pr.paid_date?`<br><span style="font-size:10px;color:#888">${pr.paid_date}</span>`:''}</td>
       <td>
-        <button class="btn btn-sm btn-success" onclick="markPaid('${emp.id}','Paid')" style="margin-bottom:2px">Paid</button>
-        <button class="btn btn-sm" onclick="markPaid('${emp.id}','Partial')">Part</button>
+        <button class="btn btn-sm btn-success paid-btn" data-empid="${emp.id}" data-status="Paid" style="margin-bottom:2px">Paid</button>
+        <button class="btn btn-sm part-btn" data-empid="${emp.id}" data-status="Partial">Part</button>
       </td></tr>`;
   }).join('');
+  tb.querySelectorAll('.post-btn').forEach(btn=>btn.addEventListener('click',()=>postToLedger(btn.dataset.empid)));
+  tb.querySelectorAll('.paid-btn,.part-btn').forEach(btn=>btn.addEventListener('click',()=>markPaid(btn.dataset.empid,btn.dataset.status)));
 }
+
 async function postToLedger(empId){
-  const mk=monthKey(payMonth);
-  const res=await api('POST','/api/payroll/post-ledger',{emp_id:empId,month_key:mk});
+  const res=await api('POST','/api/payroll/post-ledger',{emp_id:empId,month_key:monthKey(payMonth)});
   if(res&&res.ok){showToast('Posted to ledger!');await loadPayroll();}
   else if(res)showToast(res.error||'Error',false);
 }
+
 async function markPaid(empId,status){
-  const mk=monthKey(payMonth);
-  const res=await api('POST','/api/payroll/mark-paid',{emp_id:empId,month_key:mk,status});
+  const res=await api('POST','/api/payroll/mark-paid',{emp_id:empId,month_key:monthKey(payMonth),status});
   if(res&&res.ok){showToast('Payment updated!');await loadPayroll();renderDashboard();}
 }
+
 function renderBulkPay(){
   const emps=activeEmps(),tb=document.getElementById('bulk-pay-table');
   if(!emps.length){tb.innerHTML='<tr><td colspan="4" class="no-data">No employees</td></tr>';return;}
@@ -670,34 +680,37 @@ function renderBulkPay(){
     const badge=!pr?'badge-gray':pr.paid==='Paid'?'badge-green':pr.paid==='Partial'?'badge-amber':'badge-red';
     return `<tr><td>${emp.name}</td><td>${pr?rupee(pr.net):'—'}</td>
       <td><span class="badge ${badge}">${pr?pr.paid:'Not calculated'}</span></td>
-      <td><button class="btn btn-sm btn-success" onclick="markPaid('${emp.id}','Paid')">Paid</button>
-      <button class="btn btn-sm" onclick="markPaid('${emp.id}','Unpaid')" style="margin-left:4px">Unpaid</button></td></tr>`;
+      <td>
+        <button class="btn btn-sm btn-success bp-paid" data-empid="${emp.id}">Paid</button>
+        <button class="btn btn-sm bp-unpaid" data-empid="${emp.id}" style="margin-left:4px">Unpaid</button>
+      </td></tr>`;
   }).join('');
+  tb.querySelectorAll('.bp-paid').forEach(b=>b.addEventListener('click',()=>markPaid(b.dataset.empid,'Paid')));
+  tb.querySelectorAll('.bp-unpaid').forEach(b=>b.addEventListener('click',()=>markPaid(b.dataset.empid,'Unpaid')));
 }
 
-// ── ledger ───────────────────────────────────────────────────────────────────
+// ── ledger ────────────────────────────────────────────────────────────────
 async function renderLedgerPage(){
   const emps=employees;
   document.getElementById('ledger-emp-count').textContent=emps.length+' emp';
   const list=document.getElementById('ledger-emp-list');
   if(!emps.length){list.innerHTML='<div class="no-data">No employees yet</div>';return;}
-  // Load balances for all
-  const balances={};
   await Promise.all(emps.map(async e=>{
-    const entries=await api('GET',`/api/ledger/${e.id}`)||[];
-    ledgerCache[e.id]=entries;
-    balances[e.id]=entries.reduce((s,x)=>x.effect==='credit'?s+x.amount:s-x.amount,0);
+    ledgerCache[e.id]=await api('GET',`/api/ledger/${e.id}`)||[];
   }));
   list.innerHTML=emps.map(e=>{
-    const bal=balances[e.id]||0;
-    return `<div class="ledger-emp-row${selectedLedgerEmp===e.id?' selected':''}" onclick="selectLedgerEmp('${e.id}')">
+    const bal=(ledgerCache[e.id]||[]).reduce((s,x)=>x.effect==='credit'?s+x.amount:s-x.amount,0);
+    return `<div class="ledger-emp-row${selectedLedgerEmp===e.id?' selected':''}" data-empid="${e.id}">
       <div><div style="font-size:13px">${e.name}</div><div style="font-size:11px;color:#888">${(ledgerCache[e.id]||[]).length} entries</div></div>
       <div class="${bal>=0?'balance-pos':'balance-neg'}" style="font-size:12px">${bal>=0?'+':'-'}${rupee(Math.abs(bal))}</div>
     </div>`;
   }).join('');
+  list.querySelectorAll('.ledger-emp-row').forEach(row=>{
+    row.addEventListener('click',()=>{selectedLedgerEmp=row.dataset.empid;renderLedgerPage();});
+  });
   if(selectedLedgerEmp)renderLedgerDetail(selectedLedgerEmp);
 }
-function selectLedgerEmp(id){selectedLedgerEmp=id;renderLedgerPage();}
+
 function renderLedgerDetail(empId){
   const emp=employees.find(e=>e.id===empId);if(!emp)return;
   document.getElementById('ledger-emp-name').textContent=emp.name+' — '+emp.id;
@@ -729,6 +742,7 @@ function renderLedgerDetail(empId){
   });
   document.getElementById('ledger-table-wrap').innerHTML=html;
 }
+
 async function addAdvance(){
   if(!selectedLedgerEmp){alert('Select an employee first.');return;}
   const date=document.getElementById('adv-date').value,amount=document.getElementById('adv-amount').value;
@@ -741,22 +755,22 @@ async function addAdvance(){
   if(res&&res.ok){showToast('Advance posted!');closeModal('modal-add-advance');renderLedgerPage();}
 }
 
-let expLineCount=0;
 function initExpLines(){expLineCount=0;document.getElementById('exp-lines').innerHTML='';document.getElementById('lexp-total').textContent='₹0';addExpLine();}
 function addExpLine(){
   expLineCount++;
   const id='expline-'+expLineCount,div=document.createElement('div');
   div.className='exp-line';div.id=id;
-  div.innerHTML=`<input placeholder="e.g. Auto fare to site" oninput="recalcExpTotal()">
-    <select><option>Conveyance</option><option>Petty Cash</option><option>Food</option><option>Site Expense</option><option>Other</option></select>
-    <input type="number" placeholder="0" min="0" oninput="recalcExpTotal()">
-    <select><option value="reimburse">Reimburse (Debit)</option><option value="recover">Recover from Salary</option></select>
-    <button class="btn btn-sm btn-danger" onclick="removeExpLine('${id}')" style="padding:4px 8px">✕</button>`;
+  div.innerHTML=`<input placeholder="e.g. Auto fare to site" class="exp-desc">
+    <select class="exp-type"><option>Conveyance</option><option>Petty Cash</option><option>Food</option><option>Site Expense</option><option>Other</option></select>
+    <input type="number" placeholder="0" min="0" class="exp-amt">
+    <select class="exp-effect"><option value="reimburse">Reimburse (Debit)</option><option value="recover">Recover from Salary</option></select>
+    <button class="btn btn-sm btn-danger exp-remove" style="padding:4px 8px">✕</button>`;
   document.getElementById('exp-lines').appendChild(div);
+  div.querySelector('.exp-amt').addEventListener('input',recalcExpTotal);
+  div.querySelector('.exp-remove').addEventListener('click',()=>{div.remove();recalcExpTotal();});
 }
-function removeExpLine(id){const el=document.getElementById(id);if(el)el.remove();recalcExpTotal();}
 function recalcExpTotal(){
-  let t=0;document.querySelectorAll('#exp-lines .exp-line').forEach(r=>{t+=parseFloat(r.querySelectorAll('input')[1]?.value)||0;});
+  let t=0;document.querySelectorAll('.exp-amt').forEach(i=>{t+=parseFloat(i.value)||0;});
   document.getElementById('lexp-total').textContent=rupee(t);
 }
 async function submitLedgerExpenses(){
@@ -765,17 +779,17 @@ async function submitLedgerExpenses(){
   if(!date){alert('Enter a date.');return;}
   const lines=[];
   document.querySelectorAll('#exp-lines .exp-line').forEach(row=>{
-    const inputs=row.querySelectorAll('input'),selects=row.querySelectorAll('select');
-    const desc=inputs[0].value.trim(),amt=parseFloat(inputs[1].value)||0;
+    const desc=row.querySelector('.exp-desc').value.trim();
+    const amt=parseFloat(row.querySelector('.exp-amt').value)||0;
     if(!desc||!amt)return;
-    lines.push({desc,type:selects[0].value,amount:amt,effect:selects[1].value});
+    lines.push({desc,type:row.querySelector('.exp-type').value,amount:amt,effect:row.querySelector('.exp-effect').value});
   });
   if(!lines.length){alert('Add at least one expense line.');return;}
   const res=await api('POST','/api/ledger/expenses',{emp_id:selectedLedgerEmp,date,bill,lines});
   if(res&&res.ok){showToast('Expenses posted!');closeModal('modal-add-ledger-exp');renderLedgerPage();}
 }
 
-// ── leaves ───────────────────────────────────────────────────────────────────
+// ── leaves ────────────────────────────────────────────────────────────────
 async function loadLeaves(){
   allLeaves=await api('GET','/api/leaves')||[];
   employees=await api('GET','/api/employees')||[];
@@ -817,11 +831,12 @@ function renderLeaveTable(){
       <td>${new Date(l.to_date).toLocaleDateString('en-IN')}</td>
       <td>${l.days}</td><td>${l.reason||'—'}</td>
       <td><span class="badge ${badge}">${l.status}</span></td>
-      <td><button class="btn btn-sm btn-danger" onclick="deleteLeave(${l.id})">Del</button></td></tr>`;
+      <td><button class="btn btn-sm btn-danger del-leave" data-id="${l.id}">Del</button></td></tr>`;
   }).join('');
+  tb.querySelectorAll('.del-leave').forEach(b=>b.addEventListener('click',()=>deleteLeave(b.dataset.id)));
 }
 
-// ── salary slip ───────────────────────────────────────────────────────────────
+// ── salary slip ───────────────────────────────────────────────────────────
 function populateSlipSelect(){
   document.getElementById('slip-emp-select').innerHTML='<option value="">Select Employee</option>'+
     employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
@@ -833,7 +848,7 @@ async function generateSlip(){
   const mk=monthKey(slipMonth);
   const rows=await api('GET',`/api/payroll/${mk}`)||[];
   const pr=rows.find(r=>r.emp_id===empId);
-  if(!pr){cont.innerHTML='<div class="no-data">No payroll calculated for this month. Go to Payroll and calculate first.</div>';return;}
+  if(!pr){cont.innerHTML='<div class="no-data">No payroll calculated for this month. Go to Payroll → Calculate first.</div>';return;}
   const recoverEntries=(await api('GET',`/api/ledger/${empId}`)||[]).filter(x=>x.type==='expense-recover'&&x.month_key===mk);
   const dailyRate=emp.salary/30;
   cont.innerHTML=`<div class="slip" id="printable-slip">
@@ -862,14 +877,14 @@ async function generateSlip(){
     </div>
     <div class="slip-section">Earnings</div>
     <div class="slip-row"><span>Base Salary (30-day basis)</span><span>${rupee(emp.salary)}</span></div>
-    <div class="slip-row"><span>Earned Pay (${pr.present}/${pr.weekdays} days × ${rupee(emp.salary)})</span><span>${rupee(pr.earned_pay)}</span></div>
+    <div class="slip-row"><span>Earned Pay (${pr.present}/${pr.weekdays} × ${rupee(emp.salary)})</span><span>${rupee(pr.earned_pay)}</span></div>
     ${pr.sunday_ot>0?`<div class="slip-row"><span>Sunday OT (${pr.sunday_ot} × ${rupee(dailyRate)})</span><span>${rupee(pr.sunday_ot*dailyRate)}</span></div>`:''}
     ${pr.extra_ot>0?`<div class="slip-row"><span>Extra OT (${pr.extra_ot} × ${rupee(dailyRate)})</span><span>${rupee(pr.extra_ot*dailyRate)}</span></div>`:''}
     <div class="slip-row" style="font-weight:600"><span>Gross Earnings</span><span>${rupee(pr.gross)}</span></div>
     ${pr.ledger_deduct>0?`
-    <div class="slip-section">Deductions</div>
-    ${recoverEntries.map(x=>`<div class="slip-row"><span>${x.label}</span><span style="color:#e24b4a">-${rupee(x.amount)}</span></div>`).join('')}
-    <div class="slip-row" style="font-weight:500"><span>Total Deductions</span><span style="color:#e24b4a">-${rupee(pr.ledger_deduct)}</span></div>`:''}
+      <div class="slip-section">Deductions</div>
+      ${recoverEntries.map(x=>`<div class="slip-row"><span>${x.label}</span><span style="color:#e24b4a">-${rupee(x.amount)}</span></div>`).join('')}
+      <div class="slip-row" style="font-weight:500"><span>Total Deductions</span><span style="color:#e24b4a">-${rupee(pr.ledger_deduct)}</span></div>`:''}
     <div class="slip-row total"><span>NET PAYABLE</span><span style="color:#1d9e75">${rupee(pr.net)}</span></div>
     ${emp.bank||emp.ifsc?`<div style="margin-top:10px;padding:8px 12px;background:#faf9f5;border-radius:6px;font-size:12px">
       <div style="font-weight:600;margin-bottom:3px;color:#555">Bank Details</div>
@@ -904,6 +919,7 @@ async function generateSlip(){
     </div>
   </div>`;
 }
+
 function printSlip(){
   const slip=document.getElementById('printable-slip');
   if(!slip){alert('Generate a slip first.');return;}
@@ -912,7 +928,7 @@ function printSlip(){
   w.document.close();w.print();
 }
 
-// ── dashboard ─────────────────────────────────────────────────────────────────
+// ── dashboard ─────────────────────────────────────────────────────────────
 async function renderDashboard(){
   const emps=activeEmps();
   document.getElementById('dash-total').textContent=emps.length;
@@ -929,7 +945,7 @@ async function renderDashboard(){
   document.getElementById('dash-pending').textContent=pending;
   document.getElementById('dash-payable').textContent=rupee(totalPay);
   const tb=document.getElementById('dash-emp-table');
-  if(!emps.length){tb.innerHTML='<tr><td colspan="3" class="no-data">No employees yet</td></tr>';}
+  if(!emps.length)tb.innerHTML='<tr><td colspan="3" class="no-data">No employees yet</td></tr>';
   else tb.innerHTML=emps.slice(0,6).map(e=>`<tr><td>${e.name}</td><td>${e.desig}</td><td><span class="badge badge-green">Active</span></td></tr>`).join('');
   const psEl=document.getElementById('dash-payroll-summary');
   const paid=emps.filter(e=>payrollData[e.id]&&payrollData[e.id].paid==='Paid').length;
@@ -945,20 +961,73 @@ async function renderDashboard(){
   </div>`;
 }
 
-// auto-fill account name
-document.getElementById('emp-name').addEventListener('input',function(){
-  const f=document.getElementById('emp-accname');if(!f.dataset.edited)f.value=this.value;
+// ── wire up ALL events here (no inline handlers) ──────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  // Login
+  document.getElementById('login-btn').addEventListener('click',doLogin);
+  document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+  document.getElementById('logout-btn').addEventListener('click',doLogout);
+
+  // Nav
+  pages.forEach(p=>document.getElementById('nav-'+p).addEventListener('click',()=>showPage(p)));
+
+  // Employees
+  document.getElementById('btn-add-emp').addEventListener('click',()=>openModal('modal-add-emp'));
+  document.getElementById('close-emp-modal').addEventListener('click',()=>closeModal('modal-add-emp'));
+  document.getElementById('cancel-emp-modal').addEventListener('click',()=>closeModal('modal-add-emp'));
+  document.getElementById('submit-emp').addEventListener('click',addEmployee);
+  document.getElementById('emp-search').addEventListener('input',e=>renderEmployees(e.target.value));
+  document.getElementById('emp-name').addEventListener('input',function(){
+    const f=document.getElementById('emp-accname');if(!f.dataset.edited)f.value=this.value;
+  });
+  document.getElementById('emp-accname').addEventListener('input',function(){this.dataset.edited=this.value?'1':'';});
+
+  // Attendance
+  document.getElementById('att-prev').addEventListener('click',()=>{attMonth.setMonth(attMonth.getMonth()-1);renderAttMonth();loadAttendance();});
+  document.getElementById('att-next').addEventListener('click',()=>{attMonth.setMonth(attMonth.getMonth()+1);renderAttMonth();loadAttendance();});
+  document.getElementById('btn-mark-all').addEventListener('click',markAllPresent);
+  document.getElementById('btn-save-att').addEventListener('click',saveAttendance);
+
+  // Payroll
+  document.getElementById('pay-prev').addEventListener('click',()=>{payMonth.setMonth(payMonth.getMonth()-1);renderPayMonth();loadPayroll();});
+  document.getElementById('pay-next').addEventListener('click',()=>{payMonth.setMonth(payMonth.getMonth()+1);renderPayMonth();loadPayroll();});
+  document.getElementById('btn-calc-payroll').addEventListener('click',generatePayroll);
+  document.getElementById('btn-mark-payments').addEventListener('click',()=>{renderBulkPay();openModal('modal-bulk-pay');});
+  document.getElementById('close-bulkpay-modal').addEventListener('click',()=>closeModal('modal-bulk-pay'));
+  document.getElementById('cancel-bulkpay-modal').addEventListener('click',()=>closeModal('modal-bulk-pay'));
+
+  // Leaves
+  document.getElementById('btn-add-leave').addEventListener('click',()=>{populateLeaveDropdown();openModal('modal-add-leave');});
+  document.getElementById('close-leave-modal').addEventListener('click',()=>closeModal('modal-add-leave'));
+  document.getElementById('cancel-leave-modal').addEventListener('click',()=>closeModal('modal-add-leave'));
+  document.getElementById('submit-leave').addEventListener('click',addLeave);
+
+  // Ledger
+  document.getElementById('btn-add-advance').addEventListener('click',()=>{document.getElementById('adv-date').value=todayStr();openModal('modal-add-advance');});
+  document.getElementById('close-advance-modal').addEventListener('click',()=>closeModal('modal-add-advance'));
+  document.getElementById('cancel-advance-modal').addEventListener('click',()=>closeModal('modal-add-advance'));
+  document.getElementById('submit-advance').addEventListener('click',addAdvance);
+  document.getElementById('btn-add-exp').addEventListener('click',()=>{initExpLines();document.getElementById('lexp-date').value=todayStr();openModal('modal-add-ledger-exp');});
+  document.getElementById('close-exp-modal').addEventListener('click',()=>closeModal('modal-add-ledger-exp'));
+  document.getElementById('cancel-exp-modal').addEventListener('click',()=>closeModal('modal-add-ledger-exp'));
+  document.getElementById('submit-exp').addEventListener('click',submitLedgerExpenses);
+  document.getElementById('btn-add-exp-line').addEventListener('click',addExpLine);
+
+  // Slips
+  document.getElementById('slip-prev').addEventListener('click',()=>{slipMonth.setMonth(slipMonth.getMonth()-1);renderSlipMonth();generateSlip();});
+  document.getElementById('slip-next').addEventListener('click',()=>{slipMonth.setMonth(slipMonth.getMonth()+1);renderSlipMonth();generateSlip();});
+  document.getElementById('btn-gen-slip').addEventListener('click',generateSlip);
+  document.getElementById('btn-print-slip').addEventListener('click',printSlip);
+  document.getElementById('slip-emp-select').addEventListener('change',generateSlip);
+
+  // Modal overlay close
+  ['modal-add-emp','modal-add-leave','modal-bulk-pay','modal-add-advance','modal-add-ledger-exp'].forEach(id=>{
+    document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeModal(id);});
+  });
+
+  // Init
+  checkAuth();
 });
-document.getElementById('emp-accname').addEventListener('input',function(){this.dataset.edited=this.value?'1':'';});
-
-['modal-add-emp','modal-add-leave','modal-bulk-pay','modal-add-advance','modal-add-ledger-exp'].forEach(id=>{
-  document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeModal(id);});
-});
-
-document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
-
-// init
-checkAuth();
 </script>
 </body>
 </html>
