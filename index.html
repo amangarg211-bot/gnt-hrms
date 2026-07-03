@@ -226,13 +226,12 @@ input:focus,select:focus,textarea:focus{border-color:#888}
         <button id="pay-next">&#8250;</button>
       </div>
       <div style="display:flex;gap:8px">
-        <button class="btn" id="btn-calc-payroll">Calculate Payroll</button>
-        <button class="btn btn-primary" id="btn-mark-payments">Mark Payments</button>
+        <button class="btn btn-primary" id="btn-calc-payroll">Calculate Payroll</button>
       </div>
     </div>
     <div class="card" style="padding:0;overflow-x:auto">
-      <table><thead><tr><th>Employee</th><th>Base</th><th>Present</th><th>Sun OT</th><th>Extra OT</th><th>Gross</th><th>Deductions</th><th>Net Pay</th><th>Ledger</th><th>Payment</th><th></th></tr></thead>
-      <tbody id="payroll-table"><tr><td colspan="11" class="no-data">Click "Calculate Payroll" to generate</td></tr></tbody></table>
+      <table><thead><tr><th>Employee</th><th>Base</th><th>Present</th><th>Sun OT</th><th>Extra OT</th><th>Gross</th><th>Deductions</th><th>Net Pay</th><th>Ledger</th></tr></thead>
+      <tbody id="payroll-table"><tr><td colspan="9" class="no-data">Click "Calculate Payroll" to generate</td></tr></tbody></table>
     </div>
     <div class="att-note" style="margin-top:10px"><strong>Formula:</strong> Gross = (Present Days / Weekdays in month) × Base Salary + OT pay.</div>
   </div>
@@ -1140,11 +1139,10 @@ function renderPayroll(){
   if(!emps.length){tb.innerHTML='<tr><td colspan="11" class="no-data">No active employees</td></tr>';return;}
   tb.innerHTML=emps.map(emp=>{
     const pr=payrollData[emp.id];
-    if(!pr)return `<tr><td>${emp.name}</td><td>${rupee(emp.salary)}</td><td colspan="9" style="color:#aaa">Not calculated — click Calculate Payroll</td></tr>`;
-    const badge=pr.paid==='Paid'?'badge-green':pr.paid==='Partial'?'badge-amber':'badge-red';
+    if(!pr)return `<tr><td>${emp.name}</td><td>${rupee(emp.salary)}</td><td colspan="7" style="color:#aaa">Not calculated — click Calculate Payroll</td></tr>`;
     const ledgerBtn=pr.posted_to_ledger
       ?'<span class="badge badge-green">Posted</span>'
-      :`<button class="btn btn-sm btn-success post-btn" data-empid="${emp.id}">Post</button>`;
+      :`<button class="btn btn-sm btn-success post-btn" data-empid="${emp.id}">Post to Ledger</button>`;
     return `<tr>
       <td><strong>${emp.name}</strong><br><span style="font-size:11px;color:#888">${emp.id}</span></td>
       <td>${rupee(emp.salary)}</td><td>${pr.present}/${pr.weekdays}</td>
@@ -1153,14 +1151,9 @@ function renderPayroll(){
       <td style="color:#e24b4a">${pr.ledger_deduct>0?'-'+rupee(pr.ledger_deduct):'—'}</td>
       <td><strong>${rupee(pr.net)}</strong></td>
       <td>${ledgerBtn}</td>
-      <td><span class="badge ${badge}">${pr.paid}</span>${pr.paid_date?`<br><span style="font-size:10px;color:#888">${pr.paid_date}</span>`:''}</td>
-      <td>
-        <button class="btn btn-sm btn-success paid-btn" data-empid="${emp.id}" data-status="Paid" style="margin-bottom:2px">Paid</button>
-        <button class="btn btn-sm part-btn" data-empid="${emp.id}" data-status="Partial">Part</button>
-      </td></tr>`;
+    </tr>`;
   }).join('');
   tb.querySelectorAll('.post-btn').forEach(btn=>btn.addEventListener('click',()=>postToLedger(btn.dataset.empid)));
-  tb.querySelectorAll('.paid-btn,.part-btn').forEach(btn=>btn.addEventListener('click',()=>markPaid(btn.dataset.empid,btn.dataset.status)));
 }
 
 async function postToLedger(empId){

@@ -137,19 +137,33 @@ STAMP_SVG = """
 
 def send_email(to_email, subject, html_body):
     if not GMAIL_USER or not GMAIL_APP_PASSWORD:
-        return False, "Email credentials not configured in Railway environment variables."
+        return False, "Email credentials not configured. Add GMAIL_USER and GMAIL_APP_PASSWORD in Railway Variables."
     try:
         msg = MIMEMultipart('alternative')
         msg['Subject'] = subject
         msg['From'] = f"Graphics & Trends Solutions <{GMAIL_USER}>"
         msg['To'] = to_email
         msg.attach(MIMEText(html_body, 'html'))
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+        with smtplib.SMTP('smtp.gmail.com', 587) as smtp:
+            smtp.ehlo()
+            smtp.starttls()
+            smtp.ehlo()
             smtp.login(GMAIL_USER, GMAIL_APP_PASSWORD)
             smtp.sendmail(GMAIL_USER, to_email, msg.as_string())
-        return True, "Email sent successfully!"
+        return True, f"Email sent successfully to {to_email}!"
+    except smtplib.SMTPAuthenticationError:
+        return False, "Gmail authentication failed. Check your App Password in Railway Variables — make sure there are no spaces."
+    except smtplib.SMTPException as e:
+        return False, f"SMTP error: {str(e)}"
     except Exception as e:
-        return False, str(e)
+        return False, f"Error: {str(e)}"
+
+@app.route('/api/email/test', methods=['GET'])
+@login_required
+def test_email_config():
+    if not GMAIL_USER or not GMAIL_APP_PASSWORD:
+        return jsonify({'ok': False, 'message': 'GMAIL_USER or GMAIL_APP_PASSWORD not set in Railway Variables'})
+    return jsonify({'ok': True, 'gmail_user': GMAIL_USER, 'password_length': len(GMAIL_APP_PASSWORD)})
 
 def build_offer_html(emp, joining_date, address, city, pin, ref):
     return f"""
@@ -489,6 +503,15 @@ def add_expenses():
         label = f"{desc}{' ['+bill+']' if bill else ''} ({exp_type})"
         db.execute("INSERT INTO ledger(emp_id,date,type,label,amount,effect,month_key) VALUES(?,?,?,?,?,?,?)",
             (emp_id, dt, entry_type, label, amt, effect, month_key))
+    db.commit()
+    db.close()
+    return jsonify({'ok': True})
+
+@app.route('/api/ledger/<int:entry_id>', methods=['DELETE'])
+@login_required
+def delete_ledger_entry(entry_id):
+    db = get_db()
+    db.execute("DELETE FROM ledger WHERE id=?", (entry_id,))
     db.commit()
     db.close()
     return jsonify({'ok': True})
