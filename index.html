@@ -135,6 +135,7 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     <div class="nav-item" id="nav-leaves">🌿 Leave Management</div>
     <div class="nav-item" id="nav-payroll">💰 Payroll</div>
     <div class="nav-item" id="nav-ledger">📒 Employee Ledger</div>
+    <div class="nav-item" id="nav-reports">📊 Salary Report</div>
     <div class="nav-item" id="nav-slips">📄 Salary Slips</div>
   </nav>
 </div>
@@ -248,6 +249,7 @@ input:focus,select:focus,textarea:focus{border-color:#888}
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div id="ledger-emp-name" style="font-size:15px;font-weight:600;color:#888">Select an employee</div>
           <div style="display:flex;gap:8px">
+            <button class="btn" id="btn-print-ledger">🖨 Print Ledger</button>
             <button class="btn" id="btn-add-advance">+ Advance Salary</button>
             <button class="btn btn-primary" id="btn-add-exp">+ Add Expenses</button>
           </div>
@@ -261,6 +263,21 @@ input:focus,select:focus,textarea:focus{border-color:#888}
           <div id="ledger-table-wrap"><div class="no-data">Select an employee to view their ledger</div></div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- REPORTS PAGE -->
+  <div class="page" id="page-reports">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="month-nav">
+        <button id="rep-prev">&#8249;</button>
+        <div class="month-label" id="rep-month-label"></div>
+        <button id="rep-next">&#8250;</button>
+      </div>
+      <button class="btn btn-primary" id="btn-print-salary-report">🖨 Print Salary Report</button>
+    </div>
+    <div class="card" style="padding:0;overflow-x:auto" id="salary-report-container">
+      <div class="no-data">Select a month and click Generate above — or use the Payroll page to calculate first.</div>
     </div>
   </div>
 
@@ -354,6 +371,34 @@ input:focus,select:focus,textarea:focus{border-color:#888}
   <div class="modal-footer">
     <button class="btn" id="cancel-edit-emp-modal">Cancel</button>
     <button class="btn btn-primary" id="submit-edit-emp">Save Changes</button>
+  </div>
+</div>
+</div>
+
+<!-- Offer Letter Modal -->
+<div class="modal-overlay" id="modal-offer-letter">
+<div class="modal">
+  <div class="modal-header"><h3>Generate Offer Letter</h3><button class="btn btn-sm" id="close-offer-modal">✕</button></div>
+  <div class="modal-body">
+    <input type="hidden" id="offer-emp-id">
+    <div class="grid-2">
+      <div class="form-group"><label>Employee Name</label><input id="offer-emp-name" readonly style="background:#f5f5f0"></div>
+      <div class="form-group"><label>Designation</label><input id="offer-emp-desig" readonly style="background:#f5f5f0"></div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group"><label>Joining Date *</label><input id="offer-joining-date" type="date"></div>
+      <div class="form-group"><label>Salary (₹/month)</label><input id="offer-salary" readonly style="background:#f5f5f0"></div>
+    </div>
+    <div class="form-group"><label>Employee Address</label><input id="offer-address" placeholder="House No., Street, Colony"></div>
+    <div class="grid-2">
+      <div class="form-group"><label>City</label><input id="offer-city" placeholder="Delhi"></div>
+      <div class="form-group"><label>Pin Code</label><input id="offer-pin" placeholder="110001"></div>
+    </div>
+    <div class="form-group"><label>Ref / Employee No.</label><input id="offer-ref" placeholder="GNT-001"></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" id="cancel-offer-modal">Cancel</button>
+    <button class="btn btn-primary" id="btn-print-offer">🖨 Print Offer Letter</button>
   </div>
 </div>
 </div>
@@ -502,7 +547,7 @@ async function loadAll(){
 }
 
 // ── nav ───────────────────────────────────────────────────────────────────
-const pages=['dashboard','employees','attendance','leaves','payroll','ledger','slips'];
+const pages=['dashboard','employees','attendance','leaves','payroll','ledger','reports','slips'];
 const pageTitles={dashboard:'Dashboard',employees:'Employees',attendance:'Attendance',leaves:'Leave Management',payroll:'Payroll',ledger:'Employee Ledger',slips:'Salary Slips'};
 
 function showPage(p){
@@ -516,6 +561,7 @@ function showPage(p){
   if(p==='employees')renderEmployees();
   if(p==='leaves')loadLeaves();
   if(p==='ledger')renderLedgerPage();
+  if(p==='reports'){renderRepMonth();loadSalaryReport();}
   if(p==='slips'){populateSlipSelect();renderSlipMonth();}
   if(p==='dashboard')renderDashboard();
 }
@@ -527,7 +573,7 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
 function renderAttMonth(){document.getElementById('att-month-label').textContent=fmtMonth(attMonth);}
 function renderPayMonth(){document.getElementById('pay-month-label').textContent=fmtMonth(payMonth);document.getElementById('dash-month-label').textContent=fmtMonth(payMonth);}
 function renderSlipMonth(){document.getElementById('slip-month-label').textContent=fmtMonth(slipMonth);}
-renderAttMonth();renderPayMonth();renderSlipMonth();
+renderAttMonth();renderPayMonth();renderSlipMonth();renderRepMonth();
 
 // ── employees ─────────────────────────────────────────────────────────────
 async function addEmployee(){
@@ -569,11 +615,15 @@ function renderEmployees(filter=''){
     <td><span class="chip">CL:${e.cl-e.cl_used}</span><span class="chip">SL:${e.sl-e.sl_used}</span></td>
     <td><span class="badge ${e.status==='Active'?'badge-green':'badge-red'}">${e.status}</span></td>
     <td style="display:flex;gap:4px">
+      <button class="btn btn-sm offer-btn" data-empid="${e.id}">📄 Offer</button>
       <button class="btn btn-sm edit-emp-btn" data-empid="${e.id}">Edit</button>
       <button class="btn btn-sm toggle-btn" data-empid="${e.id}">${e.status==='Active'?'Deactivate':'Activate'}</button>
       <button class="btn btn-sm btn-danger del-emp-btn" data-empid="${e.id}" data-name="${e.name}">Delete</button>
     </td>
   </tr>`).join('');
+  tb.querySelectorAll('.offer-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>openOfferModal(btn.dataset.empid));
+  });
   tb.querySelectorAll('.edit-emp-btn').forEach(btn=>{
     btn.addEventListener('click',()=>openEditModal(btn.dataset.empid));
   });
@@ -583,6 +633,273 @@ function renderEmployees(filter=''){
   tb.querySelectorAll('.del-emp-btn').forEach(btn=>{
     btn.addEventListener('click',()=>deleteEmployee(btn.dataset.empid, btn.dataset.name));
   });
+}
+
+// ── offer letter ──────────────────────────────────────────────────────────
+function openOfferModal(id){
+  const e=employees.find(x=>x.id===id);if(!e)return;
+  document.getElementById('offer-emp-id').value=e.id;
+  document.getElementById('offer-emp-name').value=e.name;
+  document.getElementById('offer-emp-desig').value=e.desig;
+  document.getElementById('offer-salary').value=rupee(e.salary);
+  document.getElementById('offer-ref').value=e.id;
+  document.getElementById('offer-joining-date').value=e.doj||'';
+  document.getElementById('offer-address').value='';
+  document.getElementById('offer-city').value='';
+  document.getElementById('offer-pin').value='';
+  openModal('modal-offer-letter');
+}
+
+function printOfferLetter(){
+  const id=document.getElementById('offer-emp-id').value;
+  const emp=employees.find(e=>e.id===id);if(!emp)return;
+  const joiningDate=document.getElementById('offer-joining-date').value;
+  const address=document.getElementById('offer-address').value||'_________________';
+  const city=document.getElementById('offer-city').value||'__________';
+  const pin=document.getElementById('offer-pin').value||'______';
+  const ref=document.getElementById('offer-ref').value||emp.id;
+  const fmtDate=d=>{if(!d)return'__________';const dt=new Date(d);return dt.toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});};
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Offer Letter — ${emp.name}</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Times New Roman',serif;font-size:13pt;color:#000;padding:0}
+    .page{width:210mm;min-height:297mm;margin:0 auto;padding:0}
+    .letterhead{background:#1a1a18;color:#fff;padding:18px 36px;display:flex;justify-content:space-between;align-items:center}
+    .lh-name{font-size:20pt;font-weight:700;letter-spacing:1px;font-family:Arial,sans-serif}
+    .lh-sub{font-size:9pt;color:#ccc;margin-top:3px;font-family:Arial,sans-serif}
+    .lh-right{text-align:right;font-size:9pt;color:#ccc;font-family:Arial,sans-serif;line-height:1.6}
+    .gold-bar{height:4px;background:#d4a843}
+    .body{padding:36px 40px}
+    .ref-date{display:flex;justify-content:space-between;margin-bottom:24px;font-size:11pt}
+    .address-block{margin-bottom:20px;line-height:1.8}
+    .subject{font-weight:700;margin-bottom:16px;font-size:12pt}
+    .salutation{margin-bottom:14px}
+    .content p{margin-bottom:12px;line-height:1.9;text-align:justify}
+    .content strong{font-weight:700}
+    .sign-block{margin-top:40px}
+    .sign-name{font-weight:700;font-size:13pt}
+    .acceptance{margin-top:50px;border-top:1px solid #aaa;padding-top:20px}
+    .acceptance p{margin-bottom:10px;line-height:2}
+    .field{display:inline-block;border-bottom:1px solid #000;min-width:180px;margin-left:8px}
+    @media print{body{margin:0}@page{margin:0;size:A4}}
+  </style></head><body>
+  <div class="page">
+    <div class="letterhead">
+      <div>
+        <div class="lh-name">GRAPHICS & TRENDS SOLUTIONS</div>
+        <div class="lh-sub">Commercial Interior Fitout & Workspace Design</div>
+      </div>
+      <div class="lh-right">
+        C 269, Sector-10, Noida, U.P.<br>
+        +91-120-4322277 | +91-9560098148<br>
+        graphicsandtrends@gmail.com<br>
+        GST: 09AXBPA8060E1ZT
+      </div>
+    </div>
+    <div class="gold-bar"></div>
+    <div class="body">
+      <div class="ref-date">
+        <div>Ref: <strong>${ref}</strong></div>
+        <div>Date: <strong>${fmtDate(joiningDate)}</strong></div>
+      </div>
+      <div class="address-block">
+        To<br>
+        <strong>${emp.name}</strong><br>
+        ${address}<br>
+        ${city}${pin?' – '+pin:''}
+      </div>
+      <div class="subject">Sub: Offer Letter</div>
+      <div class="salutation">Dear <strong>${emp.name}</strong>,</div>
+      <div class="content">
+        <p>We are pleased to offer you the post of <strong>${emp.desig}</strong> based at <strong>Noida, Gautam Budh Nagar.</strong> Your joining salary will be <strong>Rs. ${Number(emp.salary).toLocaleString('en-IN')} per month</strong> inclusive all in hand. Appraisal for the same will be performance based.</p>
+        <p>Your employment with G&T Solutions will be subject to strict adherence to the policies and procedures of G&T Solutions. You will be on probation for one month. This offer is subject to background verification.</p>
+        <p>On acceptance of the terms and conditions as per this offer letter, you will be able to terminate your employment with G&T Solutions by giving one month notice to G&T Solutions and vice versa. You shall not be eligible to avail leave during the notice period.</p>
+        <p>We welcome you to join G&T Solutions and would be happy if you can sign the duplicate copy of this letter in token of your acceptance of the offer of employment with G&T Solutions.</p>
+        <p>You will be reporting to <strong>Mr. Aman Garg (+91-9560098148)</strong> on <strong>${fmtDate(joiningDate)}</strong> at <strong>9:30 am at C 269, Ground Floor, Sector 10, Gautam Budh Nagar (U.P.)</strong></p>
+        <p>We wish you all the best and look forward to having you with us.</p>
+      </div>
+      <div class="sign-block">
+        <p><strong>With regards,</strong></p>
+        <br><br>
+        <div class="sign-name">Aman Garg</div>
+        <div>Proprietor</div>
+        <div>Graphics & Trends Solutions</div>
+      </div>
+      <div class="acceptance">
+        <p>I accept the aforesaid terms & conditions and this offer of employment. I shall keep the contents of this document confidential.</p>
+        <p>I will join on <span class="field"></span></p>
+        <p>Name: <span class="field"></span></p>
+        <p>Signature: <span class="field"></span></p>
+        <p>Date: <span class="field"></span></p>
+      </div>
+    </div>
+  </div>
+  <script>window.onload=()=>window.print();<\/script>
+  </body></html>`);
+  w.document.close();
+}
+
+// ── print ledger ──────────────────────────────────────────────────────────
+function printLedger(){
+  if(!selectedLedgerEmp){showToast('Select an employee first.',false);return;}
+  const emp=employees.find(e=>e.id===selectedLedgerEmp);if(!emp)return;
+  const entries=ledgerCache[selectedLedgerEmp]||[];
+  const credits=entries.filter(e=>e.effect==='credit').reduce((s,e)=>s+e.amount,0);
+  const debits=entries.filter(e=>e.effect==='debit').reduce((s,e)=>s+e.amount,0);
+  const bal=credits-debits;
+  let running=0;
+  let rows=entries.map(e=>{
+    running+=e.effect==='credit'?e.amount:-e.amount;
+    return `<tr>
+      <td>${new Date(e.date).toLocaleDateString('en-IN')}</td>
+      <td>${e.label}</td>
+      <td style="text-align:right;color:${e.effect==='credit'?'#1d9e75':'#ccc'}">${e.effect==='credit'?rupee(e.amount):'—'}</td>
+      <td style="text-align:right;color:${e.effect==='debit'?'#e24b4a':'#ccc'}">${e.effect==='debit'?rupee(e.amount):'—'}</td>
+      <td style="text-align:right;font-weight:600;color:${running>=0?'#1d9e75':'#e24b4a'}">${running>=0?'+':'-'}${rupee(Math.abs(running))}</td>
+    </tr>`;
+  }).join('');
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Ledger — ${emp.name}</title>
+  <style>
+    body{font-family:Arial,sans-serif;font-size:12px;padding:0;margin:0}
+    .lh{background:#1a1a18;color:#fff;padding:14px 28px;display:flex;justify-content:space-between;align-items:center}
+    .lh-name{font-size:16px;font-weight:700;letter-spacing:1px}
+    .lh-sub{font-size:9px;color:#ccc;margin-top:2px}
+    .lh-right{text-align:right;font-size:9px;color:#ccc;line-height:1.6}
+    .gold{height:3px;background:#d4a843}
+    .body{padding:24px 28px}
+    h2{font-size:14px;margin-bottom:4px}
+    .meta{font-size:11px;color:#666;margin-bottom:16px}
+    .summary{display:flex;gap:20px;margin-bottom:16px}
+    .sum-box{border:1px solid #e0ddd5;border-radius:6px;padding:10px 16px;min-width:140px}
+    .sum-label{font-size:10px;color:#888;text-transform:uppercase;margin-bottom:3px}
+    .sum-val{font-size:16px;font-weight:700}
+    table{width:100%;border-collapse:collapse;font-size:11px}
+    th{text-align:left;padding:7px 10px;background:#f5f5f0;border-bottom:2px solid #e0ddd5;font-size:10px;text-transform:uppercase;color:#888}
+    td{padding:7px 10px;border-bottom:1px solid #f0ede5}
+    @media print{@page{margin:0;size:A4}body{margin:0}}
+  </style></head><body>
+  <div class="lh">
+    <div><div class="lh-name">GRAPHICS & TRENDS SOLUTIONS</div><div class="lh-sub">Commercial Interior Fitout & Workspace Design</div></div>
+    <div class="lh-right">C 269, Sector-10, Noida, U.P.<br>+91-120-4322277 | graphicsandtrends@gmail.com<br>GST: 09AXBPA8060E1ZT</div>
+  </div>
+  <div class="gold"></div>
+  <div class="body">
+    <h2>Employee Ledger — ${emp.name}</h2>
+    <div class="meta">${emp.id} | ${emp.desig} | ${emp.dept} | Printed: ${new Date().toLocaleString('en-IN')}</div>
+    <div class="summary">
+      <div class="sum-box"><div class="sum-label">Total Credits</div><div class="sum-val" style="color:#1d9e75">${rupee(credits)}</div></div>
+      <div class="sum-box"><div class="sum-label">Total Debits</div><div class="sum-val" style="color:#e24b4a">${rupee(debits)}</div></div>
+      <div class="sum-box"><div class="sum-label">Net Balance</div><div class="sum-val" style="color:${bal>=0?'#1d9e75':'#e24b4a'}">${bal>=0?'+':'-'}${rupee(Math.abs(bal))}</div></div>
+      <div class="sum-box"><div class="sum-label">Balance Note</div><div class="sum-val" style="font-size:12px;color:#555">${bal>=0?'GNT owes employee':'Employee owes GNT'}</div></div>
+    </div>
+    <table>
+      <thead><tr><th>Date</th><th>Description</th><th style="text-align:right">Credit</th><th style="text-align:right">Debit</th><th style="text-align:right">Balance</th></tr></thead>
+      <tbody>${rows||'<tr><td colspan="5" style="text-align:center;color:#aaa;padding:20px">No entries</td></tr>'}</tbody>
+    </table>
+  </div>
+  <script>window.onload=()=>window.print();<\/script>
+  </body></html>`);
+  w.document.close();
+}
+
+// ── salary report ─────────────────────────────────────────────────────────
+let repMonth=new Date(); repMonth.setDate(1);
+function renderRepMonth(){document.getElementById('rep-month-label').textContent=fmtMonth(repMonth);}
+
+async function loadSalaryReport(){
+  const mk=monthKey(repMonth);
+  const payRows=await api('GET',`/api/payroll/${mk}`)||[];
+  payrollData={};payRows.forEach(r=>payrollData[r.emp_id]=r);
+  const cont=document.getElementById('salary-report-container');
+  if(!employees.length){cont.innerHTML='<div class="no-data">No employees found.</div>';return;}
+  // Load ledger balances
+  const ledgerBals={};
+  await Promise.all(employees.map(async e=>{
+    const entries=await api('GET',`/api/ledger/${e.id}`)||[];
+    ledgerBals[e.id]=entries.reduce((s,x)=>x.effect==='credit'?s+x.amount:s-x.amount,0);
+  }));
+  let totalGross=0,totalDeduct=0,totalNet=0,totalLedger=0,totalFinal=0;
+  const rows=employees.map(e=>{
+    const pr=payrollData[e.id];
+    const gross=pr?pr.gross:0;
+    const deduct=pr?pr.ledger_deduct:0;
+    const net=pr?pr.net:0;
+    const ledgerBal=ledgerBals[e.id]||0;
+    // Final payable = net salary - any positive ledger balance already paid as advance
+    // If ledger balance is negative (employee owes GNT), add it back
+    const finalPayable=net-Math.max(0,ledgerBal);
+    totalGross+=gross;totalDeduct+=deduct;totalNet+=net;totalLedger+=ledgerBal;totalFinal+=finalPayable;
+    const badge=!pr?'badge-gray':pr.paid==='Paid'?'badge-green':pr.paid==='Partial'?'badge-amber':'badge-red';
+    return `<tr>
+      <td><strong>${e.name}</strong><br><span style="font-size:11px;color:#888">${e.id}</span></td>
+      <td>${e.desig}</td>
+      <td style="text-align:right">${rupee(e.salary)}</td>
+      <td style="text-align:right">${pr?pr.present+'/'+pr.weekdays:'—'}</td>
+      <td style="text-align:right">${pr?pr.total_ot:'—'}</td>
+      <td style="text-align:right;font-weight:600">${gross?rupee(gross):'—'}</td>
+      <td style="text-align:right;color:#e24b4a">${deduct?'-'+rupee(deduct):'—'}</td>
+      <td style="text-align:right;font-weight:600">${net?rupee(net):'—'}</td>
+      <td style="text-align:right;color:${ledgerBal>=0?'#1d9e75':'#e24b4a'}">${ledgerBal>=0?'+':'-'}${rupee(Math.abs(ledgerBal))}</td>
+      <td style="text-align:right;font-weight:700;color:${finalPayable>=0?'#1a1a18':'#e24b4a'}">${rupee(Math.max(0,finalPayable))}</td>
+      <td><span class="badge ${badge}">${pr?pr.paid:'N/A'}</span></td>
+    </tr>`;
+  }).join('');
+  cont.innerHTML=`<table>
+    <thead><tr>
+      <th>Employee</th><th>Designation</th><th style="text-align:right">Base Salary</th>
+      <th style="text-align:right">Present</th><th style="text-align:right">OT Days</th>
+      <th style="text-align:right">Gross Pay</th><th style="text-align:right">Deductions</th>
+      <th style="text-align:right">Net Pay</th><th style="text-align:right">Ledger Balance</th>
+      <th style="text-align:right">Final Payable</th><th>Status</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr style="background:#f5f5f0;font-weight:700">
+      <td colspan="5">TOTAL</td>
+      <td style="text-align:right">${rupee(totalGross)}</td>
+      <td style="text-align:right;color:#e24b4a">${totalDeduct?'-'+rupee(totalDeduct):'—'}</td>
+      <td style="text-align:right">${rupee(totalNet)}</td>
+      <td style="text-align:right;color:${totalLedger>=0?'#1d9e75':'#e24b4a'}">${totalLedger>=0?'+':'-'}${rupee(Math.abs(totalLedger))}</td>
+      <td style="text-align:right">${rupee(Math.max(0,totalFinal))}</td>
+      <td></td>
+    </tr></tfoot>
+  </table>`;
+}
+
+function printSalaryReport(){
+  const mk=monthKey(repMonth);
+  const table=document.querySelector('#salary-report-container table');
+  if(!table){showToast('Load the report first.',false);return;}
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Salary Report — ${fmtMonth(repMonth)}</title>
+  <style>
+    body{font-family:Arial,sans-serif;font-size:11px;padding:0;margin:0}
+    .lh{background:#1a1a18;color:#fff;padding:12px 24px;display:flex;justify-content:space-between;align-items:center}
+    .lh-name{font-size:15px;font-weight:700;letter-spacing:1px}
+    .lh-sub{font-size:9px;color:#ccc;margin-top:2px}
+    .lh-right{text-align:right;font-size:9px;color:#ccc;line-height:1.6}
+    .gold{height:3px;background:#d4a843}
+    .body{padding:20px 24px}
+    h2{font-size:13px;margin-bottom:12px}
+    table{width:100%;border-collapse:collapse;font-size:10px}
+    th{text-align:left;padding:6px 8px;background:#f5f5f0;border-bottom:2px solid #e0ddd5;font-size:9px;text-transform:uppercase;color:#666;white-space:nowrap}
+    td{padding:6px 8px;border-bottom:1px solid #f0ede5;white-space:nowrap}
+    tfoot tr{background:#f5f5f0;font-weight:700}
+    @media print{@page{margin:0;size:A4 landscape}body{margin:0}}
+  </style></head><body>
+  <div class="lh">
+    <div><div class="lh-name">GRAPHICS & TRENDS SOLUTIONS</div><div class="lh-sub">Salary Report — ${fmtMonth(repMonth)}</div></div>
+    <div class="lh-right">C 269, Sector-10, Noida, U.P.<br>+91-120-4322277 | graphicsandtrends@gmail.com<br>GST: 09AXBPA8060E1ZT</div>
+  </div>
+  <div class="gold"></div>
+  <div class="body">
+    <h2>Monthly Salary Report — ${fmtMonth(repMonth)} &nbsp;&nbsp; <span style="font-size:10px;color:#888;font-weight:400">Printed: ${new Date().toLocaleString('en-IN')}</span></h2>
+    ${table.outerHTML}
+  </div>
+  <script>window.onload=()=>window.print();<\/script>
+  </body></html>`);
+  w.document.close();
 }
 
 function openEditModal(id){
@@ -1112,6 +1429,20 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('close-leave-modal').addEventListener('click',()=>closeModal('modal-add-leave'));
   document.getElementById('cancel-leave-modal').addEventListener('click',()=>closeModal('modal-add-leave'));
   document.getElementById('submit-leave').addEventListener('click',addLeave);
+
+  // Offer letter
+  document.getElementById('close-offer-modal').addEventListener('click',()=>closeModal('modal-offer-letter'));
+  document.getElementById('cancel-offer-modal').addEventListener('click',()=>closeModal('modal-offer-letter'));
+  document.getElementById('btn-print-offer').addEventListener('click',printOfferLetter);
+  document.getElementById('modal-offer-letter').addEventListener('click',function(e){if(e.target===this)closeModal('modal-offer-letter');});
+
+  // Reports
+  document.getElementById('rep-prev').addEventListener('click',()=>{repMonth.setMonth(repMonth.getMonth()-1);renderRepMonth();loadSalaryReport();});
+  document.getElementById('rep-next').addEventListener('click',()=>{repMonth.setMonth(repMonth.getMonth()+1);renderRepMonth();loadSalaryReport();});
+  document.getElementById('btn-print-salary-report').addEventListener('click',printSalaryReport);
+
+  // Ledger print
+  document.getElementById('btn-print-ledger').addEventListener('click',printLedger);
 
   // Ledger
   document.getElementById('btn-add-advance').addEventListener('click',()=>{document.getElementById('adv-date').value=todayStr();openModal('modal-add-advance');});
