@@ -13,6 +13,19 @@ APP_PASSWORD = 'gnt@2024'
 
 init_db()
 
+# Run migrations for existing databases
+def migrate_db():
+    db = get_db()
+    for col, typ in [('address','TEXT'), ('city','TEXT'), ('pin','TEXT')]:
+        try:
+            db.execute(f"ALTER TABLE employees ADD COLUMN {col} {typ} DEFAULT ''")
+            db.commit()
+        except Exception:
+            pass
+    db.close()
+
+migrate_db()
+
 # ── helpers ───────────────────────────────────────────────────────────────────
 def get_meta(key):
     db = get_db()
