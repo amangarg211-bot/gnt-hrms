@@ -494,6 +494,7 @@ def add_advance():
 def add_expenses():
     d = request.json
     emp_id, dt, bill = d['emp_id'], d['date'], d.get('bill','')
+    site = d.get('site','')
     month_key = dt[:7]
     db = get_db()
     for line in d.get('lines', []):
@@ -503,7 +504,8 @@ def add_expenses():
         effect_raw = line.get('effect','reimburse')
         entry_type = 'expense-reimburse' if effect_raw == 'reimburse' else 'expense-recover'
         effect = 'debit' if effect_raw == 'reimburse' else 'credit'
-        label = f"{desc}{' ['+bill+']' if bill else ''} ({exp_type})"
+        site_tag = f" | {site}" if site else ''
+        label = f"{desc}{' ['+bill+']' if bill else ''} ({exp_type}{site_tag})"
         db.execute("INSERT INTO ledger(emp_id,date,type,label,amount,effect,month_key) VALUES(?,?,?,?,?,?,?)",
             (emp_id, dt, entry_type, label, amt, effect, month_key))
     db.commit()
