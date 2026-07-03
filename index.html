@@ -679,15 +679,15 @@ function renderEmployees(filter=''){
 // ── offer letter ──────────────────────────────────────────────────────────
 async function emailOfferLetter(){
   const id=document.getElementById('offer-emp-id').value;
+  if(!id){alert('No employee selected.');return;}
   const emp=employees.find(e=>e.id===id);if(!emp)return;
-  const toEmail=emp.email||(prompt('No email on file. Enter email address:')||'').trim();
-  if(!toEmail){return;}
   const joiningDate=document.getElementById('offer-joining-date').value;
-  if(!joiningDate){alert('Please enter joining date first.');return;}
+  if(!joiningDate){alert('Please enter a joining date first.');return;}
+  const toEmail=emp.email||(prompt(`No email on file for ${emp.name}.\nEnter email address to send to:`)||'').trim();
+  if(!toEmail){showToast('No email address — cancelled.',false);return;}
   showToast('Sending email...');
   const res=await api('POST','/api/email/offer-letter',{
-    emp_id:id,
-    to_email:toEmail,
+    emp_id:id, to_email:toEmail,
     joining_date:joiningDate,
     address:document.getElementById('offer-address').value,
     city:document.getElementById('offer-city').value,
@@ -695,6 +695,7 @@ async function emailOfferLetter(){
     ref:document.getElementById('offer-ref').value
   });
   if(res) showToast(res.message, res.ok);
+  else showToast('Server error — check Railway logs.',false);
 }
 
 async function emailSalarySlip(){
@@ -704,12 +705,15 @@ async function emailSalarySlip(){
   const mk=monthKey(slipMonth);
   const toEmail=emp.email||(prompt('No email on file. Enter email address:')||'').trim();
   if(!toEmail)return;
+  // check payroll exists first
+  const rows=await api('GET',`/api/payroll/${mk}`)||[];
+  const pr=rows.find(r=>r.emp_id===empId);
+  if(!pr){
+    alert('Payroll not calculated for this month.\n\nGo to Payroll → select the month → click "Calculate Payroll" first.');
+    return;
+  }
   showToast('Sending email...');
-  const res=await api('POST','/api/email/salary-slip',{
-    emp_id:empId,
-    month_key:mk,
-    to_email:toEmail
-  });
+  const res=await api('POST','/api/email/salary-slip',{emp_id:empId,month_key:mk,to_email:toEmail});
   if(res) showToast(res.message, res.ok);
 }
 
