@@ -676,44 +676,48 @@ function renderEmployees(filter=''){
 }
 
 // ── offer letter ──────────────────────────────────────────────────────────
+async function emailSalarySlip(){
+  const empId=document.getElementById('slip-emp-select').value;
+  if(!empId){alert('Select an employee first.');return;}
+  const emp=employees.find(e=>e.id===empId);if(!emp)return;
+  const mk=monthKey(slipMonth);
+  const rows=await api('GET',`/api/payroll/${mk}`)||[];
+  const pr=rows.find(r=>r.emp_id===empId);
+  if(!pr){alert('Payroll not calculated for this month.\n\nGo to Payroll → select the correct month → click "Calculate Payroll" first, then come back.');return;}
+  const toEmail=emp.email||(prompt(`Enter email address for ${emp.name}:`)||'').trim();
+  if(!toEmail){return;}
+  showToast('Sending...');
+  const res=await api('POST','/api/email/salary-slip',{emp_id:empId,month_key:mk,to_email:toEmail});
+  if(res){
+    showToast(res.message, res.ok);
+    if(!res.ok) alert('Email error: '+res.message);
+  } else {
+    alert('Server error. Check Railway logs for details.');
+  }
+}
+
 async function emailOfferLetter(){
   const id=document.getElementById('offer-emp-id').value;
   if(!id){alert('No employee selected.');return;}
   const emp=employees.find(e=>e.id===id);if(!emp)return;
   const joiningDate=document.getElementById('offer-joining-date').value;
   if(!joiningDate){alert('Please enter a joining date first.');return;}
-  const toEmail=emp.email||(prompt(`No email on file for ${emp.name}.\nEnter email address to send to:`)||'').trim();
-  if(!toEmail){showToast('No email address — cancelled.',false);return;}
-  showToast('Sending email...');
+  const toEmail=emp.email||(prompt(`Enter email address for ${emp.name}:`)||'').trim();
+  if(!toEmail){return;}
+  showToast('Sending...');
   const res=await api('POST','/api/email/offer-letter',{
-    emp_id:id, to_email:toEmail,
-    joining_date:joiningDate,
+    emp_id:id,to_email:toEmail,joining_date:joiningDate,
     address:document.getElementById('offer-address').value,
     city:document.getElementById('offer-city').value,
     pin:document.getElementById('offer-pin').value,
     ref:document.getElementById('offer-ref').value
   });
-  if(res) showToast(res.message, res.ok);
-  else showToast('Server error — check Railway logs.',false);
-}
-
-async function emailSalarySlip(){
-  const empId=document.getElementById('slip-emp-select').value;
-  if(!empId){alert('Select an employee first.');return;}
-  const emp=employees.find(e=>e.id===empId);if(!emp)return;
-  const mk=monthKey(slipMonth);
-  const toEmail=emp.email||(prompt('No email on file. Enter email address:')||'').trim();
-  if(!toEmail)return;
-  // check payroll exists first
-  const rows=await api('GET',`/api/payroll/${mk}`)||[];
-  const pr=rows.find(r=>r.emp_id===empId);
-  if(!pr){
-    alert('Payroll not calculated for this month.\n\nGo to Payroll → select the month → click "Calculate Payroll" first.');
-    return;
+  if(res){
+    showToast(res.message, res.ok);
+    if(!res.ok) alert('Email error: '+res.message);
+  } else {
+    alert('Server error. Check Railway logs for details.');
   }
-  showToast('Sending email...');
-  const res=await api('POST','/api/email/salary-slip',{emp_id:empId,month_key:mk,to_email:toEmail});
-  if(res) showToast(res.message, res.ok);
 }
 
 function openOfferModal(id){
@@ -1222,20 +1226,35 @@ function renderLedgerDetail(empId){
   document.getElementById('ls-balance-note').textContent=bal>=0?'GNT owes employee':'Employee owes GNT';
   if(!entries.length){document.getElementById('ledger-table-wrap').innerHTML='<div class="no-data">No ledger entries yet.</div>';return;}
   let running=0;
-  let html=`<div class="ledger-entry ledger-header"><span>Date</span><span>Description</span><span style="text-align:right">Credit</span><span style="text-align:right">Debit</span><span style="text-align:right">Balance</span></div>`;
+  let html=`<div class="ledger-entry ledger-header" style="grid-template-columns:90px 1fr 90px 90px 100px 36px">
+    <span>Date</span><span>Description</span><span style="text-align:right">Credit</span>
+    <span style="text-align:right">Debit</span><span style="text-align:right">Balance</span><span></span>
+  </div>`;
   entries.forEach(e=>{
     running+=e.effect==='credit'?e.amount:-e.amount;
-    const tc={'salary-credit':'badge-green','salary-payment':'badge-blue','advance':'badge-red','expense-reimburse':'badge-amber','expense-recover':'badge-purple'}[e.type]||'badge-gray';
-    const tl={'salary-credit':'Salary','salary-payment':'Paid','advance':'Advance','expense-reimburse':'Reimb.','expense-recover':'Recover'}[e.type]||e.type;
-    html+=`<div class="ledger-entry">
+    const tc={'salary-credit':'badge-green','salary-payment':'badge-blue','advance':'badge-red',
+      'expense-reimburse':'badge-amber','expense-recover':'badge-purple','opening-balance':'badge-gray'}[e.type]||'badge-gray';
+    const tl={'salary-credit':'Salary','salary-payment':'Paid','advance':'Advance',
+      'expense-reimburse':'Reimb.','expense-recover':'Recover','opening-balance':'Opening'}[e.type]||e.type;
+    html+=`<div class="ledger-entry" style="grid-template-columns:90px 1fr 90px 90px 100px 36px">
       <span style="color:#888;font-size:12px">${new Date(e.date).toLocaleDateString('en-IN')}</span>
       <span><span class="badge ${tc}" style="margin-right:5px">${tl}</span>${e.label}</span>
       <span style="text-align:right" class="${e.effect==='credit'?'amount-cr':''}">${e.effect==='credit'?rupee(e.amount):'—'}</span>
       <span style="text-align:right" class="${e.effect==='debit'?'amount-dr':''}">${e.effect==='debit'?rupee(e.amount):'—'}</span>
       <span style="text-align:right;font-weight:600" class="${running>=0?'balance-pos':'balance-neg'}">${running>=0?'+':'-'}${rupee(Math.abs(running))}</span>
+      <span><button class="btn btn-sm btn-danger del-ledger-btn" data-id="${e.id}" style="padding:2px 6px;font-size:11px">✕</button></span>
     </div>`;
   });
-  document.getElementById('ledger-table-wrap').innerHTML=html;
+  const wrap=document.getElementById('ledger-table-wrap');
+  wrap.innerHTML=html;
+  wrap.querySelectorAll('.del-ledger-btn').forEach(btn=>{
+    btn.addEventListener('click',async()=>{
+      if(!confirm('Delete this ledger entry?'))return;
+      const res=await api('DELETE',`/api/ledger/${btn.dataset.id}`);
+      if(res&&res.ok){showToast('Entry deleted.');renderLedgerPage();}
+      else showToast('Delete failed.',false);
+    });
+  });
 }
 
 async function addOpeningBalance(){
@@ -1474,6 +1493,7 @@ async function renderDashboard(){
 }
 
 // ── wire up ALL events here (no inline handlers) ──────────────────────────
+function safeOn(id, evt, fn){const el=document.getElementById(id);if(el)el.addEventListener(evt,fn);}
 document.addEventListener('DOMContentLoaded',()=>{
   // Login
   document.getElementById('login-btn').addEventListener('click',doLogin);
@@ -1510,9 +1530,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('pay-prev').addEventListener('click',()=>{payMonth.setMonth(payMonth.getMonth()-1);renderPayMonth();loadPayroll();});
   document.getElementById('pay-next').addEventListener('click',()=>{payMonth.setMonth(payMonth.getMonth()+1);renderPayMonth();loadPayroll();});
   document.getElementById('btn-calc-payroll').addEventListener('click',generatePayroll);
-  document.getElementById('btn-mark-payments').addEventListener('click',()=>{renderBulkPay();openModal('modal-bulk-pay');});
-  document.getElementById('close-bulkpay-modal').addEventListener('click',()=>closeModal('modal-bulk-pay'));
-  document.getElementById('cancel-bulkpay-modal').addEventListener('click',()=>closeModal('modal-bulk-pay'));
 
   // Leaves
   document.getElementById('btn-add-leave').addEventListener('click',()=>{populateLeaveDropdown();openModal('modal-add-leave');});
