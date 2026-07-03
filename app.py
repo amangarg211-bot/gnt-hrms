@@ -347,3 +347,17 @@ def index():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
+
+@app.route('/api/employees/<emp_id>', methods=['DELETE'])
+@login_required
+def delete_employee(emp_id):
+    db = get_db()
+    db.execute("DELETE FROM employees WHERE id=?", (emp_id,))
+    db.execute("DELETE FROM attendance WHERE emp_id=?", (emp_id,))
+    db.execute("DELETE FROM ot_days WHERE emp_id=?", (emp_id,))
+    db.execute("DELETE FROM payroll WHERE emp_id=?", (emp_id,))
+    db.execute("DELETE FROM ledger WHERE emp_id=?", (emp_id,))
+    db.execute("DELETE FROM leaves WHERE emp_id=?", (emp_id,))
+    db.commit()
+    db.close()
+    return jsonify({'ok': True})

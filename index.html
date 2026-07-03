@@ -529,13 +529,28 @@ function renderEmployees(filter=''){
     <td>${rupee(e.salary)}</td>
     <td><span class="chip">CL:${e.cl-e.cl_used}</span><span class="chip">SL:${e.sl-e.sl_used}</span></td>
     <td><span class="badge ${e.status==='Active'?'badge-green':'badge-red'}">${e.status}</span></td>
-    <td><button class="btn btn-sm" data-empid="${e.id}">${e.status==='Active'?'Deactivate':'Activate'}</button></td>
+    <td style="display:flex;gap:4px">
+      <button class="btn btn-sm toggle-btn" data-empid="${e.id}">${e.status==='Active'?'Deactivate':'Activate'}</button>
+      <button class="btn btn-sm btn-danger del-emp-btn" data-empid="${e.id}" data-name="${e.name}">Delete</button>
+    </td>
   </tr>`).join('');
-  tb.querySelectorAll('button[data-empid]').forEach(btn=>{
+  tb.querySelectorAll('.toggle-btn').forEach(btn=>{
     btn.addEventListener('click',()=>toggleStatus(btn.dataset.empid));
+  });
+  tb.querySelectorAll('.del-emp-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>deleteEmployee(btn.dataset.empid, btn.dataset.name));
   });
 }
 
+async function deleteEmployee(id, name){
+  if(!confirm(`Delete ${name}? This will permanently remove the employee and all their attendance, payroll and ledger data.`))return;
+  const res=await api('DELETE',`/api/employees/${id}`);
+  if(res&&res.ok){
+    showToast(name+' deleted.');
+    employees=await api('GET','/api/employees')||[];
+    renderEmployees();renderDashboard();
+  } else showToast('Delete failed.',false);
+}
 async function toggleStatus(id){
   await api('POST',`/api/employees/${id}/status`);
   employees=await api('GET','/api/employees')||[];
