@@ -291,6 +291,7 @@ input:focus,select:focus,textarea:focus{border-color:#888}
         <button id="slip-next">&#8250;</button>
       </div>
       <button class="btn btn-primary" id="btn-gen-slip">Generate Slip</button>
+      <button class="btn" id="btn-email-slip">✉ Email Slip</button>
       <button class="btn" id="btn-print-slip">🖨 Print</button>
     </div>
     <div id="slip-container" style="max-width:520px"></div>
@@ -399,6 +400,7 @@ input:focus,select:focus,textarea:focus{border-color:#888}
   </div>
   <div class="modal-footer">
     <button class="btn" id="cancel-offer-modal">Cancel</button>
+    <button class="btn" id="btn-email-offer">✉ Email to Employee</button>
     <button class="btn btn-primary" id="btn-print-offer">🖨 Print Offer Letter</button>
   </div>
 </div>
@@ -675,6 +677,42 @@ function renderEmployees(filter=''){
 }
 
 // ── offer letter ──────────────────────────────────────────────────────────
+async function emailOfferLetter(){
+  const id=document.getElementById('offer-emp-id').value;
+  const emp=employees.find(e=>e.id===id);if(!emp)return;
+  const toEmail=emp.email||(prompt('No email on file. Enter email address:')||'').trim();
+  if(!toEmail){return;}
+  const joiningDate=document.getElementById('offer-joining-date').value;
+  if(!joiningDate){alert('Please enter joining date first.');return;}
+  showToast('Sending email...');
+  const res=await api('POST','/api/email/offer-letter',{
+    emp_id:id,
+    to_email:toEmail,
+    joining_date:joiningDate,
+    address:document.getElementById('offer-address').value,
+    city:document.getElementById('offer-city').value,
+    pin:document.getElementById('offer-pin').value,
+    ref:document.getElementById('offer-ref').value
+  });
+  if(res) showToast(res.message, res.ok);
+}
+
+async function emailSalarySlip(){
+  const empId=document.getElementById('slip-emp-select').value;
+  if(!empId){alert('Select an employee first.');return;}
+  const emp=employees.find(e=>e.id===empId);if(!emp)return;
+  const mk=monthKey(slipMonth);
+  const toEmail=emp.email||(prompt('No email on file. Enter email address:')||'').trim();
+  if(!toEmail)return;
+  showToast('Sending email...');
+  const res=await api('POST','/api/email/salary-slip',{
+    emp_id:empId,
+    month_key:mk,
+    to_email:toEmail
+  });
+  if(res) showToast(res.message, res.ok);
+}
+
 function openOfferModal(id){
   const e=employees.find(x=>x.id===id);if(!e)return;
   document.getElementById('offer-emp-id').value=e.id;
@@ -1527,6 +1565,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('slip-prev').addEventListener('click',()=>{slipMonth.setMonth(slipMonth.getMonth()-1);renderSlipMonth();generateSlip();});
   document.getElementById('slip-next').addEventListener('click',()=>{slipMonth.setMonth(slipMonth.getMonth()+1);renderSlipMonth();generateSlip();});
   document.getElementById('btn-gen-slip').addEventListener('click',generateSlip);
+  document.getElementById('btn-email-slip').addEventListener('click',emailSalarySlip);
   document.getElementById('btn-print-slip').addEventListener('click',printSlip);
   document.getElementById('slip-emp-select').addEventListener('change',generateSlip);
 
