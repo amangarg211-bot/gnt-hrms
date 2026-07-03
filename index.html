@@ -3,26 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GNT HR Management System</title>
+<title>GNT HRMS</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,sans-serif;background:#f5f5f0;color:#1a1a18;font-size:14px}
-#login-screen{display:flex;position:fixed;inset:0;background:#1a1a18;z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:0}
+#login-screen{display:flex;position:fixed;inset:0;background:#1a1a18;z-index:9999;align-items:center;justify-content:center}
 #login-screen.hidden{display:none}
-.login-box{background:#222;border:1px solid #333;border-radius:14px;padding:40px 36px;width:340px;display:flex;flex-direction:column;align-items:center;gap:20px}
-.login-logo{font-size:22px;font-weight:700;color:#fff;letter-spacing:1px;text-align:center}
-.login-sub{font-size:12px;color:#888;text-align:center;margin-top:-12px}
-.login-box input[type=password]{width:100%;padding:10px 14px;border-radius:8px;border:1px solid #444;background:#2a2a28;color:#fff;font-size:14px;outline:none;letter-spacing:2px}
-.login-box input[type=password]:focus{border-color:#d4a843}
-.login-box input[type=password]::placeholder{letter-spacing:0;color:#555}
-.login-btn{width:100%;padding:10px;background:#d4a843;color:#1a1a18;font-weight:700;font-size:14px;border:none;border-radius:8px;cursor:pointer;transition:background 0.15s}
+.login-box{background:#222;border:1px solid #333;border-radius:14px;padding:40px 36px;width:340px;display:flex;flex-direction:column;align-items:center;gap:18px}
+.login-logo{font-size:22px;font-weight:700;color:#fff;letter-spacing:1px}
+.login-sub{font-size:12px;color:#888;margin-top:-10px}
+.login-box input{width:100%;padding:10px 14px;border-radius:8px;border:1px solid #444;background:#2a2a28;color:#fff;font-size:14px;outline:none;letter-spacing:2px}
+.login-box input::placeholder{letter-spacing:0;color:#555}
+.login-box input:focus{border-color:#d4a843}
+.login-btn{width:100%;padding:10px;background:#d4a843;color:#1a1a18;font-weight:700;font-size:14px;border:none;border-radius:8px;cursor:pointer}
 .login-btn:hover{background:#c49a30}
-.login-error{color:#e24b4a;font-size:12px;display:none;text-align:center}
+.login-error{color:#e24b4a;font-size:12px;display:none}
 .login-error.show{display:block}
 .app{display:flex;height:100vh;overflow:hidden}
 .sidebar{width:210px;background:#1a1a18;color:#fff;display:flex;flex-direction:column;flex-shrink:0}
 .logo{padding:18px 16px 14px;border-bottom:1px solid #333}
-.logo-title{font-size:15px;font-weight:600;color:#fff}
+.logo-title{font-size:15px;font-weight:600}
 .logo-sub{font-size:10px;color:#888;margin-top:2px}
 .nav{flex:1;padding:10px 0;overflow-y:auto}
 .nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;color:#aaa;font-size:13px;transition:all 0.15s}
@@ -38,20 +38,19 @@ body{font-family:system-ui,sans-serif;background:#f5f5f0;color:#1a1a18;font-size
 .btn-primary{background:#1a1a18;color:#fff;border-color:#1a1a18}
 .btn-primary:hover{background:#333}
 .btn-success{background:#1d9e75;color:#fff;border-color:#1d9e75}
-.btn-success:hover{background:#0f6e56}
 .btn-danger{background:#e24b4a;color:#fff;border-color:#e24b4a}
 .btn-sm{padding:4px 10px;font-size:12px}
 .card{background:#fff;border:1px solid #e0ddd5;border-radius:10px;padding:16px;margin-bottom:14px}
-.card-title{font-size:14px;font-weight:600;margin-bottom:12px;color:#1a1a18}
+.card-title{font-size:14px;font-weight:600;margin-bottom:12px}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
 .grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
 .stat-card{background:#fff;border:1px solid #e0ddd5;border-radius:10px;padding:14px}
 .stat-label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px}
-.stat-value{font-size:22px;font-weight:600;color:#1a1a18}
+.stat-value{font-size:22px;font-weight:600}
 .stat-sub{font-size:11px;color:#888;margin-top:3px}
 table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;padding:8px 12px;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.4px;border-bottom:1px solid #e0ddd5;background:#faf9f5}
+th{text-align:left;padding:8px 12px;font-size:11px;color:#888;text-transform:uppercase;border-bottom:1px solid #e0ddd5;background:#faf9f5}
 td{padding:8px 12px;border-bottom:1px solid #f0ede5;vertical-align:middle}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:#faf9f5}
@@ -86,14 +85,13 @@ input:focus,select:focus,textarea:focus{border-color:#888}
 .att-btn.A{background:#fcebeb;color:#a32d2d;border-color:#f7c1c1}
 .att-btn.H{background:#faeeda;color:#854f0b;border-color:#fac775}
 .att-btn.L{background:#e6f1fb;color:#185fa5;border-color:#b5d4f4}
-.ledger-emp-list{display:flex;flex-direction:column;gap:0}
+.ledger-emp-list{display:flex;flex-direction:column}
 .ledger-emp-row{padding:10px 14px;border-bottom:1px solid #f0ede5;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background 0.1s}
 .ledger-emp-row:hover{background:#faf9f5}
 .ledger-emp-row.selected{background:#f0ede5;font-weight:600}
 .ledger-entry{display:grid;grid-template-columns:90px 1fr 90px 90px 100px;gap:8px;padding:9px 12px;border-bottom:1px solid #f5f3ef;font-size:13px;align-items:center}
-.ledger-entry:last-child{border-bottom:none}
 .ledger-entry:hover{background:#faf9f5}
-.ledger-header{background:#faf9f5;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.4px;font-weight:600;border-bottom:1px solid #e0ddd5}
+.ledger-header{background:#faf9f5;font-size:11px;color:#888;text-transform:uppercase;font-weight:600;border-bottom:1px solid #e0ddd5}
 .amount-cr{color:#1d9e75;font-weight:600}
 .amount-dr{color:#e24b4a;font-weight:600}
 .balance-pos{color:#1d9e75;font-weight:700}
@@ -109,10 +107,12 @@ input:focus,select:focus,textarea:focus{border-color:#888}
 .slip-section{margin:10px 0 5px;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.5px}
 .no-data{text-align:center;padding:32px;color:#888;font-size:13px}
 .search-bar{padding:7px 12px;border:1px solid #d0cdc5;border-radius:6px;font-size:13px;width:200px}
+.toast{position:fixed;bottom:24px;right:24px;background:#1a1a18;color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;z-index:9999;opacity:0;transition:opacity 0.3s;pointer-events:none}
+.toast.show{opacity:1}
 </style>
 </head>
 <body>
-<!-- LOGIN SCREEN -->
+
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo">GNT HRMS</div>
@@ -123,12 +123,11 @@ input:focus,select:focus,textarea:focus{border-color:#888}
   </div>
 </div>
 
+<div class="toast" id="toast"></div>
+
 <div class="app">
 <div class="sidebar">
-  <div class="logo">
-    <div class="logo-title">GNT HRMS</div>
-    <div class="logo-sub">Graphics & Trends Solutions</div>
-  </div>
+  <div class="logo"><div class="logo-title">GNT HRMS</div><div class="logo-sub">Graphics & Trends Solutions</div></div>
   <nav class="nav">
     <div class="nav-item active" onclick="showPage('dashboard')">⊞ Dashboard</div>
     <div class="nav-item" onclick="showPage('employees')">👥 Employees</div>
@@ -142,12 +141,13 @@ input:focus,select:focus,textarea:focus{border-color:#888}
 <div class="main">
   <div class="topbar">
     <div class="page-title" id="topbar-title">Dashboard</div>
-    <div style="display:flex;align-items:center;gap:16px">
+    <div style="display:flex;align-items:center;gap:14px">
       <span style="font-size:12px;color:#888" id="topbar-date"></span>
-      <button class="btn btn-sm" onclick="doLogout()" style="font-size:12px">🔒 Logout</button>
+      <button class="btn btn-sm" onclick="doLogout()">🔒 Logout</button>
     </div>
   </div>
 
+  <!-- DASHBOARD -->
   <div class="page active" id="page-dashboard">
     <div class="grid-4" style="margin-bottom:16px">
       <div class="stat-card"><div class="stat-label">Total Employees</div><div class="stat-value" id="dash-total">0</div><div class="stat-sub">Active</div></div>
@@ -158,14 +158,15 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     <div class="grid-2">
       <div class="card"><div class="card-title">Employees</div>
         <table><thead><tr><th>Name</th><th>Designation</th><th>Status</th></tr></thead>
-        <tbody id="dash-emp-table"><tr><td colspan="3" class="no-data">No employees yet</td></tr></tbody></table>
+        <tbody id="dash-emp-table"><tr><td colspan="3" class="no-data">Loading...</td></tr></tbody></table>
       </div>
-      <div class="card"><div class="card-title">Payroll Summary — <span id="dash-month-label"></span></div>
+      <div class="card"><div class="card-title">Payroll — <span id="dash-month-label"></span></div>
         <div id="dash-payroll-summary" style="color:#888;font-size:13px;padding:20px 0;text-align:center">No payroll data yet</div>
       </div>
     </div>
   </div>
 
+  <!-- EMPLOYEES -->
   <div class="page" id="page-employees">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
       <input class="search-bar" placeholder="Search employees..." oninput="filterEmployees(this.value)">
@@ -173,10 +174,11 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     </div>
     <div class="card" style="padding:0">
       <table><thead><tr><th>Name</th><th>Designation</th><th>Dept</th><th>DOJ</th><th>Base Salary</th><th>Leave Bal.</th><th>Status</th><th></th></tr></thead>
-      <tbody id="emp-table"><tr><td colspan="8" class="no-data">No employees added yet</td></tr></tbody></table>
+      <tbody id="emp-table"><tr><td colspan="8" class="no-data">Loading...</td></tr></tbody></table>
     </div>
   </div>
 
+  <!-- ATTENDANCE -->
   <div class="page" id="page-attendance">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
       <div class="month-nav">
@@ -186,10 +188,10 @@ input:focus,select:focus,textarea:focus{border-color:#888}
       </div>
       <div style="display:flex;gap:8px">
         <button class="btn" onclick="markAllPresent()">Mark All Present</button>
-        <button class="btn btn-primary" onclick="saveAttendance()">Save</button>
+        <button class="btn btn-primary" onclick="saveAttendance()">Save Attendance</button>
       </div>
     </div>
-    <div class="att-note"><strong>Sunday rule:</strong> Sundays are paid holidays. Click <strong>—</strong> on a Sunday to mark <strong>OT</strong> (worked) — adds +1 OT day to pay.</div>
+    <div class="att-note"><strong>Sunday rule:</strong> Sundays are paid holidays. Click <strong>—</strong> to mark <strong>OT</strong> (worked Sunday = +1 OT day).</div>
     <div class="card" style="padding:0;overflow-x:auto"><div id="att-container"></div></div>
     <div class="card" style="margin-top:12px">
       <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:13px">
@@ -197,12 +199,13 @@ input:focus,select:focus,textarea:focus{border-color:#888}
         <span><span class="badge badge-red">A</span> Absent</span>
         <span><span class="badge badge-amber">H</span> Half Day</span>
         <span><span class="badge badge-blue">L</span> Leave</span>
-        <span><span class="badge" style="background:#e8e8f0;color:#888">—</span> Sunday (paid holiday)</span>
-        <span><span class="badge badge-purple">OT</span> Worked Sunday (+1 OT)</span>
+        <span><span class="badge" style="background:#e8e8f0;color:#888">—</span> Sunday</span>
+        <span><span class="badge badge-purple">OT</span> Worked Sunday</span>
       </div>
     </div>
   </div>
 
+  <!-- LEAVES -->
   <div class="page" id="page-leaves">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
       <span style="font-size:15px;font-weight:600">Leave Management</span>
@@ -210,14 +213,15 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     </div>
     <div class="card"><div class="card-title">Leave Balances</div>
       <table><thead><tr><th>Employee</th><th>Casual Leave</th><th>Sick Leave</th><th>Earned Leave</th><th>Total Availed</th></tr></thead>
-      <tbody id="leave-balance-table"><tr><td colspan="5" class="no-data">No employees yet</td></tr></tbody></table>
+      <tbody id="leave-balance-table"><tr><td colspan="5" class="no-data">Loading...</td></tr></tbody></table>
     </div>
     <div class="card"><div class="card-title">Leave Applications</div>
       <table><thead><tr><th>Employee</th><th>Type</th><th>From</th><th>To</th><th>Days</th><th>Reason</th><th>Status</th><th></th></tr></thead>
-      <tbody id="leave-app-table"><tr><td colspan="8" class="no-data">No applications yet</td></tr></tbody></table>
+      <tbody id="leave-app-table"><tr><td colspan="8" class="no-data">Loading...</td></tr></tbody></table>
     </div>
   </div>
 
+  <!-- PAYROLL -->
   <div class="page" id="page-payroll">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
       <div class="month-nav">
@@ -231,16 +235,17 @@ input:focus,select:focus,textarea:focus{border-color:#888}
       </div>
     </div>
     <div class="card" style="padding:0;overflow-x:auto">
-      <table><thead><tr><th>Employee</th><th>Base</th><th>Present Days</th><th>Sun OT</th><th>Extra OT</th><th>Gross</th><th>Deductions</th><th>Net Pay</th><th>Ledger</th><th>Payment</th><th></th></tr></thead>
+      <table><thead><tr><th>Employee</th><th>Base</th><th>Present</th><th>Sun OT</th><th>Extra OT</th><th>Gross</th><th>Deductions</th><th>Net Pay</th><th>Ledger</th><th>Payment</th><th></th></tr></thead>
       <tbody id="payroll-table"><tr><td colspan="11" class="no-data">Click "Calculate Payroll" to generate</td></tr></tbody></table>
     </div>
-    <div class="att-note" style="margin-top:10px"><strong>Formula:</strong> Gross = (Present Days / Weekdays in month) × Base Salary + OT pay. Sundays are paid holidays — only worked Sundays add OT pay.</div>
+    <div class="att-note" style="margin-top:10px"><strong>Formula:</strong> Gross = (Present Days / Weekdays in month) × Base Salary + OT pay.</div>
   </div>
 
+  <!-- LEDGER -->
   <div class="page" id="page-ledger">
     <div style="display:flex;gap:16px;height:calc(100vh - 120px)">
       <div style="width:220px;flex-shrink:0;background:#fff;border:1px solid #e0ddd5;border-radius:10px;overflow-y:auto">
-        <div style="padding:12px 14px;border-bottom:1px solid #e0ddd5;font-weight:600;font-size:13px;display:flex;justify-content:space-between;align-items:center">
+        <div style="padding:12px 14px;border-bottom:1px solid #e0ddd5;font-weight:600;font-size:13px;display:flex;justify-content:space-between">
           Employees <span style="font-size:11px;color:#888" id="ledger-emp-count"></span>
         </div>
         <div id="ledger-emp-list" class="ledger-emp-list"></div>
@@ -248,7 +253,7 @@ input:focus,select:focus,textarea:focus{border-color:#888}
       <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:12px">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div id="ledger-emp-name" style="font-size:15px;font-weight:600;color:#888">Select an employee</div>
-          <div style="display:flex;gap:8px" id="ledger-actions">
+          <div style="display:flex;gap:8px">
             <button class="btn" onclick="openModal('modal-add-advance')">+ Advance Salary</button>
             <button class="btn btn-primary" onclick="openModal('modal-add-ledger-exp')">+ Add Expenses</button>
           </div>
@@ -259,12 +264,13 @@ input:focus,select:focus,textarea:focus{border-color:#888}
           <div class="stat-card"><div class="stat-label">Net Balance</div><div class="stat-value" id="ls-balance">₹0</div><div class="stat-sub" id="ls-balance-note"></div></div>
         </div>
         <div class="card" style="padding:0;flex:1;overflow-y:auto;margin-bottom:0">
-          <div id="ledger-table-wrap"><div class="no-data">Select an employee from the left to view their ledger</div></div>
+          <div id="ledger-table-wrap"><div class="no-data">Select an employee to view their ledger</div></div>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- SALARY SLIPS -->
   <div class="page" id="page-slips">
     <div style="display:flex;gap:12px;margin-bottom:14px;align-items:center;flex-wrap:wrap">
       <select id="slip-emp-select" style="width:200px" onchange="generateSlip()"><option value="">Select Employee</option></select>
@@ -288,28 +294,25 @@ input:focus,select:focus,textarea:focus{border-color:#888}
   <div class="modal-body">
     <div class="grid-2">
       <div class="form-group"><label>Full Name *</label><input id="emp-name" placeholder="Rahul Kumar"></div>
-      <div class="form-group"><label>Employee ID</label><input id="emp-id" readonly style="background:#f5f5f0"></div>
-    </div>
-    <div class="grid-2">
       <div class="form-group"><label>Designation *</label><input id="emp-desig" placeholder="Site Supervisor"></div>
+    </div>
+    <div class="grid-2">
       <div class="form-group"><label>Department</label><input id="emp-dept" placeholder="Operations"></div>
-    </div>
-    <div class="grid-2">
       <div class="form-group"><label>Date of Joining *</label><input id="emp-doj" type="date"></div>
+    </div>
+    <div class="grid-2">
       <div class="form-group"><label>Base Monthly Salary (₹) *</label><input id="emp-salary" type="number" placeholder="25000"></div>
-    </div>
-    <div class="grid-2">
       <div class="form-group"><label>Phone</label><input id="emp-phone" placeholder="+91 98765 43210"></div>
+    </div>
+    <div class="grid-2">
       <div class="form-group"><label>Email ID</label><input id="emp-email" type="email" placeholder="rahul@example.com"></div>
-    </div>
-    <div class="grid-2">
       <div class="form-group"><label>Bank Account No.</label><input id="emp-bank" placeholder="Account number"></div>
-      <div class="form-group"><label>Bank Name</label><input id="emp-bankname" placeholder="State Bank of India"></div>
     </div>
     <div class="grid-2">
+      <div class="form-group"><label>Bank Name</label><input id="emp-bankname" placeholder="State Bank of India"></div>
       <div class="form-group"><label>IFSC Code</label><input id="emp-ifsc" placeholder="SBIN0001234"></div>
-      <div class="form-group"><label>Account Holder Name</label><input id="emp-accname" placeholder="Auto-filled from name"></div>
     </div>
+    <div class="form-group"><label>Account Holder Name</label><input id="emp-accname" placeholder="Auto-filled from name"></div>
     <div class="grid-3">
       <div class="form-group"><label>Casual Leave/yr</label><input id="emp-cl" type="number" value="12"></div>
       <div class="form-group"><label>Sick Leave/yr</label><input id="emp-sl" type="number" value="6"></div>
@@ -329,7 +332,7 @@ input:focus,select:focus,textarea:focus{border-color:#888}
   <div class="modal-body">
     <div class="form-group"><label>Employee *</label><select id="leave-emp"><option value="">Select</option></select></div>
     <div class="grid-2">
-      <div class="form-group"><label>Leave Type *</label><select id="leave-type"><option>Casual Leave</option><option>Sick Leave</option><option>Earned Leave</option><option>Unpaid Leave</option></select></div>
+      <div class="form-group"><label>Leave Type</label><select id="leave-type"><option>Casual Leave</option><option>Sick Leave</option><option>Earned Leave</option><option>Unpaid Leave</option></select></div>
       <div class="form-group"><label>Status</label><select id="leave-status"><option>Approved</option><option>Pending</option><option>Rejected</option></select></div>
     </div>
     <div class="grid-2">
@@ -360,7 +363,7 @@ input:focus,select:focus,textarea:focus{border-color:#888}
 <div class="modal">
   <div class="modal-header"><h3>Advance Salary</h3><button class="btn btn-sm" onclick="closeModal('modal-add-advance')">✕</button></div>
   <div class="modal-body">
-    <div class="att-note">An advance is a debit — money paid out early, reduces future payable balance.</div>
+    <div class="att-note">Advance = debit entry. Money paid out early, reduces future payable balance.</div>
     <div class="grid-2" style="margin-top:12px">
       <div class="form-group"><label>Date *</label><input id="adv-date" type="date"></div>
       <div class="form-group"><label>Amount (₹) *</label><input id="adv-amount" type="number" placeholder="5000"></div>
@@ -392,9 +395,8 @@ input:focus,select:focus,textarea:focus{border-color:#888}
       <div id="exp-lines"></div>
       <button class="btn btn-sm" style="margin-top:8px" onclick="addExpLine()">+ Add Line</button>
     </div>
-    <div style="margin-top:12px;padding:10px 12px;background:#f0ede5;border-radius:6px;display:flex;justify-content:space-between;align-items:center">
-      <span style="font-size:13px;color:#555">Total</span>
-      <strong id="lexp-total" style="font-size:15px">₹0</strong>
+    <div style="margin-top:12px;padding:10px 12px;background:#f0ede5;border-radius:6px;display:flex;justify-content:space-between">
+      <span>Total</span><strong id="lexp-total">₹0</strong>
     </div>
   </div>
   <div class="modal-footer">
@@ -405,108 +407,155 @@ input:focus,select:focus,textarea:focus{border-color:#888}
 </div>
 
 <script>
-let state={employees:[],attendance:{},leaves:[],ledger:{},payroll:{},nextEmpNum:1,nextEntryId:1};
+// ── state ────────────────────────────────────────────────────────────────────
+let employees=[], allLeaves=[], payrollData={}, ledgerCache={};
 let attMonth=new Date(); attMonth.setDate(1);
 let payMonth=new Date(); payMonth.setDate(1);
 let slipMonth=new Date(); slipMonth.setDate(1);
+let attCache={attendance:{},ot:{}};
 let selectedLedgerEmp=null;
-
-function load(){try{const s=localStorage.getItem('gnt-hrms2');if(s)state=JSON.parse(s);}catch(e){}}
-function save(){try{localStorage.setItem('gnt-hrms2',JSON.stringify(state));}catch(e){}}
-load();
+let expLineCount=0;
 
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 function fmtMonth(d){return MONTHS[d.getMonth()]+' '+d.getFullYear();}
 function monthKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
 function rupee(n){return '₹'+Math.abs(Math.round(n)).toLocaleString('en-IN');}
-function getDaysInMonth(d){return new Date(d.getFullYear(),d.getMonth()+1,0).getDate();}
-function getSundaysInMonth(d){let c=0,dt=new Date(d.getFullYear(),d.getMonth(),1);while(dt.getMonth()===d.getMonth()){if(dt.getDay()===0)c++;dt.setDate(dt.getDate()+1);}return c;}
-function activeEmps(){return state.employees.filter(e=>e.status==='Active');}
-function getOTDays(mk,empId){return parseFloat(state.attendance['OT-'+mk+'-'+empId]||0);}
-function setOTDays(mk,empId,val){state.attendance['OT-'+mk+'-'+empId]=parseFloat(val)||0;}
+function today(){return new Date().toISOString().split('T')[0];}
+function activeEmps(){return employees.filter(e=>e.status==='Active');}
 
+function showToast(msg,ok=true){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.background=ok?'#1a1a18':'#e24b4a';
+  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ── api ──────────────────────────────────────────────────────────────────────
+async function api(method, url, body){
+  const opts={method,headers:{'Content-Type':'application/json'}};
+  if(body)opts.body=JSON.stringify(body);
+  const res=await fetch(url,opts);
+  if(res.status===401){showLoginScreen();return null;}
+  return res.json();
+}
+
+// ── auth ─────────────────────────────────────────────────────────────────────
+function showLoginScreen(){
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('login-pass').value='';
+}
+function hideLoginScreen(){document.getElementById('login-screen').classList.add('hidden');}
+
+async function doLogin(){
+  const pass=document.getElementById('login-pass').value;
+  const err=document.getElementById('login-error');
+  const res=await api('POST','/api/login',{password:pass});
+  if(res&&res.ok){hideLoginScreen();err.classList.remove('show');await loadAll();}
+  else{err.classList.add('show');document.getElementById('login-pass').value='';}
+}
+async function doLogout(){
+  await api('POST','/api/logout');showLoginScreen();
+}
+async function checkAuth(){
+  const res=await api('GET','/api/check-auth');
+  if(res&&res.logged_in){hideLoginScreen();await loadAll();}
+}
+
+// ── load all ─────────────────────────────────────────────────────────────────
+async function loadAll(){
+  employees=await api('GET','/api/employees')||[];
+  document.getElementById('topbar-date').textContent=new Date().toDateString();
+  renderDashboard();
+}
+
+// ── nav ──────────────────────────────────────────────────────────────────────
 const pageTitles={dashboard:'Dashboard',employees:'Employees',attendance:'Attendance',leaves:'Leave Management',payroll:'Payroll',ledger:'Employee Ledger',slips:'Salary Slips'};
 function showPage(p){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
   document.getElementById('topbar-title').textContent=pageTitles[p];
-  document.querySelectorAll('.nav-item').forEach(x=>{if(x.textContent.trim().toLowerCase().includes(p.substring(0,4)))x.classList.add('active');});
-  if(p==='attendance')renderAttendance();
-  if(p==='payroll')renderPayroll();
+  document.querySelectorAll('.nav-item').forEach(x=>{if(x.textContent.trim().toLowerCase().startsWith(pageTitles[p].substring(0,4).toLowerCase()))x.classList.add('active');});
+  if(p==='attendance')loadAttendance();
+  if(p==='payroll')loadPayroll();
   if(p==='employees')renderEmployees();
-  if(p==='leaves'){renderLeaveTable();renderLeaveBalances();}
+  if(p==='leaves')loadLeaves();
   if(p==='ledger')renderLedgerPage();
   if(p==='slips'){populateSlipSelect();renderSlipMonth();}
   if(p==='dashboard')renderDashboard();
 }
 function openModal(id){
   document.getElementById(id).classList.add('open');
-  if(id==='modal-add-emp')document.getElementById('emp-id').value='GNT-'+String(state.nextEmpNum).padStart(3,'0');
-  if(id==='modal-add-leave')populateEmpDropdowns();
-  if(id==='modal-bulk-pay'){populateEmpDropdowns();renderBulkPay();}
-  if(id==='modal-add-ledger-exp'){initExpLines();document.getElementById('lexp-date').value=new Date().toISOString().split('T')[0];}
-  if(id==='modal-add-advance')document.getElementById('adv-date').value=new Date().toISOString().split('T')[0];
+  if(id==='modal-add-leave')populateLeaveDropdown();
+  if(id==='modal-bulk-pay')renderBulkPay();
+  if(id==='modal-add-ledger-exp'){initExpLines();document.getElementById('lexp-date').value=today();}
+  if(id==='modal-add-advance')document.getElementById('adv-date').value=today();
 }
 function closeModal(id){document.getElementById(id).classList.remove('open');}
-document.getElementById('topbar-date').textContent=new Date().toDateString();
 
+// ── months ───────────────────────────────────────────────────────────────────
 function renderAttMonth(){document.getElementById('att-month-label').textContent=fmtMonth(attMonth);}
 function renderPayMonth(){document.getElementById('pay-month-label').textContent=fmtMonth(payMonth);document.getElementById('dash-month-label').textContent=fmtMonth(payMonth);}
 function renderSlipMonth(){document.getElementById('slip-month-label').textContent=fmtMonth(slipMonth);}
-function changeAttMonth(d){attMonth.setMonth(attMonth.getMonth()+d);renderAttMonth();renderAttendance();}
-function changePayMonth(d){payMonth.setMonth(payMonth.getMonth()+d);renderPayMonth();renderPayroll();}
+function changeAttMonth(d){attMonth.setMonth(attMonth.getMonth()+d);renderAttMonth();loadAttendance();}
+function changePayMonth(d){payMonth.setMonth(payMonth.getMonth()+d);renderPayMonth();loadPayroll();}
 function changeSlipMonth(d){slipMonth.setMonth(slipMonth.getMonth()+d);renderSlipMonth();generateSlip();}
 renderAttMonth();renderPayMonth();renderSlipMonth();
 
-function addEmployee(){
+// ── employees ────────────────────────────────────────────────────────────────
+async function addEmployee(){
   const name=document.getElementById('emp-name').value.trim();
   const desig=document.getElementById('emp-desig').value.trim();
   const doj=document.getElementById('emp-doj').value;
-  const salary=parseFloat(document.getElementById('emp-salary').value);
+  const salary=document.getElementById('emp-salary').value;
   if(!name||!desig||!doj||!salary){alert('Fill required fields.');return;}
-  const id='GNT-'+String(state.nextEmpNum).padStart(3,'0');
-  state.employees.push({id,name,desig,
-    dept:document.getElementById('emp-dept').value.trim()||'General',
-    doj,salary,
-    phone:document.getElementById('emp-phone').value.trim(),
-    email:document.getElementById('emp-email').value.trim(),
-    bank:document.getElementById('emp-bank').value.trim(),
-    bankName:document.getElementById('emp-bankname').value.trim(),
-    ifsc:document.getElementById('emp-ifsc').value.trim().toUpperCase(),
-    accName:document.getElementById('emp-accname').value.trim()||name,
-    cl:parseInt(document.getElementById('emp-cl').value)||12,
-    sl:parseInt(document.getElementById('emp-sl').value)||6,
-    el:parseInt(document.getElementById('emp-el').value)||15,
-    clUsed:0,slUsed:0,elUsed:0,status:'Active'});
-  state.ledger[id]=[];
-  state.nextEmpNum++;
-  save();closeModal('modal-add-emp');renderEmployees();renderDashboard();
-  ['emp-name','emp-desig','emp-dept','emp-doj','emp-salary','emp-phone','emp-email','emp-bank','emp-bankname','emp-ifsc','emp-accname'].forEach(i=>document.getElementById(i).value='');
-  document.getElementById('emp-accname').dataset.edited='';
+  const res=await api('POST','/api/employees',{
+    name,desig,dept:document.getElementById('emp-dept').value||'General',doj,salary,
+    phone:document.getElementById('emp-phone').value,email:document.getElementById('emp-email').value,
+    bank:document.getElementById('emp-bank').value,bankName:document.getElementById('emp-bankname').value,
+    ifsc:document.getElementById('emp-ifsc').value,
+    accName:document.getElementById('emp-accname').value||name,
+    cl:document.getElementById('emp-cl').value,sl:document.getElementById('emp-sl').value,el:document.getElementById('emp-el').value
+  });
+  if(res&&res.ok){
+    showToast('Employee added!');
+    employees=await api('GET','/api/employees')||[];
+    closeModal('modal-add-emp');renderEmployees();renderDashboard();
+    ['emp-name','emp-desig','emp-dept','emp-doj','emp-salary','emp-phone','emp-email','emp-bank','emp-bankname','emp-ifsc','emp-accname'].forEach(i=>document.getElementById(i).value='');
+  }
 }
 function renderEmployees(filter=''){
   const tb=document.getElementById('emp-table');
-  const emps=state.employees.filter(e=>!filter||e.name.toLowerCase().includes(filter.toLowerCase()));
+  const emps=employees.filter(e=>!filter||e.name.toLowerCase().includes(filter.toLowerCase()));
   if(!emps.length){tb.innerHTML='<tr><td colspan="8" class="no-data">No employees found</td></tr>';return;}
   tb.innerHTML=emps.map(e=>`<tr>
     <td><strong>${e.name}</strong><br><span style="font-size:11px;color:#888">${e.id}</span></td>
     <td>${e.desig}</td><td>${e.dept}</td>
-    <td>${new Date(e.doj).toLocaleDateString('en-IN')}</td>
+    <td>${e.doj?new Date(e.doj).toLocaleDateString('en-IN'):''}</td>
     <td>${rupee(e.salary)}</td>
-    <td><span class="chip">CL:${e.cl-e.clUsed}</span><span class="chip">SL:${e.sl-e.slUsed}</span></td>
+    <td><span class="chip">CL:${e.cl-e.cl_used}</span><span class="chip">SL:${e.sl-e.sl_used}</span></td>
     <td><span class="badge ${e.status==='Active'?'badge-green':'badge-red'}">${e.status}</span></td>
-    <td><button class="btn btn-sm" onclick="toggleEmpStatus('${e.id}')">${e.status==='Active'?'Deactivate':'Activate'}</button></td>
+    <td><button class="btn btn-sm" onclick="toggleStatus('${e.id}')">${e.status==='Active'?'Deactivate':'Activate'}</button></td>
   </tr>`).join('');
 }
 function filterEmployees(v){renderEmployees(v);}
-function toggleEmpStatus(id){const e=state.employees.find(x=>x.id===id);if(e)e.status=e.status==='Active'?'Inactive':'Active';save();renderEmployees();}
-function populateEmpDropdowns(){
-  const emps=activeEmps();
+async function toggleStatus(id){
+  await api('POST',`/api/employees/${id}/status`);
+  employees=await api('GET','/api/employees')||[];
+  renderEmployees();
+}
+function populateLeaveDropdown(){
   const el=document.getElementById('leave-emp');
-  if(el)el.innerHTML='<option value="">Select</option>'+emps.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+  el.innerHTML='<option value="">Select</option>'+activeEmps().map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
 }
 
+// ── attendance ───────────────────────────────────────────────────────────────
+async function loadAttendance(){
+  const mk=monthKey(attMonth);
+  const res=await api('GET',`/api/attendance/${mk}`);
+  attCache=res||{attendance:{},ot:{}};
+  renderAttendance();
+}
+function getDaysInMonth(d){return new Date(d.getFullYear(),d.getMonth()+1,0).getDate();}
 function renderAttendance(){
   const emps=activeEmps(),cont=document.getElementById('att-container');
   if(!emps.length){cont.innerHTML='<div class="no-data">No active employees</div>';return;}
@@ -518,16 +567,15 @@ function renderAttendance(){
     html+=`<th style="text-align:center;min-width:34px;${sun?'background:#f0eefa;color:#534ab7':''}">
       <div>${d}</div><div style="font-size:9px">${['Su','Mo','Tu','We','Th','Fr','Sa'][dt.getDay()]}</div></th>`;
   }
-  html+=`<th style="text-align:center;min-width:40px">P</th><th style="text-align:center;min-width:46px">Sun OT</th><th style="text-align:center;min-width:50px">Extra OT</th></tr></thead><tbody>`;
+  html+=`<th style="text-align:center">P</th><th style="text-align:center">SunOT</th><th style="text-align:center;min-width:54px">ExtraOT</th></tr></thead><tbody>`;
   emps.forEach(emp=>{
     let present=0,sundayOT=0;
     html+=`<tr><td style="position:sticky;left:0;background:#fff;z-index:1;font-weight:500">${emp.name}<br><span style="font-size:11px;color:#888">${emp.id}</span></td>`;
     for(let d=1;d<=days;d++){
       const dt=new Date(attMonth.getFullYear(),attMonth.getMonth(),d),sun=dt.getDay()===0;
-      const key=mk+'-'+emp.id+'-'+d,stored=state.attendance[key]||'';
+      const key=`${emp.id}-${d}`,stored=attCache.attendance[key]||'';
       if(sun){
-        const isOT=stored==='OT';
-        if(isOT)sundayOT++;
+        const isOT=stored==='OT';if(isOT)sundayOT++;
         html+=`<td style="text-align:center;background:#f8f5ff"><button class="att-btn" style="${isOT?'background:#eedcfe;color:#3c3489;border-color:#afa9ec':'background:#e8e8f0;color:#999;border-color:#ccc'};font-size:10px;padding:2px 5px" onclick="toggleSunday('${key}','${stored}')">${isOT?'OT':'—'}</button></td>`;
       } else {
         const s=stored||'A';
@@ -535,126 +583,115 @@ function renderAttendance(){
         html+=`<td style="text-align:center"><button class="att-btn ${s}" onclick="cycleAtt('${key}','${s}')">${s}</button></td>`;
       }
     }
+    const extraOT=parseFloat(attCache.ot[emp.id]||0);
     html+=`<td style="text-align:center;font-weight:600">${present}</td>
       <td style="text-align:center;color:#534ab7;font-weight:600">${sundayOT}</td>
-      <td style="text-align:center"><input type="number" value="${getOTDays(mk,emp.id)}" min="0" step="0.5" style="width:46px;text-align:center;font-size:12px" onchange="setOTDays('${mk}','${emp.id}',this.value)"></td></tr>`;
+      <td style="text-align:center"><input type="number" value="${extraOT}" min="0" step="0.5" style="width:48px;text-align:center;font-size:12px" onchange="setOT('${emp.id}',this.value)"></td></tr>`;
   });
-  html+='</tbody></table>';
-  cont.innerHTML=html;
+  html+='</tbody></table>';cont.innerHTML=html;
 }
-function cycleAtt(key,cur){const c=['A','P','H','L'];state.attendance[key]=c[(c.indexOf(cur)+1)%c.length];renderAttendance();}
-function toggleSunday(key,cur){state.attendance[key]=cur==='OT'?'':'OT';renderAttendance();}
-function markAllPresent(){
-  const emps=activeEmps(),days=getDaysInMonth(attMonth),mk=monthKey(attMonth);
-  emps.forEach(emp=>{for(let d=1;d<=days;d++){const dt=new Date(attMonth.getFullYear(),attMonth.getMonth(),d);if(dt.getDay()!==0)state.attendance[mk+'-'+emp.id+'-'+d]='P';}});
+function cycleAtt(key,cur){
+  const c=['A','P','H','L'];
+  attCache.attendance[key]=c[(c.indexOf(cur)+1)%c.length];
   renderAttendance();
 }
-function saveAttendance(){save();alert('Attendance saved for '+fmtMonth(attMonth));}
-
-function calcEmployeePay(emp,mk){
-  const yr=parseInt(mk.split('-')[0]),mo=parseInt(mk.split('-')[1])-1;
-  const d=new Date(yr,mo,1),days=getDaysInMonth(d),sundays=getSundaysInMonth(d);
-  const weekdays=days-sundays;
-  const dailyRate=emp.salary/30;
-  let present=0,sundayOT=0;
-  for(let day=1;day<=days;day++){
-    const dt=new Date(yr,mo,day),key=mk+'-'+emp.id+'-'+day,stored=state.attendance[key]||'';
-    if(dt.getDay()===0){if(stored==='OT')sundayOT++;}
-    else{const s=stored||'A';if(s==='P')present++;else if(s==='H')present+=0.5;else if(s==='L')present++;}
-  }
-  const extraOT=getOTDays(mk,emp.id),totalOT=sundayOT+extraOT;
-  const earnedPay=(present/weekdays)*emp.salary;
-  const otPay=totalOT*dailyRate;
-  const ledgerDeduct=(state.ledger[emp.id]||[]).filter(x=>x.type==='expense-recover'&&x.month===mk).reduce((s,x)=>s+x.amount,0);
-  const gross=earnedPay+otPay;
-  const net=gross-ledgerDeduct;
-  return {present,weekdays,sundays,sundayOT,extraOT,totalOT,earnedPay,otPay,ledgerDeduct,gross,net,dailyRate};
+function toggleSunday(key,cur){attCache.attendance[key]=cur==='OT'?'':'OT';renderAttendance();}
+function setOT(empId,val){attCache.ot[empId]=parseFloat(val)||0;}
+function markAllPresent(){
+  const emps=activeEmps(),days=getDaysInMonth(attMonth);
+  emps.forEach(emp=>{
+    for(let d=1;d<=days;d++){
+      const dt=new Date(attMonth.getFullYear(),attMonth.getMonth(),d);
+      if(dt.getDay()!==0)attCache.attendance[`${emp.id}-${d}`]='P';
+    }
+  });
+  renderAttendance();
+}
+async function saveAttendance(){
+  const mk=monthKey(attMonth);
+  const res=await api('POST','/api/attendance',{month_key:mk,attendance:attCache.attendance,ot:attCache.ot});
+  if(res&&res.ok)showToast('Attendance saved for '+fmtMonth(attMonth));
 }
 
-function generatePayroll(){
-  const mk=monthKey(payMonth),emps=activeEmps();
-  if(!emps.length){alert('No active employees.');return;}
-  emps.forEach(emp=>{
-    const calc=calcEmployeePay(emp,mk);
-    const ex=state.payroll[mk+'-'+emp.id]||{paid:'Unpaid',paidDate:'',postedToLedger:false};
-    state.payroll[mk+'-'+emp.id]={...calc,paid:ex.paid,paidDate:ex.paidDate,postedToLedger:ex.postedToLedger};
-  });
-  save();renderPayroll();
+// ── payroll ──────────────────────────────────────────────────────────────────
+async function loadPayroll(){
+  const mk=monthKey(payMonth);
+  const rows=await api('GET',`/api/payroll/${mk}`)||[];
+  payrollData={};rows.forEach(r=>payrollData[r.emp_id]=r);
+  renderPayroll();
+}
+async function generatePayroll(){
+  const mk=monthKey(payMonth);
+  const res=await api('POST','/api/payroll/calculate',{month_key:mk});
+  if(res&&res.ok){showToast('Payroll calculated!');await loadPayroll();}
 }
 function renderPayroll(){
   document.getElementById('pay-month-label').textContent=fmtMonth(payMonth);
-  const mk=monthKey(payMonth),emps=activeEmps(),tb=document.getElementById('payroll-table');
+  const emps=activeEmps(),tb=document.getElementById('payroll-table');
   if(!emps.length){tb.innerHTML='<tr><td colspan="11" class="no-data">No active employees</td></tr>';return;}
   tb.innerHTML=emps.map(emp=>{
-    const pr=state.payroll[mk+'-'+emp.id];
-    if(!pr)return `<tr><td>${emp.name}</td><td>${rupee(emp.salary)}</td><td colspan="8" style="color:#aaa">Not calculated</td><td><button class="btn btn-sm" onclick="generatePayroll()">Calculate</button></td></tr>`;
+    const pr=payrollData[emp.id];
+    if(!pr)return `<tr><td>${emp.name}</td><td>${rupee(emp.salary)}</td><td colspan="8" style="color:#aaa">Not calculated</td><td><button class="btn btn-sm" onclick="generatePayroll()">Calc</button></td></tr>`;
     const badge=pr.paid==='Paid'?'badge-green':pr.paid==='Partial'?'badge-amber':'badge-red';
-    const ledgerBadge=pr.postedToLedger?'<span class="badge badge-green">Posted</span>':`<button class="btn btn-sm btn-success" onclick="postPayrollToLedger('${emp.id}','${mk}')">Post</button>`;
+    const ledgerBtn=pr.posted_to_ledger?'<span class="badge badge-green">Posted</span>':`<button class="btn btn-sm btn-success" onclick="postToLedger('${emp.id}')">Post</button>`;
     return `<tr>
       <td><strong>${emp.name}</strong><br><span style="font-size:11px;color:#888">${emp.id}</span></td>
       <td>${rupee(emp.salary)}</td>
       <td>${pr.present}/${pr.weekdays}</td>
-      <td style="color:#534ab7">${pr.sundayOT}</td>
-      <td>${pr.extraOT}</td>
+      <td style="color:#534ab7">${pr.sunday_ot}</td>
+      <td>${pr.extra_ot}</td>
       <td>${rupee(pr.gross)}</td>
-      <td style="color:#e24b4a">${pr.ledgerDeduct>0?'-'+rupee(pr.ledgerDeduct):'—'}</td>
+      <td style="color:#e24b4a">${pr.ledger_deduct>0?'-'+rupee(pr.ledger_deduct):'—'}</td>
       <td><strong>${rupee(pr.net)}</strong></td>
-      <td>${ledgerBadge}</td>
-      <td><span class="badge ${badge}">${pr.paid}</span>${pr.paidDate?`<br><span style="font-size:10px;color:#888">${pr.paidDate}</span>`:''}</td>
+      <td>${ledgerBtn}</td>
+      <td><span class="badge ${badge}">${pr.paid}</span>${pr.paid_date?`<br><span style="font-size:10px;color:#888">${pr.paid_date}</span>`:''}</td>
       <td>
-        <button class="btn btn-sm btn-success" onclick="markPaid('${emp.id}','${mk}','Paid')" style="margin-bottom:2px">Paid</button>
-        <button class="btn btn-sm" onclick="markPaid('${emp.id}','${mk}','Partial')">Part</button>
-      </td>
-    </tr>`;
+        <button class="btn btn-sm btn-success" onclick="markPaid('${emp.id}','Paid')" style="margin-bottom:2px">Paid</button>
+        <button class="btn btn-sm" onclick="markPaid('${emp.id}','Partial')">Part</button>
+      </td></tr>`;
   }).join('');
 }
-function postPayrollToLedger(empId,mk){
-  const pr=state.payroll[mk+'-'+empId];
-  if(!pr){alert('Calculate payroll first.');return;}
-  if(pr.postedToLedger){alert('Already posted.');return;}
-  const d=new Date(parseInt(mk.split('-')[0]),parseInt(mk.split('-')[1])-1,1);
-  addLedgerEntry(empId,{id:state.nextEntryId++,date:new Date().toISOString().split('T')[0],type:'salary-credit',label:'Salary — '+fmtMonth(d),amount:pr.net,effect:'credit',month:mk});
-  state.payroll[mk+'-'+empId].postedToLedger=true;
-  save();renderPayroll();if(selectedLedgerEmp===empId)renderLedgerDetail(empId);
+async function postToLedger(empId){
+  const mk=monthKey(payMonth);
+  const res=await api('POST','/api/payroll/post-ledger',{emp_id:empId,month_key:mk});
+  if(res&&res.ok){showToast('Posted to ledger!');await loadPayroll();}
+  else if(res)showToast(res.error||'Error',false);
 }
-function markPaid(empId,mk,status){
-  const key=mk+'-'+empId;
-  if(!state.payroll[key])return;
-  state.payroll[key].paid=status;
-  state.payroll[key].paidDate=new Date().toLocaleDateString('en-IN');
-  if(status==='Paid'){
-    const pr=state.payroll[key];
-    const d=new Date(parseInt(mk.split('-')[0]),parseInt(mk.split('-')[1])-1,1);
-    addLedgerEntry(empId,{id:state.nextEntryId++,date:new Date().toISOString().split('T')[0],type:'salary-payment',label:'Salary Paid — '+fmtMonth(d),amount:pr.net,effect:'debit',month:mk});
-  }
-  save();renderPayroll();renderDashboard();if(selectedLedgerEmp===empId)renderLedgerDetail(empId);
+async function markPaid(empId,status){
+  const mk=monthKey(payMonth);
+  const res=await api('POST','/api/payroll/mark-paid',{emp_id:empId,month_key:mk,status});
+  if(res&&res.ok){showToast('Payment updated!');await loadPayroll();renderDashboard();}
 }
 function renderBulkPay(){
-  const mk=monthKey(payMonth),emps=activeEmps(),tb=document.getElementById('bulk-pay-table');
+  const emps=activeEmps(),tb=document.getElementById('bulk-pay-table');
   if(!emps.length){tb.innerHTML='<tr><td colspan="4" class="no-data">No employees</td></tr>';return;}
   tb.innerHTML=emps.map(emp=>{
-    const pr=state.payroll[mk+'-'+emp.id];
+    const pr=payrollData[emp.id];
     const badge=!pr?'badge-gray':pr.paid==='Paid'?'badge-green':pr.paid==='Partial'?'badge-amber':'badge-red';
     return `<tr><td>${emp.name}</td><td>${pr?rupee(pr.net):'—'}</td>
       <td><span class="badge ${badge}">${pr?pr.paid:'Not calculated'}</span></td>
-      <td><button class="btn btn-sm btn-success" onclick="markPaid('${emp.id}','${mk}','Paid')">Paid</button>
-      <button class="btn btn-sm" onclick="markPaid('${emp.id}','${mk}','Unpaid')" style="margin-left:4px">Unpaid</button></td></tr>`;
+      <td><button class="btn btn-sm btn-success" onclick="markPaid('${emp.id}','Paid')">Paid</button>
+      <button class="btn btn-sm" onclick="markPaid('${emp.id}','Unpaid')" style="margin-left:4px">Unpaid</button></td></tr>`;
   }).join('');
 }
 
-function addLedgerEntry(empId,entry){if(!state.ledger[empId])state.ledger[empId]=[];state.ledger[empId].push(entry);}
-function getLedgerBalance(empId){return(state.ledger[empId]||[]).reduce((s,e)=>e.effect==='credit'?s+e.amount:s-e.amount,0);}
-
-function renderLedgerPage(){
-  const emps=state.employees;
+// ── ledger ───────────────────────────────────────────────────────────────────
+async function renderLedgerPage(){
+  const emps=employees;
   document.getElementById('ledger-emp-count').textContent=emps.length+' emp';
   const list=document.getElementById('ledger-emp-list');
   if(!emps.length){list.innerHTML='<div class="no-data">No employees yet</div>';return;}
+  // Load balances for all
+  const balances={};
+  await Promise.all(emps.map(async e=>{
+    const entries=await api('GET',`/api/ledger/${e.id}`)||[];
+    ledgerCache[e.id]=entries;
+    balances[e.id]=entries.reduce((s,x)=>x.effect==='credit'?s+x.amount:s-x.amount,0);
+  }));
   list.innerHTML=emps.map(e=>{
-    const bal=getLedgerBalance(e.id);
-    const entries=(state.ledger[e.id]||[]).length;
+    const bal=balances[e.id]||0;
     return `<div class="ledger-emp-row${selectedLedgerEmp===e.id?' selected':''}" onclick="selectLedgerEmp('${e.id}')">
-      <div><div style="font-size:13px">${e.name}</div><div style="font-size:11px;color:#888">${entries} entries</div></div>
+      <div><div style="font-size:13px">${e.name}</div><div style="font-size:11px;color:#888">${(ledgerCache[e.id]||[]).length} entries</div></div>
       <div class="${bal>=0?'balance-pos':'balance-neg'}" style="font-size:12px">${bal>=0?'+':'-'}${rupee(Math.abs(bal))}</div>
     </div>`;
   }).join('');
@@ -662,10 +699,10 @@ function renderLedgerPage(){
 }
 function selectLedgerEmp(id){selectedLedgerEmp=id;renderLedgerPage();}
 function renderLedgerDetail(empId){
-  const emp=state.employees.find(e=>e.id===empId);if(!emp)return;
+  const emp=employees.find(e=>e.id===empId);if(!emp)return;
   document.getElementById('ledger-emp-name').textContent=emp.name+' — '+emp.id;
   document.getElementById('ledger-summary').style.display='grid';
-  const entries=state.ledger[empId]||[];
+  const entries=ledgerCache[empId]||[];
   const credits=entries.filter(e=>e.effect==='credit').reduce((s,e)=>s+e.amount,0);
   const debits=entries.filter(e=>e.effect==='debit').reduce((s,e)=>s+e.amount,0);
   const bal=credits-debits;
@@ -677,9 +714,8 @@ function renderLedgerDetail(empId){
   document.getElementById('ls-balance-note').textContent=bal>=0?'GNT owes employee':'Employee owes GNT';
   if(!entries.length){document.getElementById('ledger-table-wrap').innerHTML='<div class="no-data">No ledger entries yet.</div>';return;}
   let running=0;
-  const sorted=[...entries].sort((a,b)=>new Date(a.date)-new Date(b.date));
   let html=`<div class="ledger-entry ledger-header"><span>Date</span><span>Description</span><span style="text-align:right">Credit</span><span style="text-align:right">Debit</span><span style="text-align:right">Balance</span></div>`;
-  sorted.forEach(e=>{
+  entries.forEach(e=>{
     running+=e.effect==='credit'?e.amount:-e.amount;
     const tc={'salary-credit':'badge-green','salary-payment':'badge-blue','advance':'badge-red','expense-reimburse':'badge-amber','expense-recover':'badge-purple'}[e.type]||'badge-gray';
     const tl={'salary-credit':'Salary','salary-payment':'Paid','advance':'Advance','expense-reimburse':'Reimb.','expense-recover':'Recover'}[e.type]||e.type;
@@ -693,13 +729,16 @@ function renderLedgerDetail(empId){
   });
   document.getElementById('ledger-table-wrap').innerHTML=html;
 }
-function addAdvance(){
+async function addAdvance(){
   if(!selectedLedgerEmp){alert('Select an employee first.');return;}
-  const date=document.getElementById('adv-date').value,amount=parseFloat(document.getElementById('adv-amount').value);
-  const note=document.getElementById('adv-note').value.trim()||'Advance salary',mode=document.getElementById('adv-mode').value;
+  const date=document.getElementById('adv-date').value,amount=document.getElementById('adv-amount').value;
   if(!date||!amount){alert('Fill required fields.');return;}
-  addLedgerEntry(selectedLedgerEmp,{id:state.nextEntryId++,date,type:'advance',label:note+' ('+mode+')',amount,effect:'debit',month:monthKey(new Date(date))});
-  save();closeModal('modal-add-advance');renderLedgerPage();
+  const res=await api('POST','/api/ledger/advance',{
+    emp_id:selectedLedgerEmp,date,amount,
+    note:document.getElementById('adv-note').value||'Advance salary',
+    mode:document.getElementById('adv-mode').value
+  });
+  if(res&&res.ok){showToast('Advance posted!');closeModal('modal-add-advance');renderLedgerPage();}
 }
 
 let expLineCount=0;
@@ -720,68 +759,83 @@ function recalcExpTotal(){
   let t=0;document.querySelectorAll('#exp-lines .exp-line').forEach(r=>{t+=parseFloat(r.querySelectorAll('input')[1]?.value)||0;});
   document.getElementById('lexp-total').textContent=rupee(t);
 }
-function submitLedgerExpenses(){
+async function submitLedgerExpenses(){
   if(!selectedLedgerEmp){alert('Select an employee first.');return;}
-  const date=document.getElementById('lexp-date').value,bill=document.getElementById('lexp-bill').value.trim();
+  const date=document.getElementById('lexp-date').value,bill=document.getElementById('lexp-bill').value;
   if(!date){alert('Enter a date.');return;}
-  let count=0;
+  const lines=[];
   document.querySelectorAll('#exp-lines .exp-line').forEach(row=>{
     const inputs=row.querySelectorAll('input'),selects=row.querySelectorAll('select');
-    const desc=inputs[0].value.trim(),amt=parseFloat(inputs[1].value)||0,expType=selects[0].value,effect=selects[1].value;
+    const desc=inputs[0].value.trim(),amt=parseFloat(inputs[1].value)||0;
     if(!desc||!amt)return;
-    addLedgerEntry(selectedLedgerEmp,{id:state.nextEntryId++,date,type:effect==='reimburse'?'expense-reimburse':'expense-recover',
-      label:desc+(bill?' ['+bill+']':'')+' ('+expType+')',amount:amt,effect:effect==='reimburse'?'debit':'credit',month:monthKey(new Date(date))});
-    count++;
+    lines.push({desc,type:selects[0].value,amount:amt,effect:selects[1].value});
   });
-  if(!count){alert('Add at least one expense line.');return;}
-  save();closeModal('modal-add-ledger-exp');renderLedgerPage();
+  if(!lines.length){alert('Add at least one expense line.');return;}
+  const res=await api('POST','/api/ledger/expenses',{emp_id:selectedLedgerEmp,date,bill,lines});
+  if(res&&res.ok){showToast('Expenses posted!');closeModal('modal-add-ledger-exp');renderLedgerPage();}
 }
 
-function addLeave(){
-  const empId=document.getElementById('leave-emp').value,from=document.getElementById('leave-from').value,to=document.getElementById('leave-to').value;
-  const type=document.getElementById('leave-type').value,status=document.getElementById('leave-status').value,reason=document.getElementById('leave-reason').value;
+// ── leaves ───────────────────────────────────────────────────────────────────
+async function loadLeaves(){
+  allLeaves=await api('GET','/api/leaves')||[];
+  employees=await api('GET','/api/employees')||[];
+  renderLeaveBalances();renderLeaveTable();
+}
+async function addLeave(){
+  const empId=document.getElementById('leave-emp').value;
+  const from=document.getElementById('leave-from').value,to=document.getElementById('leave-to').value;
   if(!empId||!from||!to){alert('Fill required fields.');return;}
-  const days=Math.ceil((new Date(to)-new Date(from))/864e5)+1;
-  state.leaves=state.leaves||[];
-  state.leaves.push({id:Date.now(),empId,from,to,type,days,reason,status});
-  const emp=state.employees.find(e=>e.id===empId);
-  if(emp&&status==='Approved'){if(type==='Casual Leave')emp.clUsed+=days;else if(type==='Sick Leave')emp.slUsed+=days;else if(type==='Earned Leave')emp.elUsed+=days;}
-  save();closeModal('modal-add-leave');renderLeaveTable();renderLeaveBalances();
+  const res=await api('POST','/api/leaves',{
+    emp_id:empId,from_date:from,to_date:to,
+    leave_type:document.getElementById('leave-type').value,
+    status:document.getElementById('leave-status').value,
+    reason:document.getElementById('leave-reason').value
+  });
+  if(res&&res.ok){showToast('Leave applied!');closeModal('modal-add-leave');await loadLeaves();}
+}
+async function deleteLeave(id){
+  const res=await api('DELETE',`/api/leaves/${id}`);
+  if(res&&res.ok){showToast('Leave deleted!');await loadLeaves();}
 }
 function renderLeaveBalances(){
   const tb=document.getElementById('leave-balance-table'),emps=activeEmps();
   if(!emps.length){tb.innerHTML='<tr><td colspan="5" class="no-data">No active employees</td></tr>';return;}
   tb.innerHTML=emps.map(e=>`<tr><td><strong>${e.name}</strong></td>
-    <td><span class="badge badge-green">${e.cl-e.clUsed}</span>/${e.cl}</td>
-    <td><span class="badge badge-amber">${e.sl-e.slUsed}</span>/${e.sl}</td>
-    <td><span class="badge badge-blue">${e.el-e.elUsed}</span>/${e.el}</td>
-    <td>${e.clUsed+e.slUsed+e.elUsed} days</td></tr>`).join('');
+    <td><span class="badge badge-green">${e.cl-e.cl_used}</span>/${e.cl}</td>
+    <td><span class="badge badge-amber">${e.sl-e.sl_used}</span>/${e.sl}</td>
+    <td><span class="badge badge-blue">${e.el-e.el_used}</span>/${e.el}</td>
+    <td>${e.cl_used+e.sl_used+e.el_used} days</td></tr>`).join('');
 }
 function renderLeaveTable(){
-  const tb=document.getElementById('leave-app-table'),leaves=state.leaves||[];
-  if(!leaves.length){tb.innerHTML='<tr><td colspan="8" class="no-data">No applications yet</td></tr>';return;}
-  tb.innerHTML=[...leaves].reverse().map(l=>{
-    const emp=state.employees.find(e=>e.id===l.empId);
+  const tb=document.getElementById('leave-app-table');
+  if(!allLeaves.length){tb.innerHTML='<tr><td colspan="8" class="no-data">No applications yet</td></tr>';return;}
+  tb.innerHTML=allLeaves.map(l=>{
+    const emp=employees.find(e=>e.id===l.emp_id);
     const badge=l.status==='Approved'?'badge-green':l.status==='Rejected'?'badge-red':'badge-amber';
-    return `<tr><td>${emp?emp.name:'?'}</td><td>${l.type}</td>
-      <td>${new Date(l.from).toLocaleDateString('en-IN')}</td><td>${new Date(l.to).toLocaleDateString('en-IN')}</td>
+    return `<tr><td>${emp?emp.name:'?'}</td><td>${l.leave_type}</td>
+      <td>${new Date(l.from_date).toLocaleDateString('en-IN')}</td>
+      <td>${new Date(l.to_date).toLocaleDateString('en-IN')}</td>
       <td>${l.days}</td><td>${l.reason||'—'}</td>
       <td><span class="badge ${badge}">${l.status}</span></td>
       <td><button class="btn btn-sm btn-danger" onclick="deleteLeave(${l.id})">Del</button></td></tr>`;
   }).join('');
 }
-function deleteLeave(id){state.leaves=(state.leaves||[]).filter(l=>l.id!==id);save();renderLeaveTable();renderLeaveBalances();}
 
+// ── salary slip ───────────────────────────────────────────────────────────────
 function populateSlipSelect(){
-  document.getElementById('slip-emp-select').innerHTML='<option value="">Select Employee</option>'+state.employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+  document.getElementById('slip-emp-select').innerHTML='<option value="">Select Employee</option>'+
+    employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
 }
-function generateSlip(){
+async function generateSlip(){
   const empId=document.getElementById('slip-emp-select').value,cont=document.getElementById('slip-container');
   if(!empId){cont.innerHTML='<div class="no-data">Select an employee</div>';return;}
-  const emp=state.employees.find(e=>e.id===empId);if(!emp){cont.innerHTML='';return;}
-  const mk=monthKey(slipMonth),calc=state.payroll[mk+'-'+empId]||calcEmployeePay(emp,mk);
+  const emp=employees.find(e=>e.id===empId);if(!emp){cont.innerHTML='';return;}
+  const mk=monthKey(slipMonth);
+  const rows=await api('GET',`/api/payroll/${mk}`)||[];
+  const pr=rows.find(r=>r.emp_id===empId);
+  if(!pr){cont.innerHTML='<div class="no-data">No payroll calculated for this month. Go to Payroll and calculate first.</div>';return;}
+  const recoverEntries=(await api('GET',`/api/ledger/${empId}`)||[]).filter(x=>x.type==='expense-recover'&&x.month_key===mk);
   const dailyRate=emp.salary/30;
-  const recoverEntries=(state.ledger[empId]||[]).filter(x=>x.type==='expense-recover'&&x.month===mk);
   cont.innerHTML=`<div class="slip" id="printable-slip">
     <div class="slip-header">
       <div class="slip-co">GRAPHICS & TRENDS SOLUTIONS</div>
@@ -801,26 +855,26 @@ function generateSlip(){
       <div>
         <div class="slip-section">Attendance</div>
         <div>Salary basis: 30 days (fixed)</div>
-        <div>Working days in month: ${calc.weekdays} (excl. ${calc.sundays} Sundays)</div>
-        <div>Weekdays present: ${calc.present} / ${calc.weekdays}</div>
-        <div>Sunday OT worked: ${calc.sundayOT} | Extra OT: ${calc.extraOT}</div>
+        <div>Working days: ${pr.weekdays} (excl. ${pr.sundays} Sundays)</div>
+        <div>Weekdays present: ${pr.present} / ${pr.weekdays}</div>
+        <div>Sunday OT: ${pr.sunday_ot} | Extra OT: ${pr.extra_ot}</div>
       </div>
     </div>
     <div class="slip-section">Earnings</div>
     <div class="slip-row"><span>Base Salary (30-day basis)</span><span>${rupee(emp.salary)}</span></div>
-    <div class="slip-row"><span>Earned Pay (${calc.present}/${calc.weekdays} days × ${rupee(emp.salary)})</span><span>${rupee(calc.earnedPay)}</span></div>
-    ${calc.sundayOT>0?`<div class="slip-row"><span>Sunday OT (${calc.sundayOT} × ${rupee(dailyRate)})</span><span>${rupee(calc.sundayOT*dailyRate)}</span></div>`:''}
-    ${calc.extraOT>0?`<div class="slip-row"><span>Extra OT (${calc.extraOT} × ${rupee(dailyRate)})</span><span>${rupee(calc.extraOT*dailyRate)}</span></div>`:''}
-    <div class="slip-row" style="font-weight:600"><span>Gross Earnings</span><span>${rupee(calc.gross)}</span></div>
-    ${calc.ledgerDeduct>0?`
+    <div class="slip-row"><span>Earned Pay (${pr.present}/${pr.weekdays} days × ${rupee(emp.salary)})</span><span>${rupee(pr.earned_pay)}</span></div>
+    ${pr.sunday_ot>0?`<div class="slip-row"><span>Sunday OT (${pr.sunday_ot} × ${rupee(dailyRate)})</span><span>${rupee(pr.sunday_ot*dailyRate)}</span></div>`:''}
+    ${pr.extra_ot>0?`<div class="slip-row"><span>Extra OT (${pr.extra_ot} × ${rupee(dailyRate)})</span><span>${rupee(pr.extra_ot*dailyRate)}</span></div>`:''}
+    <div class="slip-row" style="font-weight:600"><span>Gross Earnings</span><span>${rupee(pr.gross)}</span></div>
+    ${pr.ledger_deduct>0?`
     <div class="slip-section">Deductions</div>
     ${recoverEntries.map(x=>`<div class="slip-row"><span>${x.label}</span><span style="color:#e24b4a">-${rupee(x.amount)}</span></div>`).join('')}
-    <div class="slip-row" style="font-weight:500"><span>Total Deductions</span><span style="color:#e24b4a">-${rupee(calc.ledgerDeduct)}</span></div>`:''}
-    <div class="slip-row total"><span>NET PAYABLE</span><span style="color:#1d9e75">${rupee(calc.net)}</span></div>
+    <div class="slip-row" style="font-weight:500"><span>Total Deductions</span><span style="color:#e24b4a">-${rupee(pr.ledger_deduct)}</span></div>`:''}
+    <div class="slip-row total"><span>NET PAYABLE</span><span style="color:#1d9e75">${rupee(pr.net)}</span></div>
     ${emp.bank||emp.ifsc?`<div style="margin-top:10px;padding:8px 12px;background:#faf9f5;border-radius:6px;font-size:12px">
       <div style="font-weight:600;margin-bottom:3px;color:#555">Bank Details</div>
-      ${emp.accName?`<div>A/C Holder: <strong>${emp.accName}</strong></div>`:''}
-      ${emp.bankName?`<div>Bank: ${emp.bankName}</div>`:''}
+      ${emp.acc_name?`<div>A/C Holder: <strong>${emp.acc_name}</strong></div>`:''}
+      ${emp.bank_name?`<div>Bank: ${emp.bank_name}</div>`:''}
       ${emp.bank?`<div>A/C No: ${emp.bank}</div>`:''}
       ${emp.ifsc?`<div>IFSC: ${emp.ifsc}</div>`:''}
     </div>`:''}
@@ -858,22 +912,27 @@ function printSlip(){
   w.document.close();w.print();
 }
 
-function renderDashboard(){
+// ── dashboard ─────────────────────────────────────────────────────────────────
+async function renderDashboard(){
   const emps=activeEmps();
   document.getElementById('dash-total').textContent=emps.length;
-  const today=new Date(),mk=monthKey(today),day=today.getDate();
-  let pt=0;emps.forEach(e=>{if(state.attendance[mk+'-'+e.id+'-'+day]==='P')pt++;});
+  const mk=monthKey(new Date()),day=new Date().getDate();
+  const att=await api('GET',`/api/attendance/${mk}`)||{attendance:{}};
+  let pt=0;emps.forEach(e=>{if(att.attendance[`${e.id}-${day}`]==='P')pt++;});
   document.getElementById('dash-present').textContent=pt;
-  const pmk=monthKey(payMonth);let pending=0,totalPay=0;
-  emps.forEach(e=>{const pr=state.payroll[pmk+'-'+e.id];if(!pr||pr.paid!=='Paid')pending++;if(pr)totalPay+=pr.net;});
+  const pmk=monthKey(payMonth);
+  document.getElementById('dash-month-label').textContent=fmtMonth(payMonth);
+  const payRows=await api('GET',`/api/payroll/${pmk}`)||[];
+  payrollData={};payRows.forEach(r=>payrollData[r.emp_id]=r);
+  let pending=0,totalPay=0;
+  emps.forEach(e=>{const pr=payrollData[e.id];if(!pr||pr.paid!=='Paid')pending++;if(pr)totalPay+=pr.net;});
   document.getElementById('dash-pending').textContent=pending;
   document.getElementById('dash-payable').textContent=rupee(totalPay);
-  document.getElementById('dash-month-label').textContent=fmtMonth(payMonth);
   const tb=document.getElementById('dash-emp-table');
-  if(!emps.length){tb.innerHTML='<tr><td colspan="3" class="no-data">No employees yet</td></tr>';return;}
-  tb.innerHTML=emps.slice(0,6).map(e=>`<tr><td>${e.name}</td><td>${e.desig}</td><td><span class="badge badge-green">Active</span></td></tr>`).join('');
+  if(!emps.length){tb.innerHTML='<tr><td colspan="3" class="no-data">No employees yet</td></tr>';}
+  else tb.innerHTML=emps.slice(0,6).map(e=>`<tr><td>${e.name}</td><td>${e.desig}</td><td><span class="badge badge-green">Active</span></td></tr>`).join('');
   const psEl=document.getElementById('dash-payroll-summary');
-  const paid=emps.filter(e=>{const pr=state.payroll[pmk+'-'+e.id];return pr&&pr.paid==='Paid';}).length;
+  const paid=emps.filter(e=>payrollData[e.id]&&payrollData[e.id].paid==='Paid').length;
   if(!totalPay&&!paid){psEl.innerHTML='<div style="color:#888;padding:20px 0">No payroll calculated yet</div>';return;}
   psEl.innerHTML=`<div class="grid-2" style="gap:10px">
     <div class="stat-card"><div class="stat-label">Paid</div><div class="stat-value" style="color:#1d9e75">${paid}</div></div>
@@ -886,40 +945,20 @@ function renderDashboard(){
   </div>`;
 }
 
-// ---- LOGIN ----
-const APP_PASSWORD = 'gnt@2024';
-
-function doLogin(){
-  const val=document.getElementById('login-pass').value;
-  const err=document.getElementById('login-error');
-  if(val===APP_PASSWORD){
-    document.getElementById('login-screen').classList.add('hidden');
-    sessionStorage.setItem('gnt-auth','1');
-    err.classList.remove('show');
-    renderDashboard();
-  } else {
-    err.classList.add('show');
-    document.getElementById('login-pass').value='';
-    document.getElementById('login-pass').focus();
-  }
-}
-function doLogout(){
-  sessionStorage.removeItem('gnt-auth');
-  document.getElementById('login-pass').value='';
-  document.getElementById('login-error').classList.remove('show');
-  document.getElementById('login-screen').classList.remove('hidden');
-}
-// Check if already logged in this session
-if(sessionStorage.getItem('gnt-auth')==='1'){
-  document.getElementById('login-screen').classList.add('hidden');
-}
-
-document.getElementById('emp-name').addEventListener('input',function(){const f=document.getElementById('emp-accname');if(!f.dataset.edited)f.value=this.value;});
+// auto-fill account name
+document.getElementById('emp-name').addEventListener('input',function(){
+  const f=document.getElementById('emp-accname');if(!f.dataset.edited)f.value=this.value;
+});
 document.getElementById('emp-accname').addEventListener('input',function(){this.dataset.edited=this.value?'1':'';});
+
 ['modal-add-emp','modal-add-leave','modal-bulk-pay','modal-add-advance','modal-add-ledger-exp'].forEach(id=>{
   document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeModal(id);});
 });
-renderDashboard();
+
+document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+// init
+checkAuth();
 </script>
 </body>
 </html>
