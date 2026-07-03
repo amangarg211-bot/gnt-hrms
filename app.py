@@ -1,11 +1,8 @@
 from flask import Flask, request, jsonify, send_from_directory, session
 from database import init_db, get_db
-import os
+import os, resend
 from datetime import datetime, date
 from calendar import monthrange
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 
 app = Flask(__name__, static_folder='.')
 app.secret_key = 'gnt-hrms-fixed-secret-key-2024'
@@ -13,8 +10,7 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_SECURE'] = False
 
 APP_PASSWORD = 'gnt@2024'
-GMAIL_USER = os.environ.get('GMAIL_USER', '')
-GMAIL_APP_PASSWORD = os.environ.get('GMAIL_APP_PASSWORD', '')
+resend.api_key = os.environ.get('RESEND_API_KEY', '')
 
 init_db()
 
@@ -136,52 +132,26 @@ STAMP_SVG = """
 """
 
 def send_email(to_email, subject, html_body):
-    if not GMAIL_USER or not GMAIL_APP_PASSWORD:
-        return False, "GMAIL_USER or GMAIL_APP_PASSWORD not set in Railway Variables."
+    if not resend.api_key:
+        return False, "RESEND_API_KEY not set in Railway Variables."
     try:
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = subject
-        msg['From'] = f"GNT Solutions <{GMAIL_USER.strip()}>"
-        msg['To'] = to_email.strip()
-        msg.attach(MIMEText(html_body, 'html', 'utf-8'))
-        server = smtplib.SMTP('smtp.gmail.com', 587, timeout=30)
-        server.set_debuglevel(0)
-        server.ehlo()
-        server.starttls()
-        server.ehlo()
-        server.login(GMAIL_USER.strip(), GMAIL_APP_PASSWORD.strip())
-        server.sendmail(GMAIL_USER.strip(), to_email.strip(), msg.as_string())
-        server.quit()
+        params = {
+            "from": "GNT Solutions <onboarding@resend.dev>",
+            "to": [to_email.strip()],
+            "subject": subject,
+            "html": html_body,
+        }
+        email = resend.Emails.send(params)
         return True, f"Email sent to {to_email}!"
-    except smtplib.SMTPAuthenticationError as e:
-        return False, f"Gmail auth failed: {str(e)}. Regenerate App Password."
-    except smtplib.SMTPConnectError as e:
-        return False, f"Cannot connect to Gmail SMTP: {str(e)}"
-    except smtplib.SMTPException as e:
-        return False, f"SMTP error: {str(e)}"
     except Exception as e:
-        return False, f"Unexpected error: {type(e).__name__}: {str(e)}"
+        return False, f"Email error: {type(e).__name__}: {str(e)}"
 
 @app.route('/api/email/test', methods=['GET'])
 @login_required
 def test_email_config():
-    user = GMAIL_USER.strip() if GMAIL_USER else ''
-    pwd = GMAIL_APP_PASSWORD.strip() if GMAIL_APP_PASSWORD else ''
-    if not user or not pwd:
-        return jsonify({'ok': False, 'message': 'Credentials missing'})
-    # Try actual connection
-    try:
-        server = smtplib.SMTP('smtp.gmail.com', 587, timeout=15)
-        server.ehlo()
-        server.starttls()
-        server.ehlo()
-        server.login(user, pwd)
-        server.quit()
-        return jsonify({'ok': True, 'message': 'Connection and login successful!', 'gmail_user': user, 'password_length': len(pwd)})
-    except smtplib.SMTPAuthenticationError as e:
-        return jsonify({'ok': False, 'message': f'Auth failed: {str(e)}', 'gmail_user': user, 'password_length': len(pwd)})
-    except Exception as e:
-        return jsonify({'ok': False, 'message': f'{type(e).__name__}: {str(e)}', 'gmail_user': user, 'password_length': len(pwd)})
+    if not resend.api_key:
+        return jsonify({'ok': False, 'message': 'RESEND_API_KEY not set in Railway Variables'})
+    return jsonify({'ok': True, 'message': 'Resend API key is configured', 'key_prefix': resend.api_key[:8]+'...'})
 
 def build_offer_html(emp, joining_date, address, city, pin, ref):
     return f"""
