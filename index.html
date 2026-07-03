@@ -492,6 +492,7 @@ let slipMonth=new Date(); slipMonth.setDate(1);
 let attCache={attendance:{},ot:{}};
 let selectedLedgerEmp=null;
 let expLineCount=0;
+let repMonth=new Date(); repMonth.setDate(1);
 
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const fmtMonth=d=>MONTHS[d.getMonth()]+' '+d.getFullYear();
@@ -805,7 +806,6 @@ function printLedger(){
 }
 
 // ── salary report ─────────────────────────────────────────────────────────
-let repMonth=new Date(); repMonth.setDate(1);
 function renderRepMonth(){document.getElementById('rep-month-label').textContent=fmtMonth(repMonth);}
 
 async function loadSalaryReport(){
