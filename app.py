@@ -1,17 +1,18 @@
 from flask import Flask, request, jsonify, send_from_directory, session
 from database import init_db, get_db
-import os, math
+import os
 from datetime import datetime, date
 from calendar import monthrange
 
 app = Flask(__name__, static_folder='.')
-app.secret_key = os.environ.get('SECRET_KEY', 'gnt-hrms-secret-2024')
+app.secret_key = 'gnt-hrms-fixed-secret-key-2024'
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SECURE'] = False
 
 APP_PASSWORD = 'gnt@2024'
 
 init_db()
 
-# ── helpers ──────────────────────────────────────────────────────────────────
 def get_meta(key):
     db = get_db()
     row = db.execute("SELECT value FROM meta WHERE key=?", (key,)).fetchone()
@@ -40,39 +41,33 @@ def calc_pay(emp_id, month_key):
         return None
     salary = emp['salary']
     daily_rate = salary / 30
-
     att_rows = db.execute(
         "SELECT day, status FROM attendance WHERE emp_id=? AND month_key=?",
         (emp_id, month_key)).fetchall()
     att = {r['day']: r['status'] for r in att_rows}
-
     present = 0.0
     sunday_ot = 0
     for day in range(1, days_in_month + 1):
         wd = date(yr, mo, day).weekday()
         s = att.get(day, 'A')
-        if wd == 6:  # Sunday
+        if wd == 6:
             if s == 'OT':
                 sunday_ot += 1
         else:
             if s == 'P':   present += 1
             elif s == 'H': present += 0.5
             elif s == 'L': present += 1
-
     ot_row = db.execute(
         "SELECT ot_days FROM ot_days WHERE emp_id=? AND month_key=?",
         (emp_id, month_key)).fetchone()
     extra_ot = float(ot_row['ot_days']) if ot_row else 0.0
     total_ot = sunday_ot + extra_ot
-
     earned_pay = (present / weekdays) * salary if weekdays else 0
     ot_pay = total_ot * daily_rate
-
     deduct_rows = db.execute(
         "SELECT SUM(amount) as total FROM ledger WHERE emp_id=? AND type='expense-recover' AND month_key=?",
         (emp_id, month_key)).fetchone()
     ledger_deduct = float(deduct_rows['total'] or 0)
-
     gross = earned_pay + ot_pay
     net = gross - ledger_deduct
     db.close()
@@ -91,11 +86,11 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated
 
-# ── auth ─────────────────────────────────────────────────────────────────────
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.json
     if data.get('password') == APP_PASSWORD:
+        session.permanent = True
         session['logged_in'] = True
         return jsonify({'ok': True})
     return jsonify({'ok': False, 'error': 'Wrong password'}), 401
@@ -109,7 +104,6 @@ def logout():
 def check_auth():
     return jsonify({'logged_in': bool(session.get('logged_in'))})
 
-# ── employees ────────────────────────────────────────────────────────────────
 @app.route('/api/employees', methods=['GET'])
 @login_required
 def get_employees():
@@ -148,7 +142,6 @@ def toggle_status(emp_id):
     db.close()
     return jsonify({'ok': True, 'status': new_status})
 
-# ── attendance ───────────────────────────────────────────────────────────────
 @app.route('/api/attendance/<month_key>', methods=['GET'])
 @login_required
 def get_attendance(month_key):
@@ -185,7 +178,6 @@ def save_attendance():
     db.close()
     return jsonify({'ok': True})
 
-# ── payroll ──────────────────────────────────────────────────────────────────
 @app.route('/api/payroll/<month_key>', methods=['GET'])
 @login_required
 def get_payroll(month_key):
@@ -255,9 +247,9 @@ def mark_paid():
     emp_id, month_key, status = d['emp_id'], d['month_key'], d['status']
     db = get_db()
     pr = db.execute("SELECT net FROM payroll WHERE emp_id=? AND month_key=?", (emp_id, month_key)).fetchone()
-    today = date.today().strftime('%d/%m/%Y')
+    today_str = date.today().strftime('%d/%m/%Y')
     db.execute("UPDATE payroll SET paid=?,paid_date=? WHERE emp_id=? AND month_key=?",
-        (status, today, emp_id, month_key))
+        (status, today_str, emp_id, month_key))
     if status == 'Paid' and pr:
         yr, mo = int(month_key[:4]), int(month_key[5:])
         label = f"Salary Paid — {datetime(yr,mo,1).strftime('%B %Y')}"
@@ -267,7 +259,6 @@ def mark_paid():
     db.close()
     return jsonify({'ok': True})
 
-# ── ledger ───────────────────────────────────────────────────────────────────
 @app.route('/api/ledger/<emp_id>', methods=['GET'])
 @login_required
 def get_ledger(emp_id):
@@ -312,7 +303,6 @@ def add_expenses():
     db.close()
     return jsonify({'ok': True})
 
-# ── leaves ───────────────────────────────────────────────────────────────────
 @app.route('/api/leaves', methods=['GET'])
 @login_required
 def get_leaves():
@@ -350,7 +340,6 @@ def delete_leave(leave_id):
     db.close()
     return jsonify({'ok': True})
 
-# ── serve frontend ────────────────────────────────────────────────────────────
 @app.route('/')
 def index():
     return send_from_directory('.', 'index.html')
