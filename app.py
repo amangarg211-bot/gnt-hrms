@@ -16,9 +16,15 @@ init_db()
 # Run migrations for existing databases
 def migrate_db():
     db = get_db()
-    for col, typ in [('address','TEXT'), ('city','TEXT'), ('pin','TEXT')]:
+    migrations = [
+        ("employees", "address", "TEXT", "''"),
+        ("employees", "city", "TEXT", "''"),
+        ("employees", "pin", "TEXT", "''"),
+        ("ledger", "site", "TEXT", "''"),
+    ]
+    for table, col, typ, default in migrations:
         try:
-            db.execute(f"ALTER TABLE employees ADD COLUMN {col} {typ} DEFAULT ''")
+            db.execute(f"ALTER TABLE {table} ADD COLUMN {col} {typ} DEFAULT {default}")
             db.commit()
         except Exception:
             pass

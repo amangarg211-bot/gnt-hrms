@@ -91,7 +91,8 @@ def init_db():
         label TEXT NOT NULL,
         amount REAL NOT NULL,
         effect TEXT NOT NULL,
-        month_key TEXT
+        month_key TEXT,
+        site TEXT DEFAULT ''
     )''')
 
     c.execute('''CREATE TABLE IF NOT EXISTS leaves (
