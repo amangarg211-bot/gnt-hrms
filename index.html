@@ -290,7 +290,6 @@ input:focus,select:focus,textarea:focus{border-color:#888}
         <button id="slip-next">&#8250;</button>
       </div>
       <button class="btn btn-primary" id="btn-gen-slip">Generate Slip</button>
-      <button class="btn" id="btn-email-slip">✉ Email Slip</button>
       <button class="btn" id="btn-print-slip">🖨 Print</button>
     </div>
     <div id="slip-container" style="max-width:520px"></div>
@@ -401,7 +400,6 @@ input:focus,select:focus,textarea:focus{border-color:#888}
   </div>
   <div class="modal-footer">
     <button class="btn" id="cancel-offer-modal">Cancel</button>
-    <button class="btn" id="btn-email-offer">✉ Email to Employee</button>
     <button class="btn btn-primary" id="btn-print-offer">🖨 Print Offer Letter</button>
   </div>
 </div>
@@ -680,50 +678,6 @@ function renderEmployees(filter=''){
 }
 
 // ── offer letter ──────────────────────────────────────────────────────────
-async function emailSalarySlip(){
-  const empId=document.getElementById('slip-emp-select').value;
-  if(!empId){alert('Select an employee first.');return;}
-  const emp=employees.find(e=>e.id===empId);if(!emp)return;
-  const mk=monthKey(slipMonth);
-  const rows=await api('GET',`/api/payroll/${mk}`)||[];
-  const pr=rows.find(r=>r.emp_id===empId);
-  if(!pr){alert('Payroll not calculated for this month.\n\nGo to Payroll → select the correct month → click "Calculate Payroll" first, then come back.');return;}
-  const toEmail=emp.email||(prompt(`Enter email address for ${emp.name}:`)||'').trim();
-  if(!toEmail){return;}
-  showToast('Sending...');
-  const res=await api('POST','/api/email/salary-slip',{emp_id:empId,month_key:mk,to_email:toEmail});
-  if(res){
-    showToast(res.message, res.ok);
-    if(!res.ok) alert('Email error: '+res.message);
-  } else {
-    alert('Server error. Check Railway logs for details.');
-  }
-}
-
-async function emailOfferLetter(){
-  const id=document.getElementById('offer-emp-id').value;
-  if(!id){alert('No employee selected.');return;}
-  const emp=employees.find(e=>e.id===id);if(!emp)return;
-  const joiningDate=document.getElementById('offer-joining-date').value;
-  if(!joiningDate){alert('Please enter a joining date first.');return;}
-  const toEmail=emp.email||(prompt(`Enter email address for ${emp.name}:`)||'').trim();
-  if(!toEmail){return;}
-  showToast('Sending...');
-  const res=await api('POST','/api/email/offer-letter',{
-    emp_id:id,to_email:toEmail,joining_date:joiningDate,
-    address:document.getElementById('offer-address').value,
-    city:document.getElementById('offer-city').value,
-    pin:document.getElementById('offer-pin').value,
-    ref:document.getElementById('offer-ref').value
-  });
-  if(res){
-    showToast(res.message, res.ok);
-    if(!res.ok) alert('Email error: '+res.message);
-  } else {
-    alert('Server error. Check Railway logs for details.');
-  }
-}
-
 function openOfferModal(id){
   const e=employees.find(x=>x.id===id);if(!e)return;
   document.getElementById('offer-emp-id').value=e.id;

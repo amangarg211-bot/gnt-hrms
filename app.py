@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, send_from_directory, session
 from database import init_db, get_db
-import os, resend
+import os
 from datetime import datetime, date
 from calendar import monthrange
 
@@ -10,7 +10,6 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_SECURE'] = False
 
 APP_PASSWORD = 'gnt@2024'
-resend.api_key = os.environ.get('RESEND_API_KEY', '')
 
 init_db()
 
@@ -138,13 +137,14 @@ def send_email(to_email, subject, html_body):
         params = {
             "from": "GNT Solutions <onboarding@resend.dev>",
             "to": [to_email.strip()],
+            "reply_to": "graphicsandtrends@gmail.com",
             "subject": subject,
             "html": html_body,
         }
-        email = resend.Emails.send(params)
+        resend.Emails.send(params)
         return True, f"Email sent to {to_email}!"
     except Exception as e:
-        return False, f"Email error: {type(e).__name__}: {str(e)}"
+        return False, f"Email error: {str(e)}"
 
 @app.route('/api/email/test', methods=['GET'])
 @login_required
