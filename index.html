@@ -250,6 +250,7 @@ input:focus,select:focus,textarea:focus{border-color:#888}
           <div id="ledger-emp-name" style="font-size:15px;font-weight:600;color:#888">Select an employee</div>
           <div style="display:flex;gap:8px">
             <button class="btn" id="btn-print-ledger">🖨 Print Ledger</button>
+            <button class="btn" id="btn-opening-balance">± Opening Balance</button>
             <button class="btn" id="btn-add-advance">+ Advance Salary</button>
             <button class="btn btn-primary" id="btn-add-exp">+ Add Expenses</button>
           </div>
@@ -433,6 +434,43 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     <tbody id="bulk-pay-table"></tbody></table>
   </div>
   <div class="modal-footer"><button class="btn" id="cancel-bulkpay-modal">Close</button></div>
+</div>
+</div>
+
+<div class="modal-overlay" id="modal-add-advance">
+<div class="modal">
+  <div class="modal-header"><h3>Advance Salary</h3><button class="btn btn-sm" id="close-advance-modal">✕</button></div>
+  <div class="modal-body">
+    <div class="att-note">Advance = debit entry. Money paid out early, reduces future payable balance.</div>
+  </div>
+</div>
+</div>
+
+<!-- Opening Balance Modal -->
+<div class="modal-overlay" id="modal-opening-balance">
+<div class="modal">
+  <div class="modal-header"><h3>Set Opening Balance</h3><button class="btn btn-sm" id="close-ob-modal">✕</button></div>
+  <div class="modal-body">
+    <div class="att-note">Opening balance carries forward existing dues or advances before you started using this system.<br><br>
+      <strong>Positive (+)</strong> = GNT owes the employee (e.g. unpaid salary)<br>
+      <strong>Negative (−)</strong> = Employee owes GNT (e.g. advance already taken)
+    </div>
+    <div class="grid-2" style="margin-top:14px">
+      <div class="form-group"><label>Date *</label><input id="ob-date" type="date"></div>
+      <div class="form-group"><label>Balance Type *</label>
+        <select id="ob-type">
+          <option value="credit">+ Positive (GNT owes employee)</option>
+          <option value="debit">− Negative (Employee owes GNT)</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>Amount (₹) *</label><input id="ob-amount" type="number" placeholder="e.g. 5000"></div>
+    <div class="form-group"><label>Note</label><input id="ob-note" placeholder="e.g. Salary due from March, Advance taken in April"></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" id="cancel-ob-modal">Cancel</button>
+    <button class="btn btn-primary" id="submit-ob">Post Opening Balance</button>
+  </div>
 </div>
 </div>
 
@@ -1165,6 +1203,23 @@ function renderLedgerDetail(empId){
   document.getElementById('ledger-table-wrap').innerHTML=html;
 }
 
+async function addOpeningBalance(){
+  if(!selectedLedgerEmp){alert('Select an employee first.');return;}
+  const date=document.getElementById('ob-date').value;
+  const amount=parseFloat(document.getElementById('ob-amount').value);
+  const type=document.getElementById('ob-type').value;
+  const note=document.getElementById('ob-note').value.trim()||'Opening Balance';
+  if(!date||!amount){alert('Fill required fields.');return;}
+  const res=await api('POST','/api/ledger/opening-balance',{
+    emp_id:selectedLedgerEmp, date, amount, effect:type, note
+  });
+  if(res&&res.ok){
+    showToast('Opening balance posted!');
+    closeModal('modal-opening-balance');
+    renderLedgerPage();
+  } else showToast('Failed.',false);
+}
+
 async function addAdvance(){
   if(!selectedLedgerEmp){alert('Select an employee first.');return;}
   const date=document.getElementById('adv-date').value,amount=document.getElementById('adv-amount').value;
@@ -1443,6 +1498,19 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // Ledger print
   document.getElementById('btn-print-ledger').addEventListener('click',printLedger);
+
+  // Opening balance
+  document.getElementById('btn-opening-balance').addEventListener('click',()=>{
+    if(!selectedLedgerEmp){showToast('Select an employee first.',false);return;}
+    document.getElementById('ob-date').value=todayStr();
+    document.getElementById('ob-amount').value='';
+    document.getElementById('ob-note').value='';
+    openModal('modal-opening-balance');
+  });
+  document.getElementById('close-ob-modal').addEventListener('click',()=>closeModal('modal-opening-balance'));
+  document.getElementById('cancel-ob-modal').addEventListener('click',()=>closeModal('modal-opening-balance'));
+  document.getElementById('submit-ob').addEventListener('click',addOpeningBalance);
+  document.getElementById('modal-opening-balance').addEventListener('click',function(e){if(e.target===this)closeModal('modal-opening-balance');});
 
   // Ledger
   document.getElementById('btn-add-advance').addEventListener('click',()=>{document.getElementById('adv-date').value=todayStr();openModal('modal-add-advance');});

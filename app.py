@@ -378,3 +378,18 @@ def update_employee(emp_id):
     db.commit()
     db.close()
     return jsonify({'ok': True})
+
+@app.route('/api/ledger/opening-balance', methods=['POST'])
+@login_required
+def add_opening_balance():
+    d = request.json
+    db = get_db()
+    month_key = d['date'][:7]
+    label = d.get('note', 'Opening Balance')
+    db.execute(
+        "INSERT INTO ledger(emp_id,date,type,label,amount,effect,month_key) VALUES(?,?,?,?,?,?,?)",
+        (d['emp_id'], d['date'], 'opening-balance', label,
+         float(d['amount']), d['effect'], month_key))
+    db.commit()
+    db.close()
+    return jsonify({'ok': True})
