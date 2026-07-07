@@ -274,8 +274,12 @@ input:focus,select:focus,textarea:focus{border-color:#888}
         <div class="month-label" id="rep-month-label"></div>
         <button id="rep-next">&#8250;</button>
       </div>
-      <button class="btn btn-primary" id="btn-print-salary-report">🖨 Print Salary Report</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" id="btn-load-report">Calculate & Load</button>
+        <button class="btn" id="btn-print-salary-report">🖨 Print</button>
+      </div>
     </div>
+    <div class="att-note">Salary = (Weekdays Present + Sundays in month) ÷ 30 × Base Salary. Sundays are always paid. Sunday OT adds extra pay on top.</div>
     <div class="card" style="padding:0;overflow-x:auto" id="salary-report-container">
       <div class="no-data">Select a month and click Generate above — or use the Payroll page to calculate first.</div>
     </div>
@@ -616,7 +620,11 @@ function showPage(p){
   if(p==='employees')renderEmployees();
   if(p==='leaves')loadLeaves();
   if(p==='ledger')renderLedgerPage();
-  if(p==='reports'){renderRepMonth();loadSalaryReport();}
+  if(p==='reports'){
+    renderRepMonth();
+    document.getElementById('salary-report-container').innerHTML='<div class="no-data">Loading...</div>';
+    loadSalaryReport();
+  }
   if(p==='slips'){populateSlipSelect();renderSlipMonth();}
   if(p==='dashboard')renderDashboard();
 }
@@ -866,11 +874,12 @@ function renderRepMonth(){document.getElementById('rep-month-label').textContent
 
 async function loadSalaryReport(){
   const mk=monthKey(repMonth);
-  // Always recalculate payroll fresh before showing report
+  const cont=document.getElementById('salary-report-container');
+  cont.innerHTML='<div class="no-data">Calculating...</div>';
+  // Always recalculate fresh from attendance before showing report
   await api('POST','/api/payroll/calculate',{month_key:mk});
   const payRows=await api('GET',`/api/payroll/${mk}`)||[];
   payrollData={};payRows.forEach(r=>payrollData[r.emp_id]=r);
-  const cont=document.getElementById('salary-report-container');
   if(!employees.length){cont.innerHTML='<div class="no-data">No employees found.</div>';return;}
   const ledgerBals={};
   await Promise.all(employees.map(async e=>{
@@ -884,37 +893,33 @@ async function loadSalaryReport(){
     const deduct=pr?pr.ledger_deduct:0;
     const net=pr?pr.net:0;
     const ledgerBal=ledgerBals[e.id]||0;
-    const finalPayable=Math.max(0, net - Math.max(0, ledgerBal));
+    const finalPayable=Math.max(0,net-Math.max(0,ledgerBal));
+    const paidDays=pr?(parseFloat(pr.paid_days||0)||(parseFloat(pr.present)+parseFloat(pr.sundays))):0;
     totalGross+=gross;totalDeduct+=deduct;totalNet+=net;totalFinal+=finalPayable;
-    const badge=!pr?'badge-gray':pr.paid==='Paid'?'badge-green':pr.paid==='Partial'?'badge-amber':'badge-red';
-    // Show present days + sundays so user sees full picture
-    const presentDisplay = pr ? `${pr.present}/${pr.weekdays} wd + ${pr.sundays} Sun` : '—';
     return `<tr>
       <td><strong>${e.name}</strong><br><span style="font-size:11px;color:#888">${e.id}</span></td>
       <td>${e.desig}</td>
       <td style="text-align:right">${rupee(e.salary)}</td>
-      <td style="text-align:right;font-size:12px">${presentDisplay}</td>
+      <td style="text-align:right">${pr?`${pr.present}wd+${pr.sundays}S=<strong>${paidDays}</strong>/30`:'—'}</td>
       <td style="text-align:right">${pr?pr.total_ot:'—'}</td>
       <td style="text-align:right;font-weight:600">${gross?rupee(gross):'—'}</td>
       <td style="text-align:right;color:#e24b4a">${deduct?'-'+rupee(deduct):'—'}</td>
       <td style="text-align:right;font-weight:600">${net?rupee(net):'—'}</td>
-      <td style="text-align:right;color:${ledgerBal>=0?'#1d9e75':'#e24b4a'}">${ledgerBal!==0?(ledgerBal>=0?'+':'-')+rupee(Math.abs(ledgerBal)):'—'}</td>
+      <td style="text-align:right;color:${ledgerBal>=0?'#1d9e75':'#e24b4a'}">${ledgerBal>=0?'+':'-'}${rupee(Math.abs(ledgerBal))}</td>
       <td style="text-align:right;font-weight:700">${rupee(finalPayable)}</td>
-      <td><span class="badge ${badge}">${pr?pr.paid:'N/A'}</span></td>
     </tr>`;
   }).join('');
   cont.innerHTML=`<table>
     <thead><tr>
       <th>Employee</th><th>Designation</th>
       <th style="text-align:right">Base Salary</th>
-      <th style="text-align:right">Attendance</th>
+      <th style="text-align:right">Paid Days</th>
       <th style="text-align:right">OT Days</th>
       <th style="text-align:right">Gross Pay</th>
       <th style="text-align:right">Deductions</th>
       <th style="text-align:right">Net Pay</th>
       <th style="text-align:right">Ledger Bal.</th>
       <th style="text-align:right">Final Payable</th>
-      <th>Status</th>
     </tr></thead>
     <tbody>${rows}</tbody>
     <tfoot><tr style="background:#f5f5f0;font-weight:700">
@@ -924,7 +929,6 @@ async function loadSalaryReport(){
       <td style="text-align:right">${rupee(totalNet)}</td>
       <td></td>
       <td style="text-align:right">${rupee(totalFinal)}</td>
-      <td></td>
     </tr></tfoot>
   </table>`;
 }
@@ -1107,6 +1111,8 @@ async function saveAttendance(){
 // ── payroll ───────────────────────────────────────────────────────────────
 async function loadPayroll(){
   const mk=monthKey(payMonth);
+  // Always recalculate from current attendance before displaying
+  await api('POST','/api/payroll/calculate',{month_key:mk});
   const rows=await api('GET',`/api/payroll/${mk}`)||[];
   payrollData={};rows.forEach(r=>payrollData[r.emp_id]=r);
   renderPayroll();
@@ -1450,15 +1456,15 @@ async function generateSlip(){
       <div>
         <div class="slip-section">Attendance</div>
         <div>Salary basis: 30 days (fixed)</div>
-        <div>Working days in month: ${pr.weekdays} + ${pr.sundays} Sundays</div>
+        <div>Sundays in month: ${pr.sundays} (paid holidays)</div>
         <div>Weekdays present: ${pr.present} / ${pr.weekdays}</div>
-        <div>Paid days: ${pr.present} + ${pr.sundays} Sundays = ${(parseFloat(pr.present)+pr.sundays).toFixed(1)} / 30</div>
-        <div>OT: ${pr.sunday_ot} Sun OT + ${pr.extra_ot} extra</div>
+        <div>Paid days: ${(parseFloat(pr.paid_days||0)||(parseFloat(pr.present)+parseFloat(pr.sundays)))} / 30</div>
+        <div>Sunday OT: ${pr.sunday_ot} | Extra OT: ${pr.extra_ot}</div>
       </div>
     </div>
     <div class="slip-section">Earnings</div>
     <div class="slip-row"><span>Base Salary (30-day basis)</span><span>${rupee(emp.salary)}</span></div>
-    <div class="slip-row"><span>Earned Pay (${pr.present} weekdays + ${pr.sundays} Sundays = ${(parseFloat(pr.present)+pr.sundays).toFixed(1)}/30 × ${rupee(emp.salary)})</span><span>${rupee(pr.earned_pay)}</span></div>
+    <div class="slip-row"><span>Earned Pay (${(parseFloat(pr.paid_days||0)||(parseFloat(pr.present)+parseFloat(pr.sundays)))}/30 × ${rupee(emp.salary)})</span><span>${rupee(pr.earned_pay)}</span></div>
     ${pr.sunday_ot>0?`<div class="slip-row"><span>Sunday OT (${pr.sunday_ot} × ${rupee(dailyRate)})</span><span>${rupee(pr.sunday_ot*dailyRate)}</span></div>`:''}
     ${pr.extra_ot>0?`<div class="slip-row"><span>Extra OT (${pr.extra_ot} × ${rupee(dailyRate)})</span><span>${rupee(pr.extra_ot*dailyRate)}</span></div>`:''}
     <div class="slip-row" style="font-weight:600"><span>Gross Earnings</span><span>${rupee(pr.gross)}</span></div>

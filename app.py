@@ -21,6 +21,7 @@ def migrate_db():
         ("employees", "city", "TEXT", "''"),
         ("employees", "pin", "TEXT", "''"),
         ("ledger", "site", "TEXT", "''"),
+        ("payroll", "paid_days", "REAL", "0"),
     ]
     for table, col, typ, default in migrations:
         try:
@@ -85,7 +86,6 @@ def calc_pay(emp_id, month_key):
     net = gross - ledger_deduct
     db.close()
     return dict(present=present, weekdays=weekdays, sundays=sundays,
-                paid_days=round(paid_days, 1),
                 sunday_ot=sunday_ot, extra_ot=extra_ot, total_ot=total_ot,
                 earned_pay=round(earned_pay,2), ot_pay=round(ot_pay,2),
                 ledger_deduct=round(ledger_deduct,2),
@@ -419,17 +419,18 @@ def calculate_payroll():
         paid_date = existing['paid_date'] if existing else ''
         posted = existing['posted_to_ledger'] if existing else 0
         db.execute('''INSERT INTO payroll(emp_id,month_key,present,weekdays,sundays,sunday_ot,extra_ot,
-            total_ot,earned_pay,ot_pay,ledger_deduct,gross,net,daily_rate,paid,paid_date,posted_to_ledger)
-            VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            total_ot,earned_pay,ot_pay,ledger_deduct,gross,net,daily_rate,paid_days,paid,paid_date,posted_to_ledger)
+            VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             ON CONFLICT(emp_id,month_key) DO UPDATE SET
             present=excluded.present,weekdays=excluded.weekdays,sundays=excluded.sundays,
             sunday_ot=excluded.sunday_ot,extra_ot=excluded.extra_ot,total_ot=excluded.total_ot,
             earned_pay=excluded.earned_pay,ot_pay=excluded.ot_pay,ledger_deduct=excluded.ledger_deduct,
-            gross=excluded.gross,net=excluded.net,daily_rate=excluded.daily_rate''',
+            gross=excluded.gross,net=excluded.net,daily_rate=excluded.daily_rate,
+            paid_days=excluded.paid_days''',
             (emp['id'], month_key, calc['present'], calc['weekdays'], calc['sundays'],
              calc['sunday_ot'], calc['extra_ot'], calc['total_ot'], calc['earned_pay'],
              calc['ot_pay'], calc['ledger_deduct'], calc['gross'], calc['net'],
-             calc['daily_rate'], paid, paid_date, posted))
+             calc['daily_rate'], calc['paid_days'], paid, paid_date, posted))
     db.commit()
     db.close()
     return jsonify({'ok': True})
