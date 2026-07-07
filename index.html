@@ -609,7 +609,7 @@ async function loadAll(){
 const pages=['dashboard','employees','attendance','leaves','payroll','ledger','reports','slips'];
 const pageTitles={dashboard:'Dashboard',employees:'Employees',attendance:'Attendance',leaves:'Leave Management',payroll:'Payroll',ledger:'Employee Ledger',slips:'Salary Slips'};
 
-function showPage(p){
+async function showPage(p){
   pages.forEach(x=>{
     document.getElementById('page-'+x).classList.toggle('active',x===p);
     document.getElementById('nav-'+x).classList.toggle('active',x===p);
