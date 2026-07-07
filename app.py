@@ -63,7 +63,7 @@ def calc_pay(emp_id, month_key):
     salary = emp['salary']
     daily_rate = salary / 30
     att_rows = db.execute("SELECT day, status FROM attendance WHERE emp_id=? AND month_key=?", (emp_id, month_key)).fetchall()
-    att = {r['day']: r['status'] for r in att_rows}
+    att = {int(r['day']): r['status'] for r in att_rows}
     present = 0.0
     sunday_ot = 0
     for day in range(1, days_in_month + 1):
