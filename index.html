@@ -875,19 +875,18 @@ function renderRepMonth(){document.getElementById('rep-month-label').textContent
 async function loadSalaryReport(){
   const mk=monthKey(repMonth);
   const cont=document.getElementById('salary-report-container');
-  cont.innerHTML='<div class="no-data">Calculating payroll...</div>';
+  cont.innerHTML='<div class="no-data">Loading...</div>';
   if(!employees.length){cont.innerHTML='<div class="no-data">No employees found.</div>';return;}
 
-  // Recalculate + fetch payroll and ledger balances in parallel
-  await api('POST','/api/payroll/calculate',{month_key:mk});
-  const [payRows, ledgerBals] = await Promise.all([
+  // Fetch payroll + ledger balances in parallel — no recalculate on load
+  const [payRows, bals] = await Promise.all([
     api('GET',`/api/payroll/${mk}`),
     api('GET','/api/ledger/all-balances')
   ]);
 
   payrollData={};
   (payRows||[]).forEach(r=>payrollData[r.emp_id]=r);
-  const bals=ledgerBals||{};
+  const ledgerBals=bals||{};
 
   let totalGross=0,totalDeduct=0,totalNet=0,totalFinal=0;
   const rows=employees.map(e=>{
@@ -895,7 +894,7 @@ async function loadSalaryReport(){
     const gross=pr?pr.gross:0;
     const deduct=pr?pr.ledger_deduct:0;
     const net=pr?pr.net:0;
-    const ledgerBal=bals[e.id]||0;
+    const ledgerBal=ledgerBals[e.id]||0;
     const finalPayable=Math.max(0,net-Math.max(0,ledgerBal));
     const paidDays=pr?(pr.paid_days||(parseFloat(pr.present)+parseFloat(pr.sundays))):0;
     totalGross+=gross;totalDeduct+=deduct;totalNet+=net;totalFinal+=finalPayable;
@@ -913,7 +912,8 @@ async function loadSalaryReport(){
     </tr>`;
   }).join('');
 
-  cont.innerHTML=`<table>
+  const hasData=employees.some(e=>payrollData[e.id]);
+  cont.innerHTML= hasData ? `<table>
     <thead><tr>
       <th>Employee</th><th>Designation</th>
       <th style="text-align:right">Base Salary</th>
@@ -934,7 +934,7 @@ async function loadSalaryReport(){
       <td></td>
       <td style="text-align:right">${rupee(totalFinal)}</td>
     </tr></tfoot>
-  </table>`;
+  </table>` : '<div class="no-data">No payroll data for this month. Go to Payroll page → click "Calculate Payroll" first.</div>';
 }
 
 function printSalaryReport(){
@@ -1115,8 +1115,6 @@ async function saveAttendance(){
 // ── payroll ───────────────────────────────────────────────────────────────
 async function loadPayroll(){
   const mk=monthKey(payMonth);
-  // Always recalculate from current attendance before displaying
-  await api('POST','/api/payroll/calculate',{month_key:mk});
   const rows=await api('GET',`/api/payroll/${mk}`)||[];
   payrollData={};rows.forEach(r=>payrollData[r.emp_id]=r);
   renderPayroll();
