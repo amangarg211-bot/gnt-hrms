@@ -364,44 +364,6 @@ def delete_employee(emp_id):
     return jsonify({'ok': True})
 
 # ── attendance ─────────────────────────────────────────────────────────────────
-@app.route('/api/attendance/fix-empids', methods=['POST'])
-@login_required
-def fix_attendance_empids():
-    """Fix attendance records saved with truncated emp_ids due to split bug"""
-    db = get_db()
-    # Find all employees
-    emps = db.execute("SELECT id FROM employees").fetchall()
-    fixed = 0
-    for emp in emps:
-        emp_id = emp['id']  # e.g. GNT-010
-        # Check if records exist with just the prefix before last hyphen
-        # e.g. GNT-010 split wrongly gives emp_id=GNT, day=010 (invalid)
-        # The real issue: "GNT-010-5".rsplit('-',1) = ['GNT-010', '5'] which is CORRECT
-        # So the bug may be elsewhere — check for duplicate/wrong records
-        pass
-    # Instead, let's check what emp_ids exist in attendance
-    att_empids = db.execute("SELECT DISTINCT emp_id FROM attendance").fetchall()
-    db.close()
-    return jsonify({'emp_ids_in_attendance': [r['emp_id'] for r in att_empids]})
-
-    db = get_db()
-    rows = db.execute(
-        "SELECT day, status FROM attendance WHERE emp_id=? AND month_key=? ORDER BY day",
-        (emp_id, month_key)).fetchall()
-    db.close()
-    return jsonify({'emp_id': emp_id, 'month_key': month_key,
-                    'records': [{'day': r['day'], 'status': r['status']} for r in rows],
-                    'count': len(rows)})
-@login_required
-def get_attendance(month_key):
-    db = get_db()
-    rows = db.execute("SELECT emp_id, day, status FROM attendance WHERE month_key=?", (month_key,)).fetchall()
-    ot_rows = db.execute("SELECT emp_id, ot_days FROM ot_days WHERE month_key=?", (month_key,)).fetchall()
-    db.close()
-    att = {f"{r['emp_id']}-{r['day']}": r['status'] for r in rows}
-    ot = {r['emp_id']: r['ot_days'] for r in ot_rows}
-    return jsonify({'attendance': att, 'ot': ot})
-
 @app.route('/api/attendance', methods=['POST'])
 @login_required
 def save_attendance():
