@@ -615,17 +615,37 @@ function showPage(p){
     document.getElementById('nav-'+x).classList.toggle('active',x===p);
   });
   document.getElementById('topbar-title').textContent=pageTitles[p];
-  if(p==='attendance')loadAttendance();
-  if(p==='payroll')loadPayroll();
-  if(p==='employees')renderEmployees();
-  if(p==='leaves')loadLeaves();
-  if(p==='ledger')renderLedgerPage();
+  if(p==='attendance'){
+    if(!employees.length) employees=await api('GET','/api/employees')||[];
+    loadAttendance();
+  }
+  if(p==='payroll'){
+    if(!employees.length) employees=await api('GET','/api/employees')||[];
+    loadPayroll();
+  }
+  if(p==='employees'){
+    if(!employees.length) employees=await api('GET','/api/employees')||[];
+    renderEmployees();
+  }
+  if(p==='leaves'){
+    if(!employees.length) employees=await api('GET','/api/employees')||[];
+    loadLeaves();
+  }
+  if(p==='ledger'){
+    if(!employees.length) employees=await api('GET','/api/employees')||[];
+    renderLedgerPage();
+  }
   if(p==='reports'){
+    if(!employees.length) employees=await api('GET','/api/employees')||[];
     renderRepMonth();
     document.getElementById('salary-report-container').innerHTML='<div class="no-data">Loading...</div>';
     loadSalaryReport();
   }
-  if(p==='slips'){populateSlipSelect();renderSlipMonth();}
+  if(p==='slips'){
+    if(!employees.length) employees=await api('GET','/api/employees')||[];
+    populateSlipSelect();
+    renderSlipMonth();
+  }
   if(p==='dashboard')renderDashboard();
 }
 
