@@ -602,7 +602,7 @@ async function checkAuth(){
 async function loadAll(){
   employees=await api('GET','/api/employees')||[];
   document.getElementById('topbar-date').textContent=new Date().toDateString();
-  renderDashboard();
+  await renderDashboard();
 }
 
 // ── nav ───────────────────────────────────────────────────────────────────
@@ -1062,6 +1062,7 @@ function populateLeaveDropdown(){
 
 // ── attendance ────────────────────────────────────────────────────────────
 async function loadAttendance(){
+  if(!employees.length) employees=await api('GET','/api/employees')||[];
   const mk=monthKey(attMonth);
   const res=await api('GET',`/api/attendance/${mk}`);
   attCache=res||{attendance:{},ot:{}};
@@ -1069,8 +1070,12 @@ async function loadAttendance(){
 }
 
 function renderAttendance(){
-  const emps=activeEmps(),cont=document.getElementById('att-container');
-  if(!emps.length){cont.innerHTML='<div class="no-data">No active employees</div>';return;}
+  const emps=activeEmps();
+  const cont=document.getElementById('att-container');
+  if(!emps.length){
+    cont.innerHTML='<div class="no-data" style="padding:40px">No active employees found. Please add employees first.</div>';
+    return;
+  }
   const days=getDaysInMonth(attMonth),mk=monthKey(attMonth);
   let html=`<table style="min-width:${Math.max(800,130+days*40)}px"><thead><tr>
     <th style="min-width:130px;position:sticky;left:0;background:#faf9f5;z-index:2">Employee</th>`;
