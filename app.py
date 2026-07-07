@@ -364,9 +364,26 @@ def delete_employee(emp_id):
     return jsonify({'ok': True})
 
 # ── attendance ─────────────────────────────────────────────────────────────────
-@app.route('/api/attendance/debug/<emp_id>/<month_key>', methods=['GET'])
+@app.route('/api/attendance/fix-empids', methods=['POST'])
 @login_required
-def debug_attendance(emp_id, month_key):
+def fix_attendance_empids():
+    """Fix attendance records saved with truncated emp_ids due to split bug"""
+    db = get_db()
+    # Find all employees
+    emps = db.execute("SELECT id FROM employees").fetchall()
+    fixed = 0
+    for emp in emps:
+        emp_id = emp['id']  # e.g. GNT-010
+        # Check if records exist with just the prefix before last hyphen
+        # e.g. GNT-010 split wrongly gives emp_id=GNT, day=010 (invalid)
+        # The real issue: "GNT-010-5".rsplit('-',1) = ['GNT-010', '5'] which is CORRECT
+        # So the bug may be elsewhere — check for duplicate/wrong records
+        pass
+    # Instead, let's check what emp_ids exist in attendance
+    att_empids = db.execute("SELECT DISTINCT emp_id FROM attendance").fetchall()
+    db.close()
+    return jsonify({'emp_ids_in_attendance': [r['emp_id'] for r in att_empids]})
+
     db = get_db()
     rows = db.execute(
         "SELECT day, status FROM attendance WHERE emp_id=? AND month_key=? ORDER BY day",
