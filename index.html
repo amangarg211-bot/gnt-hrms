@@ -568,11 +568,21 @@ function showToast(msg,ok=true){
 
 // ── api ───────────────────────────────────────────────────────────────────
 async function api(method,url,body){
-  const opts={method,headers:{'Content-Type':'application/json'}};
-  if(body) opts.body=JSON.stringify(body);
-  const res=await fetch(url,opts);
-  if(res.status===401){showLoginScreen();return null;}
-  return res.json();
+  try{
+    const opts={method,headers:{'Content-Type':'application/json'}};
+    if(body) opts.body=JSON.stringify(body);
+    const res=await fetch(url,opts);
+    if(res.status===401){showLoginScreen();return null;}
+    if(!res.ok){
+      const txt=await res.text();
+      console.error('API error',res.status,url,txt.substring(0,200));
+      return null;
+    }
+    return res.json();
+  } catch(e){
+    console.error('Fetch error',url,e);
+    return null;
+  }
 }
 
 // ── auth ──────────────────────────────────────────────────────────────────
