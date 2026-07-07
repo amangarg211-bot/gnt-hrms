@@ -364,7 +364,17 @@ def delete_employee(emp_id):
     return jsonify({'ok': True})
 
 # ── attendance ─────────────────────────────────────────────────────────────────
-@app.route('/api/attendance/<month_key>', methods=['GET'])
+@app.route('/api/attendance/debug/<emp_id>/<month_key>', methods=['GET'])
+@login_required
+def debug_attendance(emp_id, month_key):
+    db = get_db()
+    rows = db.execute(
+        "SELECT day, status FROM attendance WHERE emp_id=? AND month_key=? ORDER BY day",
+        (emp_id, month_key)).fetchall()
+    db.close()
+    return jsonify({'emp_id': emp_id, 'month_key': month_key,
+                    'records': [{'day': r['day'], 'status': r['status']} for r in rows],
+                    'count': len(rows)})
 @login_required
 def get_attendance(month_key):
     db = get_db()
@@ -382,10 +392,19 @@ def save_attendance():
     month_key = d['month_key']
     db = get_db()
     for key, status in d.get('attendance', {}).items():
-        emp_id, day = key.rsplit('-', 1)
+        # key format: "GNT-010-7" — emp_id contains hyphens so split from right, once
+        # last segment is the day number
+        parts = key.rsplit('-', 1)
+        if len(parts) != 2:
+            continue
+        emp_id, day_str = parts[0], parts[1]
+        try:
+            day = int(day_str)
+        except ValueError:
+            continue
         db.execute('''INSERT INTO attendance(emp_id,month_key,day,status) VALUES(?,?,?,?)
             ON CONFLICT(emp_id,month_key,day) DO UPDATE SET status=excluded.status''',
-            (emp_id, month_key, int(day), status))
+            (emp_id, month_key, day, status))
     for emp_id, days in d.get('ot', {}).items():
         db.execute('''INSERT INTO ot_days(emp_id,month_key,ot_days) VALUES(?,?,?)
             ON CONFLICT(emp_id,month_key) DO UPDATE SET ot_days=excluded.ot_days''',
