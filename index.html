@@ -866,49 +866,55 @@ function renderRepMonth(){document.getElementById('rep-month-label').textContent
 
 async function loadSalaryReport(){
   const mk=monthKey(repMonth);
+  // Always recalculate payroll fresh before showing report
+  await api('POST','/api/payroll/calculate',{month_key:mk});
   const payRows=await api('GET',`/api/payroll/${mk}`)||[];
   payrollData={};payRows.forEach(r=>payrollData[r.emp_id]=r);
   const cont=document.getElementById('salary-report-container');
   if(!employees.length){cont.innerHTML='<div class="no-data">No employees found.</div>';return;}
-  // Load ledger balances
   const ledgerBals={};
   await Promise.all(employees.map(async e=>{
     const entries=await api('GET',`/api/ledger/${e.id}`)||[];
     ledgerBals[e.id]=entries.reduce((s,x)=>x.effect==='credit'?s+x.amount:s-x.amount,0);
   }));
-  let totalGross=0,totalDeduct=0,totalNet=0,totalLedger=0,totalFinal=0;
+  let totalGross=0,totalDeduct=0,totalNet=0,totalFinal=0;
   const rows=employees.map(e=>{
     const pr=payrollData[e.id];
     const gross=pr?pr.gross:0;
     const deduct=pr?pr.ledger_deduct:0;
     const net=pr?pr.net:0;
     const ledgerBal=ledgerBals[e.id]||0;
-    // Final payable = net salary - any positive ledger balance already paid as advance
-    // If ledger balance is negative (employee owes GNT), add it back
-    const finalPayable=net-Math.max(0,ledgerBal);
-    totalGross+=gross;totalDeduct+=deduct;totalNet+=net;totalLedger+=ledgerBal;totalFinal+=finalPayable;
+    const finalPayable=Math.max(0, net - Math.max(0, ledgerBal));
+    totalGross+=gross;totalDeduct+=deduct;totalNet+=net;totalFinal+=finalPayable;
     const badge=!pr?'badge-gray':pr.paid==='Paid'?'badge-green':pr.paid==='Partial'?'badge-amber':'badge-red';
+    // Show present days + sundays so user sees full picture
+    const presentDisplay = pr ? `${pr.present}/${pr.weekdays} wd + ${pr.sundays} Sun` : '—';
     return `<tr>
       <td><strong>${e.name}</strong><br><span style="font-size:11px;color:#888">${e.id}</span></td>
       <td>${e.desig}</td>
       <td style="text-align:right">${rupee(e.salary)}</td>
-      <td style="text-align:right">${pr?pr.present+'/'+pr.weekdays:'—'}</td>
+      <td style="text-align:right;font-size:12px">${presentDisplay}</td>
       <td style="text-align:right">${pr?pr.total_ot:'—'}</td>
       <td style="text-align:right;font-weight:600">${gross?rupee(gross):'—'}</td>
       <td style="text-align:right;color:#e24b4a">${deduct?'-'+rupee(deduct):'—'}</td>
       <td style="text-align:right;font-weight:600">${net?rupee(net):'—'}</td>
-      <td style="text-align:right;color:${ledgerBal>=0?'#1d9e75':'#e24b4a'}">${ledgerBal>=0?'+':'-'}${rupee(Math.abs(ledgerBal))}</td>
-      <td style="text-align:right;font-weight:700;color:${finalPayable>=0?'#1a1a18':'#e24b4a'}">${rupee(Math.max(0,finalPayable))}</td>
+      <td style="text-align:right;color:${ledgerBal>=0?'#1d9e75':'#e24b4a'}">${ledgerBal!==0?(ledgerBal>=0?'+':'-')+rupee(Math.abs(ledgerBal)):'—'}</td>
+      <td style="text-align:right;font-weight:700">${rupee(finalPayable)}</td>
       <td><span class="badge ${badge}">${pr?pr.paid:'N/A'}</span></td>
     </tr>`;
   }).join('');
   cont.innerHTML=`<table>
     <thead><tr>
-      <th>Employee</th><th>Designation</th><th style="text-align:right">Base Salary</th>
-      <th style="text-align:right">Present</th><th style="text-align:right">OT Days</th>
-      <th style="text-align:right">Gross Pay</th><th style="text-align:right">Deductions</th>
-      <th style="text-align:right">Net Pay</th><th style="text-align:right">Ledger Balance</th>
-      <th style="text-align:right">Final Payable</th><th>Status</th>
+      <th>Employee</th><th>Designation</th>
+      <th style="text-align:right">Base Salary</th>
+      <th style="text-align:right">Attendance</th>
+      <th style="text-align:right">OT Days</th>
+      <th style="text-align:right">Gross Pay</th>
+      <th style="text-align:right">Deductions</th>
+      <th style="text-align:right">Net Pay</th>
+      <th style="text-align:right">Ledger Bal.</th>
+      <th style="text-align:right">Final Payable</th>
+      <th>Status</th>
     </tr></thead>
     <tbody>${rows}</tbody>
     <tfoot><tr style="background:#f5f5f0;font-weight:700">
@@ -916,8 +922,8 @@ async function loadSalaryReport(){
       <td style="text-align:right">${rupee(totalGross)}</td>
       <td style="text-align:right;color:#e24b4a">${totalDeduct?'-'+rupee(totalDeduct):'—'}</td>
       <td style="text-align:right">${rupee(totalNet)}</td>
-      <td style="text-align:right;color:${totalLedger>=0?'#1d9e75':'#e24b4a'}">${totalLedger>=0?'+':'-'}${rupee(Math.abs(totalLedger))}</td>
-      <td style="text-align:right">${rupee(Math.max(0,totalFinal))}</td>
+      <td></td>
+      <td style="text-align:right">${rupee(totalFinal)}</td>
       <td></td>
     </tr></tfoot>
   </table>`;
@@ -1444,14 +1450,15 @@ async function generateSlip(){
       <div>
         <div class="slip-section">Attendance</div>
         <div>Salary basis: 30 days (fixed)</div>
-        <div>Working days: ${pr.weekdays} (excl. ${pr.sundays} Sundays)</div>
+        <div>Working days in month: ${pr.weekdays} + ${pr.sundays} Sundays</div>
         <div>Weekdays present: ${pr.present} / ${pr.weekdays}</div>
-        <div>Sunday OT: ${pr.sunday_ot} | Extra OT: ${pr.extra_ot}</div>
+        <div>Paid days: ${pr.present} + ${pr.sundays} Sundays = ${(parseFloat(pr.present)+pr.sundays).toFixed(1)} / 30</div>
+        <div>OT: ${pr.sunday_ot} Sun OT + ${pr.extra_ot} extra</div>
       </div>
     </div>
     <div class="slip-section">Earnings</div>
     <div class="slip-row"><span>Base Salary (30-day basis)</span><span>${rupee(emp.salary)}</span></div>
-    <div class="slip-row"><span>Earned Pay (${pr.present}/${pr.weekdays} × ${rupee(emp.salary)})</span><span>${rupee(pr.earned_pay)}</span></div>
+    <div class="slip-row"><span>Earned Pay (${pr.present} weekdays + ${pr.sundays} Sundays = ${(parseFloat(pr.present)+pr.sundays).toFixed(1)}/30 × ${rupee(emp.salary)})</span><span>${rupee(pr.earned_pay)}</span></div>
     ${pr.sunday_ot>0?`<div class="slip-row"><span>Sunday OT (${pr.sunday_ot} × ${rupee(dailyRate)})</span><span>${rupee(pr.sunday_ot*dailyRate)}</span></div>`:''}
     ${pr.extra_ot>0?`<div class="slip-row"><span>Extra OT (${pr.extra_ot} × ${rupee(dailyRate)})</span><span>${rupee(pr.extra_ot*dailyRate)}</span></div>`:''}
     <div class="slip-row" style="font-weight:600"><span>Gross Earnings</span><span>${rupee(pr.gross)}</span></div>

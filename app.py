@@ -85,6 +85,7 @@ def calc_pay(emp_id, month_key):
     net = gross - ledger_deduct
     db.close()
     return dict(present=present, weekdays=weekdays, sundays=sundays,
+                paid_days=round(paid_days, 1),
                 sunday_ot=sunday_ot, extra_ot=extra_ot, total_ot=total_ot,
                 earned_pay=round(earned_pay,2), ot_pay=round(ot_pay,2),
                 ledger_deduct=round(ledger_deduct,2),
