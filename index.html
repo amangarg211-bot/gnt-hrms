@@ -875,26 +875,29 @@ function renderRepMonth(){document.getElementById('rep-month-label').textContent
 async function loadSalaryReport(){
   const mk=monthKey(repMonth);
   const cont=document.getElementById('salary-report-container');
-  cont.innerHTML='<div class="no-data">Calculating...</div>';
-  // Always recalculate fresh from attendance before showing report
-  await api('POST','/api/payroll/calculate',{month_key:mk});
-  const payRows=await api('GET',`/api/payroll/${mk}`)||[];
-  payrollData={};payRows.forEach(r=>payrollData[r.emp_id]=r);
+  cont.innerHTML='<div class="no-data">Calculating payroll...</div>';
   if(!employees.length){cont.innerHTML='<div class="no-data">No employees found.</div>';return;}
-  const ledgerBals={};
-  await Promise.all(employees.map(async e=>{
-    const entries=await api('GET',`/api/ledger/${e.id}`)||[];
-    ledgerBals[e.id]=entries.reduce((s,x)=>x.effect==='credit'?s+x.amount:s-x.amount,0);
-  }));
+
+  // Recalculate + fetch payroll and ledger balances in parallel
+  await api('POST','/api/payroll/calculate',{month_key:mk});
+  const [payRows, ledgerBals] = await Promise.all([
+    api('GET',`/api/payroll/${mk}`),
+    api('GET','/api/ledger/all-balances')
+  ]);
+
+  payrollData={};
+  (payRows||[]).forEach(r=>payrollData[r.emp_id]=r);
+  const bals=ledgerBals||{};
+
   let totalGross=0,totalDeduct=0,totalNet=0,totalFinal=0;
   const rows=employees.map(e=>{
     const pr=payrollData[e.id];
     const gross=pr?pr.gross:0;
     const deduct=pr?pr.ledger_deduct:0;
     const net=pr?pr.net:0;
-    const ledgerBal=ledgerBals[e.id]||0;
+    const ledgerBal=bals[e.id]||0;
     const finalPayable=Math.max(0,net-Math.max(0,ledgerBal));
-    const paidDays=pr?(parseFloat(pr.paid_days||0)||(parseFloat(pr.present)+parseFloat(pr.sundays))):0;
+    const paidDays=pr?(pr.paid_days||(parseFloat(pr.present)+parseFloat(pr.sundays))):0;
     totalGross+=gross;totalDeduct+=deduct;totalNet+=net;totalFinal+=finalPayable;
     return `<tr>
       <td><strong>${e.name}</strong><br><span style="font-size:11px;color:#888">${e.id}</span></td>
@@ -909,6 +912,7 @@ async function loadSalaryReport(){
       <td style="text-align:right;font-weight:700">${rupee(finalPayable)}</td>
     </tr>`;
   }).join('');
+
   cont.innerHTML=`<table>
     <thead><tr>
       <th>Employee</th><th>Designation</th>
@@ -1180,19 +1184,30 @@ async function renderLedgerPage(){
   document.getElementById('ledger-emp-count').textContent=emps.length+' emp';
   const list=document.getElementById('ledger-emp-list');
   if(!emps.length){list.innerHTML='<div class="no-data">No employees yet</div>';return;}
-  await Promise.all(emps.map(async e=>{
-    ledgerCache[e.id]=await api('GET',`/api/ledger/${e.id}`)||[];
-  }));
+
+  // Fetch individual ledger for selected emp, and balances for all
+  const bals=await api('GET','/api/ledger/all-balances')||{};
+  if(selectedLedgerEmp){
+    ledgerCache[selectedLedgerEmp]=await api('GET',`/api/ledger/${selectedLedgerEmp}`)||[];
+  }
+
   list.innerHTML=emps.map(e=>{
-    const bal=(ledgerCache[e.id]||[]).reduce((s,x)=>x.effect==='credit'?s+x.amount:s-x.amount,0);
+    const bal=bals[e.id]||0;
+    const count=selectedLedgerEmp===e.id?(ledgerCache[e.id]||[]).length:'—';
     return `<div class="ledger-emp-row${selectedLedgerEmp===e.id?' selected':''}" data-empid="${e.id}">
-      <div><div style="font-size:13px">${e.name}</div><div style="font-size:11px;color:#888">${(ledgerCache[e.id]||[]).length} entries</div></div>
+      <div><div style="font-size:13px">${e.name}</div><div style="font-size:11px;color:#888">${count} entries</div></div>
       <div class="${bal>=0?'balance-pos':'balance-neg'}" style="font-size:12px">${bal>=0?'+':'-'}${rupee(Math.abs(bal))}</div>
     </div>`;
   }).join('');
+
   list.querySelectorAll('.ledger-emp-row').forEach(row=>{
-    row.addEventListener('click',()=>{selectedLedgerEmp=row.dataset.empid;renderLedgerPage();});
+    row.addEventListener('click',async()=>{
+      selectedLedgerEmp=row.dataset.empid;
+      ledgerCache[selectedLedgerEmp]=await api('GET',`/api/ledger/${selectedLedgerEmp}`)||[];
+      renderLedgerPage();
+    });
   });
+
   if(selectedLedgerEmp)renderLedgerDetail(selectedLedgerEmp);
 }
 

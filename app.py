@@ -475,6 +475,17 @@ def mark_paid():
     return jsonify({'ok': True})
 
 # ── ledger ─────────────────────────────────────────────────────────────────────
+@app.route('/api/ledger/all-balances', methods=['GET'])
+@login_required
+def get_all_ledger_balances():
+    db = get_db()
+    rows = db.execute('''SELECT emp_id,
+        SUM(CASE WHEN effect='credit' THEN amount ELSE 0 END) -
+        SUM(CASE WHEN effect='debit' THEN amount ELSE 0 END) as balance
+        FROM ledger GROUP BY emp_id''').fetchall()
+    db.close()
+    return jsonify({r['emp_id']: r['balance'] for r in rows})
+
 @app.route('/api/ledger/<emp_id>', methods=['GET'])
 @login_required
 def get_ledger(emp_id):
