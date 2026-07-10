@@ -89,7 +89,7 @@ input:focus,select:focus,textarea:focus{border-color:#888}
 .ledger-emp-row{padding:10px 14px;border-bottom:1px solid #f0ede5;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background 0.1s}
 .ledger-emp-row:hover{background:#faf9f5}
 .ledger-emp-row.selected{background:#f0ede5;font-weight:600}
-.ledger-entry{display:grid;grid-template-columns:90px 1fr 90px 90px 100px;gap:8px;padding:9px 12px;border-bottom:1px solid #f5f3ef;font-size:13px;align-items:center}
+.ledger-entry{display:grid;grid-template-columns:90px 1fr 90px 90px 100px 36px;gap:8px;padding:9px 12px;border-bottom:1px solid #f5f3ef;font-size:13px;align-items:center}
 .ledger-entry:hover{background:#faf9f5}
 .ledger-header{background:#faf9f5;font-size:11px;color:#888;text-transform:uppercase;font-weight:600;border-bottom:1px solid #e0ddd5}
 .amount-cr{color:#1d9e75;font-weight:600}
@@ -129,7 +129,7 @@ input:focus,select:focus,textarea:focus{border-color:#888}
 <div class="sidebar">
   <div class="logo"><div class="logo-title">GNT HRMS</div><div class="logo-sub">Graphics & Trends Solutions</div></div>
   <nav class="nav">
-    <div class="nav-item active" id="nav-dashboard">⊞ Dashboard</div>
+    <div class="nav-item" id="nav-dashboard">⊞ Dashboard</div>
     <div class="nav-item" id="nav-employees">👥 Employees</div>
     <div class="nav-item" id="nav-attendance">📅 Attendance</div>
     <div class="nav-item" id="nav-leaves">🌿 Leave Management</div>
@@ -148,6 +148,7 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     </div>
   </div>
 
+  <!-- DASHBOARD -->
   <div class="page active" id="page-dashboard">
     <div class="grid-4" style="margin-bottom:16px">
       <div class="stat-card"><div class="stat-label">Total Employees</div><div class="stat-value" id="dash-total">0</div><div class="stat-sub">Active</div></div>
@@ -166,17 +167,19 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     </div>
   </div>
 
+  <!-- EMPLOYEES -->
   <div class="page" id="page-employees">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
       <input class="search-bar" id="emp-search" placeholder="Search employees...">
       <button class="btn btn-primary" id="btn-add-emp">+ Add Employee</button>
     </div>
     <div class="card" style="padding:0">
-      <table><thead><tr><th>Name</th><th>Designation</th><th>Dept</th><th>DOJ</th><th>Base Salary</th><th>Leave Bal.</th><th>Status</th><th></th></tr></thead>
-      <tbody id="emp-table"><tr><td colspan="8" class="no-data">Loading...</td></tr></tbody></table>
+      <table><thead><tr><th>Name</th><th>Designation</th><th>Dept</th><th>DOJ</th><th>Base Salary</th><th>Status</th><th></th></tr></thead>
+      <tbody id="emp-table"><tr><td colspan="7" class="no-data">Loading...</td></tr></tbody></table>
     </div>
   </div>
 
+  <!-- ATTENDANCE -->
   <div class="page" id="page-attendance">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
       <div class="month-nav">
@@ -203,6 +206,7 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     </div>
   </div>
 
+  <!-- LEAVES -->
   <div class="page" id="page-leaves">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
       <span style="font-size:15px;font-weight:600">Leave Management</span>
@@ -218,6 +222,7 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     </div>
   </div>
 
+  <!-- PAYROLL -->
   <div class="page" id="page-payroll">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
       <div class="month-nav">
@@ -225,17 +230,16 @@ input:focus,select:focus,textarea:focus{border-color:#888}
         <div class="month-label" id="pay-month-label"></div>
         <button id="pay-next">&#8250;</button>
       </div>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-primary" id="btn-calc-payroll">Calculate Payroll</button>
-      </div>
+      <button class="btn btn-primary" id="btn-calc-payroll">Calculate Payroll</button>
     </div>
     <div class="card" style="padding:0;overflow-x:auto">
-      <table><thead><tr><th>Employee</th><th>Base</th><th>Present</th><th>Sun OT</th><th>Extra OT</th><th>Gross</th><th>Deductions</th><th>Net Pay</th><th>Ledger</th></tr></thead>
+      <table><thead><tr><th>Employee</th><th>Base</th><th>Paid Days</th><th>Sun OT</th><th>Extra OT</th><th>Gross</th><th>Deductions</th><th>Net Pay</th><th>Ledger</th></tr></thead>
       <tbody id="payroll-table"><tr><td colspan="9" class="no-data">Click "Calculate Payroll" to generate</td></tr></tbody></table>
     </div>
-    <div class="att-note" style="margin-top:10px"><strong>Formula:</strong> Gross = (Present Days / Weekdays in month) × Base Salary + OT pay.</div>
+    <div class="att-note" style="margin-top:10px"><strong>Formula:</strong> Paid Days = Weekdays Present + Sundays. Gross = (Paid Days / 30) × Base Salary + OT pay.</div>
   </div>
 
+  <!-- LEDGER -->
   <div class="page" id="page-ledger">
     <div style="display:flex;gap:16px;height:calc(100vh - 120px)">
       <div style="width:220px;flex-shrink:0;background:#fff;border:1px solid #e0ddd5;border-radius:10px;overflow-y:auto">
@@ -255,8 +259,8 @@ input:focus,select:focus,textarea:focus{border-color:#888}
           </div>
         </div>
         <div class="grid-3" id="ledger-summary" style="display:none">
-          <div class="stat-card"><div class="stat-label">Total Credits</div><div class="stat-value amount-cr" id="ls-credits">₹0</div><div class="stat-sub">Salary + reimbursements</div></div>
-          <div class="stat-card"><div class="stat-label">Total Debits</div><div class="stat-value amount-dr" id="ls-debits">₹0</div><div class="stat-sub">Paid out</div></div>
+          <div class="stat-card"><div class="stat-label">Total Credits</div><div class="stat-value amount-cr" id="ls-credits">₹0</div></div>
+          <div class="stat-card"><div class="stat-label">Total Debits</div><div class="stat-value amount-dr" id="ls-debits">₹0</div></div>
           <div class="stat-card"><div class="stat-label">Net Balance</div><div class="stat-value" id="ls-balance">₹0</div><div class="stat-sub" id="ls-balance-note"></div></div>
         </div>
         <div class="card" style="padding:0;flex:1;overflow-y:auto;margin-bottom:0">
@@ -266,9 +270,9 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     </div>
   </div>
 
-  <!-- REPORTS PAGE -->
+  <!-- SALARY REPORT -->
   <div class="page" id="page-reports">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
       <div class="month-nav">
         <button id="rep-prev">&#8249;</button>
         <div class="month-label" id="rep-month-label"></div>
@@ -279,12 +283,13 @@ input:focus,select:focus,textarea:focus{border-color:#888}
         <button class="btn" id="btn-print-salary-report">🖨 Print</button>
       </div>
     </div>
-    <div class="att-note">Salary = (Weekdays Present + Sundays in month) ÷ 30 × Base Salary. Sundays are always paid. Sunday OT adds extra pay on top.</div>
+    <div class="att-note">Salary = (Weekdays Present + Sundays) ÷ 30 × Base Salary. Sundays are always paid. Click "Calculate & Load" after any attendance changes.</div>
     <div class="card" style="padding:0;overflow-x:auto" id="salary-report-container">
-      <div class="no-data">Select a month and click Generate above — or use the Payroll page to calculate first.</div>
+      <div class="no-data">Select a month and click "Calculate & Load"</div>
     </div>
   </div>
 
+  <!-- SALARY SLIPS -->
   <div class="page" id="page-slips">
     <div style="display:flex;gap:12px;margin-bottom:14px;align-items:center;flex-wrap:wrap">
       <select id="slip-emp-select" style="width:200px"><option value="">Select Employee</option></select>
@@ -348,11 +353,11 @@ input:focus,select:focus,textarea:focus{border-color:#888}
   <div class="modal-body">
     <input type="hidden" id="edit-emp-id">
     <div class="grid-2">
-      <div class="form-group"><label>Full Name *</label><input id="edit-emp-name" placeholder="Rahul Kumar"></div>
-      <div class="form-group"><label>Designation *</label><input id="edit-emp-desig" placeholder="Site Supervisor"></div>
+      <div class="form-group"><label>Full Name *</label><input id="edit-emp-name"></div>
+      <div class="form-group"><label>Designation *</label><input id="edit-emp-desig"></div>
     </div>
     <div class="grid-2">
-      <div class="form-group"><label>Department</label><input id="edit-emp-dept" placeholder="Operations"></div>
+      <div class="form-group"><label>Department</label><input id="edit-emp-dept"></div>
       <div class="form-group"><label>Date of Joining</label><input id="edit-emp-doj" type="date"></div>
     </div>
     <div class="grid-2">
@@ -361,11 +366,11 @@ input:focus,select:focus,textarea:focus{border-color:#888}
     </div>
     <div class="grid-2">
       <div class="form-group"><label>Email ID</label><input id="edit-emp-email" type="email"></div>
-      <div class="form-group"><label>Address</label><input id="edit-emp-address" placeholder="House No., Street, Colony"></div>
+      <div class="form-group"><label>Address</label><input id="edit-emp-address"></div>
     </div>
     <div class="grid-2">
-      <div class="form-group"><label>City</label><input id="edit-emp-city" placeholder="Delhi"></div>
-      <div class="form-group"><label>Pin Code</label><input id="edit-emp-pin" placeholder="110001"></div>
+      <div class="form-group"><label>City</label><input id="edit-emp-city"></div>
+      <div class="form-group"><label>Pin Code</label><input id="edit-emp-pin"></div>
     </div>
     <div class="grid-2">
       <div class="form-group"><label>Bank Account No.</label><input id="edit-emp-bank"></div>
@@ -379,34 +384,6 @@ input:focus,select:focus,textarea:focus{border-color:#888}
   <div class="modal-footer">
     <button class="btn" id="cancel-edit-emp-modal">Cancel</button>
     <button class="btn btn-primary" id="submit-edit-emp">Save Changes</button>
-  </div>
-</div>
-</div>
-
-<!-- Offer Letter Modal -->
-<div class="modal-overlay" id="modal-offer-letter">
-<div class="modal">
-  <div class="modal-header"><h3>Generate Offer Letter</h3><button class="btn btn-sm" id="close-offer-modal">✕</button></div>
-  <div class="modal-body">
-    <input type="hidden" id="offer-emp-id">
-    <div class="grid-2">
-      <div class="form-group"><label>Employee Name</label><input id="offer-emp-name" readonly style="background:#f5f5f0"></div>
-      <div class="form-group"><label>Designation</label><input id="offer-emp-desig" readonly style="background:#f5f5f0"></div>
-    </div>
-    <div class="grid-2">
-      <div class="form-group"><label>Joining Date *</label><input id="offer-joining-date" type="date"></div>
-      <div class="form-group"><label>Salary (₹/month)</label><input id="offer-salary" readonly style="background:#f5f5f0"></div>
-    </div>
-    <div class="form-group"><label>Employee Address</label><input id="offer-address" placeholder="House No., Street, Colony"></div>
-    <div class="grid-2">
-      <div class="form-group"><label>City</label><input id="offer-city" placeholder="Delhi"></div>
-      <div class="form-group"><label>Pin Code</label><input id="offer-pin" placeholder="110001"></div>
-    </div>
-    <div class="form-group"><label>Ref / Employee No.</label><input id="offer-ref" placeholder="GNT-001"></div>
-  </div>
-  <div class="modal-footer">
-    <button class="btn" id="cancel-offer-modal">Cancel</button>
-    <button class="btn btn-primary" id="btn-print-offer">🖨 Print Offer Letter</button>
   </div>
 </div>
 </div>
@@ -433,17 +410,6 @@ input:focus,select:focus,textarea:focus{border-color:#888}
 </div>
 </div>
 
-<div class="modal-overlay" id="modal-bulk-pay">
-<div class="modal">
-  <div class="modal-header"><h3>Mark Salary Payments</h3><button class="btn btn-sm" id="close-bulkpay-modal">✕</button></div>
-  <div class="modal-body">
-    <table><thead><tr><th>Employee</th><th>Net Pay</th><th>Status</th><th>Mark</th></tr></thead>
-    <tbody id="bulk-pay-table"></tbody></table>
-  </div>
-  <div class="modal-footer"><button class="btn" id="cancel-bulkpay-modal">Close</button></div>
-</div>
-</div>
-
 <div class="modal-overlay" id="modal-add-advance">
 <div class="modal">
   <div class="modal-header"><h3>Advance Salary</h3><button class="btn btn-sm" id="close-advance-modal">✕</button></div>
@@ -465,26 +431,19 @@ input:focus,select:focus,textarea:focus{border-color:#888}
 </div>
 </div>
 
-<!-- Opening Balance Modal -->
 <div class="modal-overlay" id="modal-opening-balance">
 <div class="modal">
   <div class="modal-header"><h3>Set Opening Balance</h3><button class="btn btn-sm" id="close-ob-modal">✕</button></div>
   <div class="modal-body">
-    <div class="att-note">Opening balance carries forward existing dues or advances before you started using this system.<br><br>
-      <strong>Positive (+)</strong> = GNT owes the employee (e.g. unpaid salary)<br>
-      <strong>Negative (−)</strong> = Employee owes GNT (e.g. advance already taken)
-    </div>
-    <div class="grid-2" style="margin-top:14px">
+    <div class="att-note"><strong>Positive (+)</strong> = GNT owes employee &nbsp;|&nbsp; <strong>Negative (−)</strong> = Employee owes GNT</div>
+    <div class="grid-2" style="margin-top:12px">
       <div class="form-group"><label>Date *</label><input id="ob-date" type="date"></div>
       <div class="form-group"><label>Balance Type *</label>
-        <select id="ob-type">
-          <option value="credit">+ Positive (GNT owes employee)</option>
-          <option value="debit">− Negative (Employee owes GNT)</option>
-        </select>
+        <select id="ob-type"><option value="credit">+ Positive (GNT owes employee)</option><option value="debit">− Negative (Employee owes GNT)</option></select>
       </div>
     </div>
-    <div class="form-group"><label>Amount (₹) *</label><input id="ob-amount" type="number" placeholder="e.g. 5000"></div>
-    <div class="form-group"><label>Note</label><input id="ob-note" placeholder="e.g. Salary due from March, Advance taken in April"></div>
+    <div class="form-group"><label>Amount (₹) *</label><input id="ob-amount" type="number" placeholder="5000"></div>
+    <div class="form-group"><label>Note</label><input id="ob-note" placeholder="Opening balance"></div>
   </div>
   <div class="modal-footer">
     <button class="btn" id="cancel-ob-modal">Cancel</button>
@@ -493,36 +452,15 @@ input:focus,select:focus,textarea:focus{border-color:#888}
 </div>
 </div>
 
-<div class="modal-overlay" id="modal-add-advance">
-<div class="modal">
-  <div class="modal-header"><h3>Advance Salary</h3><button class="btn btn-sm" id="close-advance-modal">✕</button></div>
-  <div class="modal-body">
-    <div class="att-note">Advance = debit entry. Money paid out early, reduces future payable balance.</div>
-    <div class="grid-2" style="margin-top:12px">
-      <div class="form-group"><label>Date *</label><input id="adv-date" type="date"></div>
-      <div class="form-group"><label>Amount (₹) *</label><input id="adv-amount" type="number" placeholder="5000"></div>
-    </div>
-    <div class="form-group"><label>Note</label><input id="adv-note" placeholder="Advance against June salary"></div>
-    <div class="form-group"><label>Payment Mode</label>
-      <select id="adv-mode"><option>Cash</option><option>Bank Transfer</option><option>UPI</option><option>Cheque</option></select>
-    </div>
-  </div>
-  <div class="modal-footer">
-    <button class="btn" id="cancel-advance-modal">Cancel</button>
-    <button class="btn btn-primary" id="submit-advance">Post Advance</button>
-  </div>
-</div>
-</div>
-
 <div class="modal-overlay" id="modal-add-ledger-exp">
 <div class="modal modal-wide">
   <div class="modal-header"><h3>Add Expense Entries</h3><button class="btn btn-sm" id="close-exp-modal">✕</button></div>
   <div class="modal-body">
-    <div class="grid-2" style="margin-bottom:12px">
+    <div class="grid-2" style="margin-bottom:10px">
       <div class="form-group"><label>Date *</label><input id="lexp-date" type="date"></div>
       <div class="form-group"><label>Bill / Voucher No.</label><input id="lexp-bill" placeholder="BILL-001"></div>
     </div>
-    <div class="form-group"><label>Site / Project</label><input id="lexp-site" placeholder="e.g. Cognisphere Noida, Ganesh Grain Kolkata"></div>
+    <div class="form-group"><label>Site / Project</label><input id="lexp-site" placeholder="e.g. Cognisphere Noida"></div>
     <div class="exp-lines-wrap">
       <div style="display:grid;grid-template-columns:1fr 1fr 90px 110px 32px;gap:8px;margin-bottom:6px;font-size:11px;color:#888;font-weight:600;text-transform:uppercase">
         <span>Description *</span><span>Type</span><span>Amount *</span><span>Effect</span><span></span>
@@ -541,16 +479,43 @@ input:focus,select:focus,textarea:focus{border-color:#888}
 </div>
 </div>
 
+<div class="modal-overlay" id="modal-offer-letter">
+<div class="modal">
+  <div class="modal-header"><h3>Generate Offer Letter</h3><button class="btn btn-sm" id="close-offer-modal">✕</button></div>
+  <div class="modal-body">
+    <input type="hidden" id="offer-emp-id">
+    <div class="grid-2">
+      <div class="form-group"><label>Employee Name</label><input id="offer-emp-name" readonly style="background:#f5f5f0"></div>
+      <div class="form-group"><label>Designation</label><input id="offer-emp-desig" readonly style="background:#f5f5f0"></div>
+    </div>
+    <div class="grid-2">
+      <div class="form-group"><label>Joining Date *</label><input id="offer-joining-date" type="date"></div>
+      <div class="form-group"><label>Salary</label><input id="offer-salary" readonly style="background:#f5f5f0"></div>
+    </div>
+    <div class="form-group"><label>Address</label><input id="offer-address" placeholder="House No., Street, Colony"></div>
+    <div class="grid-2">
+      <div class="form-group"><label>City</label><input id="offer-city" placeholder="Delhi"></div>
+      <div class="form-group"><label>Pin Code</label><input id="offer-pin" placeholder="110001"></div>
+    </div>
+    <div class="form-group"><label>Ref / Employee No.</label><input id="offer-ref" placeholder="GNT-001"></div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" id="cancel-offer-modal">Cancel</button>
+    <button class="btn btn-primary" id="btn-print-offer">🖨 Print Offer Letter</button>
+  </div>
+</div>
+</div>
+
 <script>
-// ── state ─────────────────────────────────────────────────────────────────
-let employees=[], allLeaves=[], payrollData={}, ledgerCache={};
+// ── state ─────────────────────────────────────────────────────────────────────
+let employees=[],allLeaves=[],payrollData={},ledgerCache={};
 let attMonth=new Date(); attMonth.setDate(1);
 let payMonth=new Date(); payMonth.setDate(1);
 let slipMonth=new Date(); slipMonth.setDate(1);
+let repMonth=new Date(); repMonth.setDate(1);
 let attCache={attendance:{},ot:{}};
 let selectedLedgerEmp=null;
 let expLineCount=0;
-let repMonth=new Date(); repMonth.setDate(1);
 
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const fmtMonth=d=>MONTHS[d.getMonth()]+' '+d.getFullYear();
@@ -562,52 +527,34 @@ const getDaysInMonth=d=>new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
 
 function showToast(msg,ok=true){
   const t=document.getElementById('toast');
-  t.textContent=msg; t.style.background=ok?'#1a1a18':'#e24b4a';
-  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500);
+  t.textContent=msg;t.style.background=ok?'#1a1a18':'#e24b4a';
+  t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);
 }
 
-// ── api ───────────────────────────────────────────────────────────────────
+// ── api ───────────────────────────────────────────────────────────────────────
 async function api(method,url,body){
   try{
     const opts={method,headers:{'Content-Type':'application/json'}};
-    if(body) opts.body=JSON.stringify(body);
+    if(body)opts.body=JSON.stringify(body);
     const res=await fetch(url,opts);
     if(res.status===401){showLoginScreen();return null;}
-    if(!res.ok){
-      const txt=await res.text();
-      console.error('API error',res.status,url,txt.substring(0,200));
-      return null;
-    }
+    if(!res.ok){console.error('API error',res.status,url);return null;}
     return res.json();
-  } catch(e){
-    console.error('Fetch error',url,e);
-    return null;
-  }
+  }catch(e){console.error('Fetch error',url,e);return null;}
 }
 
-// ── auth ──────────────────────────────────────────────────────────────────
-function showLoginScreen(){
-  document.getElementById('login-screen').classList.remove('hidden');
-  document.getElementById('login-pass').value='';
-  document.getElementById('login-error').classList.remove('show');
-}
+// ── auth ──────────────────────────────────────────────────────────────────────
+function showLoginScreen(){document.getElementById('login-screen').classList.remove('hidden');document.getElementById('login-pass').value='';document.getElementById('login-error').classList.remove('show');}
 function hideLoginScreen(){document.getElementById('login-screen').classList.add('hidden');}
 
 async function doLogin(){
   const pass=document.getElementById('login-pass').value;
   const res=await api('POST','/api/login',{password:pass});
   if(res&&res.ok){hideLoginScreen();await loadAll();}
-  else{
-    document.getElementById('login-error').classList.add('show');
-    document.getElementById('login-pass').value='';
-    document.getElementById('login-pass').focus();
-  }
+  else{document.getElementById('login-error').classList.add('show');document.getElementById('login-pass').value='';}
 }
 async function doLogout(){await api('POST','/api/logout');showLoginScreen();}
-async function checkAuth(){
-  const res=await api('GET','/api/check-auth');
-  if(res&&res.logged_in){hideLoginScreen();await loadAll();}
-}
+async function checkAuth(){const res=await api('GET','/api/check-auth');if(res&&res.logged_in){hideLoginScreen();await loadAll();}}
 
 async function loadAll(){
   employees=await api('GET','/api/employees')||[];
@@ -615,9 +562,9 @@ async function loadAll(){
   await renderDashboard();
 }
 
-// ── nav ───────────────────────────────────────────────────────────────────
+// ── nav ───────────────────────────────────────────────────────────────────────
 const pages=['dashboard','employees','attendance','leaves','payroll','ledger','reports','slips'];
-const pageTitles={dashboard:'Dashboard',employees:'Employees',attendance:'Attendance',leaves:'Leave Management',payroll:'Payroll',ledger:'Employee Ledger',slips:'Salary Slips'};
+const pageTitles={dashboard:'Dashboard',employees:'Employees',attendance:'Attendance',leaves:'Leave Management',payroll:'Payroll',ledger:'Employee Ledger',reports:'Salary Report',slips:'Salary Slips'};
 
 async function showPage(p){
   pages.forEach(x=>{
@@ -625,50 +572,28 @@ async function showPage(p){
     document.getElementById('nav-'+x).classList.toggle('active',x===p);
   });
   document.getElementById('topbar-title').textContent=pageTitles[p];
-  if(p==='attendance'){
-    if(!employees.length) employees=await api('GET','/api/employees')||[];
-    loadAttendance();
-  }
-  if(p==='payroll'){
-    if(!employees.length) employees=await api('GET','/api/employees')||[];
-    loadPayroll();
-  }
-  if(p==='employees'){
-    if(!employees.length) employees=await api('GET','/api/employees')||[];
-    renderEmployees();
-  }
-  if(p==='leaves'){
-    if(!employees.length) employees=await api('GET','/api/employees')||[];
-    loadLeaves();
-  }
-  if(p==='ledger'){
-    if(!employees.length) employees=await api('GET','/api/employees')||[];
-    renderLedgerPage();
-  }
-  if(p==='reports'){
-    if(!employees.length) employees=await api('GET','/api/employees')||[];
-    renderRepMonth();
-    document.getElementById('salary-report-container').innerHTML='<div class="no-data">Loading...</div>';
-    loadSalaryReport();
-  }
-  if(p==='slips'){
-    if(!employees.length) employees=await api('GET','/api/employees')||[];
-    populateSlipSelect();
-    renderSlipMonth();
-  }
-  if(p==='dashboard')renderDashboard();
+  if(!employees.length)employees=await api('GET','/api/employees')||[];
+  if(p==='dashboard')await renderDashboard();
+  if(p==='employees')renderEmployees();
+  if(p==='attendance')await loadAttendance();
+  if(p==='leaves')await loadLeaves();
+  if(p==='payroll')await loadPayroll();
+  if(p==='ledger')await renderLedgerPage();
+  if(p==='reports'){renderRepMonth();await loadSalaryReport();}
+  if(p==='slips'){populateSlipSelect();renderSlipMonth();}
 }
 
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 
-// ── month nav ─────────────────────────────────────────────────────────────
+// ── months ────────────────────────────────────────────────────────────────────
 function renderAttMonth(){document.getElementById('att-month-label').textContent=fmtMonth(attMonth);}
 function renderPayMonth(){document.getElementById('pay-month-label').textContent=fmtMonth(payMonth);document.getElementById('dash-month-label').textContent=fmtMonth(payMonth);}
 function renderSlipMonth(){document.getElementById('slip-month-label').textContent=fmtMonth(slipMonth);}
+function renderRepMonth(){document.getElementById('rep-month-label').textContent=fmtMonth(repMonth);}
 renderAttMonth();renderPayMonth();renderSlipMonth();renderRepMonth();
 
-// ── employees ─────────────────────────────────────────────────────────────
+// ── employees ─────────────────────────────────────────────────────────────────
 async function addEmployee(){
   const name=document.getElementById('emp-name').value.trim();
   const desig=document.getElementById('emp-desig').value.trim();
@@ -677,23 +602,17 @@ async function addEmployee(){
   if(!name||!desig||!doj||!salary){alert('Fill required fields.');return;}
   const res=await api('POST','/api/employees',{
     name,desig,dept:document.getElementById('emp-dept').value||'General',doj,salary,
-    phone:document.getElementById('emp-phone').value,
-    email:document.getElementById('emp-email').value,
-    address:document.getElementById('emp-address').value,
-    city:document.getElementById('emp-city').value,
-    pin:document.getElementById('emp-pin').value,
-    bank:document.getElementById('emp-bank').value,
-    bankName:document.getElementById('emp-bankname').value,
-    ifsc:document.getElementById('emp-ifsc').value,
-    accName:document.getElementById('emp-accname').value||name,
-    cl:12, sl:6, el:15
+    phone:document.getElementById('emp-phone').value,email:document.getElementById('emp-email').value,
+    address:document.getElementById('emp-address').value,city:document.getElementById('emp-city').value,
+    pin:document.getElementById('emp-pin').value,bank:document.getElementById('emp-bank').value,
+    bankName:document.getElementById('emp-bankname').value,ifsc:document.getElementById('emp-ifsc').value,
+    accName:document.getElementById('emp-accname').value||name,cl:12,sl:6,el:15
   });
   if(res&&res.ok){
     showToast('Employee added!');
     employees=await api('GET','/api/employees')||[];
     closeModal('modal-add-emp');renderEmployees();renderDashboard();
-    ['emp-name','emp-desig','emp-dept','emp-doj','emp-salary','emp-phone','emp-email',
-     'emp-address','emp-city','emp-pin','emp-bank','emp-bankname','emp-ifsc','emp-accname'].forEach(i=>document.getElementById(i).value='');
+    ['emp-name','emp-desig','emp-dept','emp-doj','emp-salary','emp-phone','emp-email','emp-address','emp-city','emp-pin','emp-bank','emp-bankname','emp-ifsc','emp-accname'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
     document.getElementById('emp-accname').dataset.edited='';
   }
 }
@@ -701,324 +620,40 @@ async function addEmployee(){
 function renderEmployees(filter=''){
   const tb=document.getElementById('emp-table');
   const emps=employees.filter(e=>!filter||e.name.toLowerCase().includes(filter.toLowerCase()));
-  if(!emps.length){tb.innerHTML='<tr><td colspan="8" class="no-data">No employees found</td></tr>';return;}
+  if(!emps.length){tb.innerHTML='<tr><td colspan="7" class="no-data">No employees found</td></tr>';return;}
   tb.innerHTML=emps.map(e=>`<tr>
     <td><strong>${e.name}</strong><br><span style="font-size:11px;color:#888">${e.id}</span></td>
-    <td>${e.desig}</td><td>${e.dept}</td>
+    <td>${e.desig}</td><td>${e.dept||''}</td>
     <td>${e.doj?new Date(e.doj).toLocaleDateString('en-IN'):''}</td>
     <td>${rupee(e.salary)}</td>
-    <td><span class="chip">CL:${e.cl-e.cl_used}</span><span class="chip">SL:${e.sl-e.sl_used}</span></td>
     <td><span class="badge ${e.status==='Active'?'badge-green':'badge-red'}">${e.status}</span></td>
     <td style="display:flex;gap:4px">
-      <button class="btn btn-sm offer-btn" data-empid="${e.id}">📄 Offer</button>
-      <button class="btn btn-sm edit-emp-btn" data-empid="${e.id}">Edit</button>
-      <button class="btn btn-sm toggle-btn" data-empid="${e.id}">${e.status==='Active'?'Deactivate':'Activate'}</button>
-      <button class="btn btn-sm btn-danger del-emp-btn" data-empid="${e.id}" data-name="${e.name}">Delete</button>
+      <button class="btn btn-sm offer-btn" data-id="${e.id}">📄 Offer</button>
+      <button class="btn btn-sm edit-btn" data-id="${e.id}">Edit</button>
+      <button class="btn btn-sm toggle-btn" data-id="${e.id}">${e.status==='Active'?'Deactivate':'Activate'}</button>
+      <button class="btn btn-sm btn-danger del-btn" data-id="${e.id}" data-name="${e.name}">Delete</button>
     </td>
   </tr>`).join('');
-  tb.querySelectorAll('.offer-btn').forEach(btn=>{
-    btn.addEventListener('click',()=>openOfferModal(btn.dataset.empid));
-  });
-  tb.querySelectorAll('.edit-emp-btn').forEach(btn=>{
-    btn.addEventListener('click',()=>openEditModal(btn.dataset.empid));
-  });
-  tb.querySelectorAll('.toggle-btn').forEach(btn=>{
-    btn.addEventListener('click',()=>toggleStatus(btn.dataset.empid));
-  });
-  tb.querySelectorAll('.del-emp-btn').forEach(btn=>{
-    btn.addEventListener('click',()=>deleteEmployee(btn.dataset.empid, btn.dataset.name));
-  });
+  tb.querySelectorAll('.offer-btn').forEach(b=>b.addEventListener('click',()=>openOfferModal(b.dataset.id)));
+  tb.querySelectorAll('.edit-btn').forEach(b=>b.addEventListener('click',()=>openEditModal(b.dataset.id)));
+  tb.querySelectorAll('.toggle-btn').forEach(b=>b.addEventListener('click',()=>toggleStatus(b.dataset.id)));
+  tb.querySelectorAll('.del-btn').forEach(b=>b.addEventListener('click',()=>deleteEmployee(b.dataset.id,b.dataset.name)));
 }
 
-// ── offer letter ──────────────────────────────────────────────────────────
-function openOfferModal(id){
-  const e=employees.find(x=>x.id===id);if(!e)return;
-  document.getElementById('offer-emp-id').value=e.id;
-  document.getElementById('offer-emp-name').value=e.name;
-  document.getElementById('offer-emp-desig').value=e.desig;
-  document.getElementById('offer-salary').value=rupee(e.salary);
-  document.getElementById('offer-ref').value=e.id;
-  document.getElementById('offer-joining-date').value=e.doj||'';
-  document.getElementById('offer-address').value=e.address||'';
-  document.getElementById('offer-city').value=e.city||'';
-  document.getElementById('offer-pin').value=e.pin||'';
-  openModal('modal-offer-letter');
-}
-
-function printOfferLetter(){
-  const id=document.getElementById('offer-emp-id').value;
-  const emp=employees.find(e=>e.id===id);if(!emp)return;
-  const joiningDate=document.getElementById('offer-joining-date').value;
-  const address=document.getElementById('offer-address').value||'_________________';
-  const city=document.getElementById('offer-city').value||'__________';
-  const pin=document.getElementById('offer-pin').value||'______';
-  const ref=document.getElementById('offer-ref').value||emp.id;
-  const fmtDate=d=>{if(!d)return'__________';const dt=new Date(d);return dt.toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});};
-  const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><title>Offer Letter — ${emp.name}</title>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:'Times New Roman',serif;font-size:13pt;color:#000;padding:0}
-    .page{width:210mm;min-height:297mm;margin:0 auto;padding:0}
-    .letterhead{background:#1a1a18;color:#fff;padding:18px 36px;display:flex;justify-content:space-between;align-items:center}
-    .lh-name{font-size:20pt;font-weight:700;letter-spacing:1px;font-family:Arial,sans-serif}
-    .lh-sub{font-size:9pt;color:#ccc;margin-top:3px;font-family:Arial,sans-serif}
-    .lh-right{text-align:right;font-size:9pt;color:#ccc;font-family:Arial,sans-serif;line-height:1.6}
-    .gold-bar{height:4px;background:#d4a843}
-    .body{padding:36px 40px}
-    .ref-date{display:flex;justify-content:space-between;margin-bottom:24px;font-size:11pt}
-    .address-block{margin-bottom:20px;line-height:1.8}
-    .subject{font-weight:700;margin-bottom:16px;font-size:12pt}
-    .salutation{margin-bottom:14px}
-    .content p{margin-bottom:12px;line-height:1.9;text-align:justify}
-    .content strong{font-weight:700}
-    .sign-block{margin-top:40px}
-    .sign-name{font-weight:700;font-size:13pt}
-    .acceptance{margin-top:50px;border-top:1px solid #aaa;padding-top:20px}
-    .acceptance p{margin-bottom:10px;line-height:2}
-    .field{display:inline-block;border-bottom:1px solid #000;min-width:180px;margin-left:8px}
-    @media print{body{margin:0}@page{margin:0;size:A4}}
-  </style></head><body>
-  <div class="page">
-    <div class="letterhead">
-      <div>
-        <div class="lh-name">GRAPHICS & TRENDS SOLUTIONS</div>
-        <div class="lh-sub">Commercial Interior Fitout & Workspace Design</div>
-      </div>
-      <div class="lh-right">
-        C 269, Sector-10, Noida, U.P.<br>
-        +91-120-4322277 | +91-9560098148<br>
-        graphicsandtrends@gmail.com<br>
-        GST: 09AXBPA8060E1ZT
-      </div>
-    </div>
-    <div class="gold-bar"></div>
-    <div class="body">
-      <div class="ref-date">
-        <div>Ref: <strong>${ref}</strong></div>
-        <div>Date: <strong>${fmtDate(joiningDate)}</strong></div>
-      </div>
-      <div class="address-block">
-        To<br>
-        <strong>${emp.name}</strong><br>
-        ${address}<br>
-        ${city}${pin?' – '+pin:''}
-      </div>
-      <div class="subject">Sub: Offer Letter</div>
-      <div class="salutation">Dear <strong>${emp.name}</strong>,</div>
-      <div class="content">
-        <p>We are pleased to offer you the post of <strong>${emp.desig}</strong> based at <strong>Noida, Gautam Budh Nagar.</strong> Your joining salary will be <strong>Rs. ${Number(emp.salary).toLocaleString('en-IN')} per month</strong> inclusive all in hand. Appraisal for the same will be performance based.</p>
-        <p>Your employment with G&T Solutions will be subject to strict adherence to the policies and procedures of G&T Solutions. You will be on probation for one month. This offer is subject to background verification.</p>
-        <p>On acceptance of the terms and conditions as per this offer letter, you will be able to terminate your employment with G&T Solutions by giving one month notice to G&T Solutions and vice versa. You shall not be eligible to avail leave during the notice period.</p>
-        <p>We welcome you to join G&T Solutions and would be happy if you can sign the duplicate copy of this letter in token of your acceptance of the offer of employment with G&T Solutions.</p>
-        <p>You will be reporting to <strong>Mr. Aman Garg (+91-9560098148)</strong> on <strong>${fmtDate(joiningDate)}</strong> at <strong>9:30 am at C 269, Ground Floor, Sector 10, Gautam Budh Nagar (U.P.)</strong></p>
-        <p>We wish you all the best and look forward to having you with us.</p>
-      </div>
-      <div class="sign-block">
-        <p><strong>With regards,</strong></p>
-        <br><br>
-        <div class="sign-name">Aman Garg</div>
-        <div>Proprietor</div>
-        <div>Graphics & Trends Solutions</div>
-      </div>
-      <div class="acceptance">
-        <p>I accept the aforesaid terms & conditions and this offer of employment. I shall keep the contents of this document confidential.</p>
-        <p>I will join on <span class="field"></span></p>
-        <p>Name: <span class="field"></span></p>
-        <p>Signature: <span class="field"></span></p>
-        <p>Date: <span class="field"></span></p>
-      </div>
-    </div>
-  </div>
-  <script>window.onload=()=>window.print();<\/script>
-  </body></html>`);
-  w.document.close();
-}
-
-// ── print ledger ──────────────────────────────────────────────────────────
-function printLedger(){
-  if(!selectedLedgerEmp){showToast('Select an employee first.',false);return;}
-  const emp=employees.find(e=>e.id===selectedLedgerEmp);if(!emp)return;
-  const entries=ledgerCache[selectedLedgerEmp]||[];
-  const credits=entries.filter(e=>e.effect==='credit').reduce((s,e)=>s+e.amount,0);
-  const debits=entries.filter(e=>e.effect==='debit').reduce((s,e)=>s+e.amount,0);
-  const bal=credits-debits;
-  let running=0;
-  let rows=entries.map(e=>{
-    running+=e.effect==='credit'?e.amount:-e.amount;
-    return `<tr>
-      <td>${new Date(e.date).toLocaleDateString('en-IN')}</td>
-      <td>${e.label}</td>
-      <td style="text-align:right;color:${e.effect==='credit'?'#1d9e75':'#ccc'}">${e.effect==='credit'?rupee(e.amount):'—'}</td>
-      <td style="text-align:right;color:${e.effect==='debit'?'#e24b4a':'#ccc'}">${e.effect==='debit'?rupee(e.amount):'—'}</td>
-      <td style="text-align:right;font-weight:600;color:${running>=0?'#1d9e75':'#e24b4a'}">${running>=0?'+':'-'}${rupee(Math.abs(running))}</td>
-    </tr>`;
-  }).join('');
-  const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><title>Ledger — ${emp.name}</title>
-  <style>
-    body{font-family:Arial,sans-serif;font-size:12px;padding:0;margin:0}
-    .lh{background:#1a1a18;color:#fff;padding:14px 28px;display:flex;justify-content:space-between;align-items:center}
-    .lh-name{font-size:16px;font-weight:700;letter-spacing:1px}
-    .lh-sub{font-size:9px;color:#ccc;margin-top:2px}
-    .lh-right{text-align:right;font-size:9px;color:#ccc;line-height:1.6}
-    .gold{height:3px;background:#d4a843}
-    .body{padding:24px 28px}
-    h2{font-size:14px;margin-bottom:4px}
-    .meta{font-size:11px;color:#666;margin-bottom:16px}
-    .summary{display:flex;gap:20px;margin-bottom:16px}
-    .sum-box{border:1px solid #e0ddd5;border-radius:6px;padding:10px 16px;min-width:140px}
-    .sum-label{font-size:10px;color:#888;text-transform:uppercase;margin-bottom:3px}
-    .sum-val{font-size:16px;font-weight:700}
-    table{width:100%;border-collapse:collapse;font-size:11px}
-    th{text-align:left;padding:7px 10px;background:#f5f5f0;border-bottom:2px solid #e0ddd5;font-size:10px;text-transform:uppercase;color:#888}
-    td{padding:7px 10px;border-bottom:1px solid #f0ede5}
-    @media print{@page{margin:0;size:A4}body{margin:0}}
-  </style></head><body>
-  <div class="lh">
-    <div><div class="lh-name">GRAPHICS & TRENDS SOLUTIONS</div><div class="lh-sub">Commercial Interior Fitout & Workspace Design</div></div>
-    <div class="lh-right">C 269, Sector-10, Noida, U.P.<br>+91-120-4322277 | graphicsandtrends@gmail.com<br>GST: 09AXBPA8060E1ZT</div>
-  </div>
-  <div class="gold"></div>
-  <div class="body">
-    <h2>Employee Ledger — ${emp.name}</h2>
-    <div class="meta">${emp.id} | ${emp.desig} | ${emp.dept} | Printed: ${new Date().toLocaleString('en-IN')}</div>
-    <div class="summary">
-      <div class="sum-box"><div class="sum-label">Total Credits</div><div class="sum-val" style="color:#1d9e75">${rupee(credits)}</div></div>
-      <div class="sum-box"><div class="sum-label">Total Debits</div><div class="sum-val" style="color:#e24b4a">${rupee(debits)}</div></div>
-      <div class="sum-box"><div class="sum-label">Net Balance</div><div class="sum-val" style="color:${bal>=0?'#1d9e75':'#e24b4a'}">${bal>=0?'+':'-'}${rupee(Math.abs(bal))}</div></div>
-      <div class="sum-box"><div class="sum-label">Balance Note</div><div class="sum-val" style="font-size:12px;color:#555">${bal>=0?'GNT owes employee':'Employee owes GNT'}</div></div>
-    </div>
-    <table>
-      <thead><tr><th>Date</th><th>Description</th><th style="text-align:right">Credit</th><th style="text-align:right">Debit</th><th style="text-align:right">Balance</th></tr></thead>
-      <tbody>${rows||'<tr><td colspan="5" style="text-align:center;color:#aaa;padding:20px">No entries</td></tr>'}</tbody>
-    </table>
-  </div>
-  <script>window.onload=()=>window.print();<\/script>
-  </body></html>`);
-  w.document.close();
-}
-
-// ── salary report ─────────────────────────────────────────────────────────
-function renderRepMonth(){document.getElementById('rep-month-label').textContent=fmtMonth(repMonth);}
-
-async function loadSalaryReport(){
-  const mk=monthKey(repMonth);
-  const cont=document.getElementById('salary-report-container');
-  cont.innerHTML='<div class="no-data">Loading...</div>';
-  if(!employees.length){cont.innerHTML='<div class="no-data">No employees found.</div>';return;}
-
-  // Fetch payroll + ledger balances in parallel — no recalculate on load
-  const [payRows, bals] = await Promise.all([
-    api('GET',`/api/payroll/${mk}`),
-    api('GET','/api/ledger/all-balances')
-  ]);
-
-  payrollData={};
-  (payRows||[]).forEach(r=>payrollData[r.emp_id]=r);
-  const ledgerBals=bals||{};
-
-  let totalGross=0,totalDeduct=0,totalNet=0,totalFinal=0;
-  const rows=employees.map(e=>{
-    const pr=payrollData[e.id];
-    const gross=pr?pr.gross:0;
-    const deduct=pr?pr.ledger_deduct:0;
-    const net=pr?pr.net:0;
-    const ledgerBal=ledgerBals[e.id]||0;
-    const finalPayable=Math.max(0,net-Math.max(0,ledgerBal));
-    const paidDays=pr?(pr.paid_days||(parseFloat(pr.present)+parseFloat(pr.sundays))):0;
-    totalGross+=gross;totalDeduct+=deduct;totalNet+=net;totalFinal+=finalPayable;
-    return `<tr>
-      <td><strong>${e.name}</strong><br><span style="font-size:11px;color:#888">${e.id}</span></td>
-      <td>${e.desig}</td>
-      <td style="text-align:right">${rupee(e.salary)}</td>
-      <td style="text-align:right">${pr?`${pr.present}wd+${pr.sundays}S=<strong>${paidDays}</strong>/30`:'—'}</td>
-      <td style="text-align:right">${pr?pr.total_ot:'—'}</td>
-      <td style="text-align:right;font-weight:600">${gross?rupee(gross):'—'}</td>
-      <td style="text-align:right;color:#e24b4a">${deduct?'-'+rupee(deduct):'—'}</td>
-      <td style="text-align:right;font-weight:600">${net?rupee(net):'—'}</td>
-      <td style="text-align:right;color:${ledgerBal>=0?'#1d9e75':'#e24b4a'}">${ledgerBal>=0?'+':'-'}${rupee(Math.abs(ledgerBal))}</td>
-      <td style="text-align:right;font-weight:700">${rupee(finalPayable)}</td>
-    </tr>`;
-  }).join('');
-
-  const hasData=employees.some(e=>payrollData[e.id]);
-  cont.innerHTML= hasData ? `<table>
-    <thead><tr>
-      <th>Employee</th><th>Designation</th>
-      <th style="text-align:right">Base Salary</th>
-      <th style="text-align:right">Paid Days</th>
-      <th style="text-align:right">OT Days</th>
-      <th style="text-align:right">Gross Pay</th>
-      <th style="text-align:right">Deductions</th>
-      <th style="text-align:right">Net Pay</th>
-      <th style="text-align:right">Ledger Bal.</th>
-      <th style="text-align:right">Final Payable</th>
-    </tr></thead>
-    <tbody>${rows}</tbody>
-    <tfoot><tr style="background:#f5f5f0;font-weight:700">
-      <td colspan="5">TOTAL</td>
-      <td style="text-align:right">${rupee(totalGross)}</td>
-      <td style="text-align:right;color:#e24b4a">${totalDeduct?'-'+rupee(totalDeduct):'—'}</td>
-      <td style="text-align:right">${rupee(totalNet)}</td>
-      <td></td>
-      <td style="text-align:right">${rupee(totalFinal)}</td>
-    </tr></tfoot>
-  </table>` : '<div class="no-data">No payroll data for this month. Go to Payroll page → click "Calculate Payroll" first.</div>';
-}
-
-function printSalaryReport(){
-  const mk=monthKey(repMonth);
-  const table=document.querySelector('#salary-report-container table');
-  if(!table){showToast('Load the report first.',false);return;}
-  const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><title>Salary Report — ${fmtMonth(repMonth)}</title>
-  <style>
-    body{font-family:Arial,sans-serif;font-size:11px;padding:0;margin:0}
-    .lh{background:#1a1a18;color:#fff;padding:12px 24px;display:flex;justify-content:space-between;align-items:center}
-    .lh-name{font-size:15px;font-weight:700;letter-spacing:1px}
-    .lh-sub{font-size:9px;color:#ccc;margin-top:2px}
-    .lh-right{text-align:right;font-size:9px;color:#ccc;line-height:1.6}
-    .gold{height:3px;background:#d4a843}
-    .body{padding:20px 24px}
-    h2{font-size:13px;margin-bottom:12px}
-    table{width:100%;border-collapse:collapse;font-size:10px}
-    th{text-align:left;padding:6px 8px;background:#f5f5f0;border-bottom:2px solid #e0ddd5;font-size:9px;text-transform:uppercase;color:#666;white-space:nowrap}
-    td{padding:6px 8px;border-bottom:1px solid #f0ede5;white-space:nowrap}
-    tfoot tr{background:#f5f5f0;font-weight:700}
-    @media print{@page{margin:0;size:A4 landscape}body{margin:0}}
-  </style></head><body>
-  <div class="lh">
-    <div><div class="lh-name">GRAPHICS & TRENDS SOLUTIONS</div><div class="lh-sub">Salary Report — ${fmtMonth(repMonth)}</div></div>
-    <div class="lh-right">C 269, Sector-10, Noida, U.P.<br>+91-120-4322277 | graphicsandtrends@gmail.com<br>GST: 09AXBPA8060E1ZT</div>
-  </div>
-  <div class="gold"></div>
-  <div class="body">
-    <h2>Monthly Salary Report — ${fmtMonth(repMonth)} &nbsp;&nbsp; <span style="font-size:10px;color:#888;font-weight:400">Printed: ${new Date().toLocaleString('en-IN')}</span></h2>
-    ${table.outerHTML}
-  </div>
-  <script>window.onload=()=>window.print();<\/script>
-  </body></html>`);
-  w.document.close();
+async function toggleStatus(id){await api('POST',`/api/employees/${id}/status`);employees=await api('GET','/api/employees')||[];renderEmployees();}
+async function deleteEmployee(id,name){
+  if(!confirm(`Delete ${name}? This removes all their data.`))return;
+  const res=await api('DELETE',`/api/employees/${id}`);
+  if(res&&res.ok){showToast(name+' deleted.');employees=await api('GET','/api/employees')||[];renderEmployees();renderDashboard();}
 }
 
 function openEditModal(id){
   const e=employees.find(x=>x.id===id);if(!e)return;
-  document.getElementById('edit-emp-id').value=e.id;
-  document.getElementById('edit-emp-name').value=e.name||'';
-  document.getElementById('edit-emp-desig').value=e.desig||'';
-  document.getElementById('edit-emp-dept').value=e.dept||'';
-  document.getElementById('edit-emp-doj').value=e.doj||'';
-  document.getElementById('edit-emp-salary').value=e.salary||'';
-  document.getElementById('edit-emp-phone').value=e.phone||'';
-  document.getElementById('edit-emp-email').value=e.email||'';
-  document.getElementById('edit-emp-address').value=e.address||'';
-  document.getElementById('edit-emp-city').value=e.city||'';
-  document.getElementById('edit-emp-pin').value=e.pin||'';
-  document.getElementById('edit-emp-bank').value=e.bank||'';
-  document.getElementById('edit-emp-bankname').value=e.bank_name||'';
-  document.getElementById('edit-emp-ifsc').value=e.ifsc||'';
-  document.getElementById('edit-emp-accname').value=e.acc_name||'';
+  ['id','name','desig','dept','doj','salary','phone','email','address','city','pin','bank','bankname','ifsc','accname'].forEach(f=>{
+    const el=document.getElementById('edit-emp-'+f);if(!el)return;
+    const map={id:'id',name:'name',desig:'desig',dept:'dept',doj:'doj',salary:'salary',phone:'phone',email:'email',address:'address',city:'city',pin:'pin',bank:'bank',bankname:'bank_name',ifsc:'ifsc',accname:'acc_name'};
+    el.value=e[map[f]]||'';
+  });
   openModal('modal-edit-emp');
 }
 async function saveEditEmployee(){
@@ -1028,41 +663,15 @@ async function saveEditEmployee(){
   const salary=document.getElementById('edit-emp-salary').value;
   if(!name||!desig||!salary){alert('Fill required fields.');return;}
   const res=await api('PUT',`/api/employees/${id}`,{
-    name,desig,
-    dept:document.getElementById('edit-emp-dept').value||'General',
-    doj:document.getElementById('edit-emp-doj').value,
-    salary,
-    phone:document.getElementById('edit-emp-phone').value,
-    email:document.getElementById('edit-emp-email').value,
-    address:document.getElementById('edit-emp-address').value,
-    city:document.getElementById('edit-emp-city').value,
-    pin:document.getElementById('edit-emp-pin').value,
-    bank:document.getElementById('edit-emp-bank').value,
-    bankName:document.getElementById('edit-emp-bankname').value,
-    ifsc:document.getElementById('edit-emp-ifsc').value,
-    accName:document.getElementById('edit-emp-accname').value||name,
-    cl:12, sl:6, el:15
+    name,desig,dept:document.getElementById('edit-emp-dept').value||'General',
+    doj:document.getElementById('edit-emp-doj').value,salary,
+    phone:document.getElementById('edit-emp-phone').value,email:document.getElementById('edit-emp-email').value,
+    address:document.getElementById('edit-emp-address').value,city:document.getElementById('edit-emp-city').value,
+    pin:document.getElementById('edit-emp-pin').value,bank:document.getElementById('edit-emp-bank').value,
+    bankName:document.getElementById('edit-emp-bankname').value,ifsc:document.getElementById('edit-emp-ifsc').value,
+    accName:document.getElementById('edit-emp-accname').value||name,cl:12,sl:6,el:15
   });
-  if(res&&res.ok){
-    showToast('Employee updated!');
-    employees=await api('GET','/api/employees')||[];
-    closeModal('modal-edit-emp');renderEmployees();renderDashboard();
-  } else showToast('Update failed.',false);
-}
-
-async function deleteEmployee(id, name){
-  if(!confirm(`Delete ${name}? This will permanently remove the employee and all their attendance, payroll and ledger data.`))return;
-  const res=await api('DELETE',`/api/employees/${id}`);
-  if(res&&res.ok){
-    showToast(name+' deleted.');
-    employees=await api('GET','/api/employees')||[];
-    renderEmployees();renderDashboard();
-  } else showToast('Delete failed.',false);
-}
-async function toggleStatus(id){
-  await api('POST',`/api/employees/${id}/status`);
-  employees=await api('GET','/api/employees')||[];
-  renderEmployees();
+  if(res&&res.ok){showToast('Employee updated!');employees=await api('GET','/api/employees')||[];closeModal('modal-edit-emp');renderEmployees();}
 }
 
 function populateLeaveDropdown(){
@@ -1070,9 +679,9 @@ function populateLeaveDropdown(){
   el.innerHTML='<option value="">Select</option>'+activeEmps().map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
 }
 
-// ── attendance ────────────────────────────────────────────────────────────
+// ── attendance ────────────────────────────────────────────────────────────────
 async function loadAttendance(){
-  if(!employees.length) employees=await api('GET','/api/employees')||[];
+  if(!employees.length)employees=await api('GET','/api/employees')||[];
   const mk=monthKey(attMonth);
   const res=await api('GET',`/api/attendance/${mk}`);
   attCache=res||{attendance:{},ot:{}};
@@ -1080,12 +689,8 @@ async function loadAttendance(){
 }
 
 function renderAttendance(){
-  const emps=activeEmps();
-  const cont=document.getElementById('att-container');
-  if(!emps.length){
-    cont.innerHTML='<div class="no-data" style="padding:40px">No active employees found. Please add employees first.</div>';
-    return;
-  }
+  const emps=activeEmps(),cont=document.getElementById('att-container');
+  if(!emps.length){cont.innerHTML='<div class="no-data" style="padding:40px">No active employees. Please add employees first.</div>';return;}
   const days=getDaysInMonth(attMonth),mk=monthKey(attMonth);
   let html=`<table style="min-width:${Math.max(800,130+days*40)}px"><thead><tr>
     <th style="min-width:130px;position:sticky;left:0;background:#faf9f5;z-index:2">Employee</th>`;
@@ -1140,107 +745,75 @@ function markAllPresent(){
   });
   renderAttendance();
 }
-
 async function saveAttendance(){
   const mk=monthKey(attMonth);
   const res=await api('POST','/api/attendance',{month_key:mk,attendance:attCache.attendance,ot:attCache.ot});
   if(res&&res.ok)showToast('Attendance saved for '+fmtMonth(attMonth));
 }
 
-// ── payroll ───────────────────────────────────────────────────────────────
+// ── payroll ───────────────────────────────────────────────────────────────────
 async function loadPayroll(){
   const mk=monthKey(payMonth);
   const rows=await api('GET',`/api/payroll/${mk}`)||[];
   payrollData={};rows.forEach(r=>payrollData[r.emp_id]=r);
   renderPayroll();
 }
-
 async function generatePayroll(){
   const res=await api('POST','/api/payroll/calculate',{month_key:monthKey(payMonth)});
   if(res&&res.ok){showToast('Payroll calculated!');await loadPayroll();}
 }
-
 function renderPayroll(){
   document.getElementById('pay-month-label').textContent=fmtMonth(payMonth);
   const emps=activeEmps(),tb=document.getElementById('payroll-table');
-  if(!emps.length){tb.innerHTML='<tr><td colspan="11" class="no-data">No active employees</td></tr>';return;}
+  if(!emps.length){tb.innerHTML='<tr><td colspan="9" class="no-data">No active employees</td></tr>';return;}
   tb.innerHTML=emps.map(emp=>{
     const pr=payrollData[emp.id];
-    if(!pr)return `<tr><td>${emp.name}</td><td>${rupee(emp.salary)}</td><td colspan="7" style="color:#aaa">Not calculated — click Calculate Payroll</td></tr>`;
-    const ledgerBtn=pr.posted_to_ledger
-      ?'<span class="badge badge-green">Posted</span>'
-      :`<button class="btn btn-sm btn-success post-btn" data-empid="${emp.id}">Post to Ledger</button>`;
+    if(!pr)return `<tr><td>${emp.name}</td><td>${rupee(emp.salary)}</td><td colspan="7" style="color:#aaa">Not calculated</td></tr>`;
+    const paidDays=pr.paid_days||(parseFloat(pr.present)+parseFloat(pr.sundays));
+    const ledgerBtn=pr.posted_to_ledger?'<span class="badge badge-green">Posted</span>':`<button class="btn btn-sm btn-success post-btn" data-id="${emp.id}">Post</button>`;
     return `<tr>
       <td><strong>${emp.name}</strong><br><span style="font-size:11px;color:#888">${emp.id}</span></td>
-      <td>${rupee(emp.salary)}</td><td>${pr.present}/${pr.weekdays}</td>
-      <td style="color:#534ab7">${pr.sunday_ot}</td><td>${pr.extra_ot}</td>
+      <td>${rupee(emp.salary)}</td>
+      <td>${pr.present}wd+${pr.sundays}S=<strong>${paidDays}</strong>/30</td>
+      <td style="color:#534ab7">${pr.sunday_ot}</td>
+      <td>${pr.extra_ot}</td>
       <td>${rupee(pr.gross)}</td>
       <td style="color:#e24b4a">${pr.ledger_deduct>0?'-'+rupee(pr.ledger_deduct):'—'}</td>
       <td><strong>${rupee(pr.net)}</strong></td>
       <td>${ledgerBtn}</td>
     </tr>`;
   }).join('');
-  tb.querySelectorAll('.post-btn').forEach(btn=>btn.addEventListener('click',()=>postToLedger(btn.dataset.empid)));
+  tb.querySelectorAll('.post-btn').forEach(b=>b.addEventListener('click',()=>postToLedger(b.dataset.id)));
 }
-
 async function postToLedger(empId){
   const res=await api('POST','/api/payroll/post-ledger',{emp_id:empId,month_key:monthKey(payMonth)});
   if(res&&res.ok){showToast('Posted to ledger!');await loadPayroll();}
   else if(res)showToast(res.error||'Error',false);
 }
 
-async function markPaid(empId,status){
-  const res=await api('POST','/api/payroll/mark-paid',{emp_id:empId,month_key:monthKey(payMonth),status});
-  if(res&&res.ok){showToast('Payment updated!');await loadPayroll();renderDashboard();}
-}
-
-function renderBulkPay(){
-  const emps=activeEmps(),tb=document.getElementById('bulk-pay-table');
-  if(!emps.length){tb.innerHTML='<tr><td colspan="4" class="no-data">No employees</td></tr>';return;}
-  tb.innerHTML=emps.map(emp=>{
-    const pr=payrollData[emp.id];
-    const badge=!pr?'badge-gray':pr.paid==='Paid'?'badge-green':pr.paid==='Partial'?'badge-amber':'badge-red';
-    return `<tr><td>${emp.name}</td><td>${pr?rupee(pr.net):'—'}</td>
-      <td><span class="badge ${badge}">${pr?pr.paid:'Not calculated'}</span></td>
-      <td>
-        <button class="btn btn-sm btn-success bp-paid" data-empid="${emp.id}">Paid</button>
-        <button class="btn btn-sm bp-unpaid" data-empid="${emp.id}" style="margin-left:4px">Unpaid</button>
-      </td></tr>`;
-  }).join('');
-  tb.querySelectorAll('.bp-paid').forEach(b=>b.addEventListener('click',()=>markPaid(b.dataset.empid,'Paid')));
-  tb.querySelectorAll('.bp-unpaid').forEach(b=>b.addEventListener('click',()=>markPaid(b.dataset.empid,'Unpaid')));
-}
-
-// ── ledger ────────────────────────────────────────────────────────────────
+// ── ledger ────────────────────────────────────────────────────────────────────
 async function renderLedgerPage(){
   const emps=employees;
   document.getElementById('ledger-emp-count').textContent=emps.length+' emp';
   const list=document.getElementById('ledger-emp-list');
   if(!emps.length){list.innerHTML='<div class="no-data">No employees yet</div>';return;}
-
-  // Fetch individual ledger for selected emp, and balances for all
   const bals=await api('GET','/api/ledger/all-balances')||{};
-  if(selectedLedgerEmp){
-    ledgerCache[selectedLedgerEmp]=await api('GET',`/api/ledger/${selectedLedgerEmp}`)||[];
-  }
-
+  if(selectedLedgerEmp){ledgerCache[selectedLedgerEmp]=await api('GET',`/api/ledger/${selectedLedgerEmp}`)||[];}
   list.innerHTML=emps.map(e=>{
     const bal=bals[e.id]||0;
-    const count=selectedLedgerEmp===e.id?(ledgerCache[e.id]||[]).length:'—';
-    return `<div class="ledger-emp-row${selectedLedgerEmp===e.id?' selected':''}" data-empid="${e.id}">
-      <div><div style="font-size:13px">${e.name}</div><div style="font-size:11px;color:#888">${count} entries</div></div>
+    const cnt=selectedLedgerEmp===e.id?(ledgerCache[e.id]||[]).length:'—';
+    return `<div class="ledger-emp-row${selectedLedgerEmp===e.id?' selected':''}" data-id="${e.id}">
+      <div><div style="font-size:13px">${e.name}</div><div style="font-size:11px;color:#888">${cnt} entries</div></div>
       <div class="${bal>=0?'balance-pos':'balance-neg'}" style="font-size:12px">${bal>=0?'+':'-'}${rupee(Math.abs(bal))}</div>
     </div>`;
   }).join('');
-
   list.querySelectorAll('.ledger-emp-row').forEach(row=>{
     row.addEventListener('click',async()=>{
-      selectedLedgerEmp=row.dataset.empid;
+      selectedLedgerEmp=row.dataset.id;
       ledgerCache[selectedLedgerEmp]=await api('GET',`/api/ledger/${selectedLedgerEmp}`)||[];
       renderLedgerPage();
     });
   });
-
   if(selectedLedgerEmp)renderLedgerDetail(selectedLedgerEmp);
 }
 
@@ -1260,17 +833,12 @@ function renderLedgerDetail(empId){
   document.getElementById('ls-balance-note').textContent=bal>=0?'GNT owes employee':'Employee owes GNT';
   if(!entries.length){document.getElementById('ledger-table-wrap').innerHTML='<div class="no-data">No ledger entries yet.</div>';return;}
   let running=0;
-  let html=`<div class="ledger-entry ledger-header" style="grid-template-columns:90px 1fr 90px 90px 100px 36px">
-    <span>Date</span><span>Description</span><span style="text-align:right">Credit</span>
-    <span style="text-align:right">Debit</span><span style="text-align:right">Balance</span><span></span>
-  </div>`;
+  let html=`<div class="ledger-entry ledger-header"><span>Date</span><span>Description</span><span style="text-align:right">Credit</span><span style="text-align:right">Debit</span><span style="text-align:right">Balance</span><span></span></div>`;
   entries.forEach(e=>{
     running+=e.effect==='credit'?e.amount:-e.amount;
-    const tc={'salary-credit':'badge-green','salary-payment':'badge-blue','advance':'badge-red',
-      'expense-reimburse':'badge-amber','expense-recover':'badge-purple','opening-balance':'badge-gray'}[e.type]||'badge-gray';
-    const tl={'salary-credit':'Salary','salary-payment':'Paid','advance':'Advance',
-      'expense-reimburse':'Reimb.','expense-recover':'Recover','opening-balance':'Opening'}[e.type]||e.type;
-    html+=`<div class="ledger-entry" style="grid-template-columns:90px 1fr 90px 90px 100px 36px">
+    const tc={'salary-credit':'badge-green','salary-payment':'badge-blue','advance':'badge-red','expense-reimburse':'badge-amber','expense-recover':'badge-purple','opening-balance':'badge-gray'}[e.type]||'badge-gray';
+    const tl={'salary-credit':'Salary','salary-payment':'Paid','advance':'Advance','expense-reimburse':'Reimb.','expense-recover':'Recover','opening-balance':'Opening'}[e.type]||e.type;
+    html+=`<div class="ledger-entry">
       <span style="color:#888;font-size:12px">${new Date(e.date).toLocaleDateString('en-IN')}</span>
       <span><span class="badge ${tc}" style="margin-right:5px">${tl}</span>${e.label}</span>
       <span style="text-align:right" class="${e.effect==='credit'?'amount-cr':''}">${e.effect==='credit'?rupee(e.amount):'—'}</span>
@@ -1285,174 +853,135 @@ function renderLedgerDetail(empId){
     btn.addEventListener('click',async()=>{
       if(!confirm('Delete this ledger entry?'))return;
       const res=await api('DELETE',`/api/ledger/${btn.dataset.id}`);
-      if(res&&res.ok){showToast('Entry deleted.');renderLedgerPage();}
-      else showToast('Delete failed.',false);
+      if(res&&res.ok){showToast('Entry deleted.');await renderLedgerPage();}
     });
   });
 }
 
-async function addOpeningBalance(){
-  if(!selectedLedgerEmp){alert('Select an employee first.');return;}
-  const date=document.getElementById('ob-date').value;
-  const amount=parseFloat(document.getElementById('ob-amount').value);
-  const type=document.getElementById('ob-type').value;
-  const note=document.getElementById('ob-note').value.trim()||'Opening Balance';
-  if(!date||!amount){alert('Fill required fields.');return;}
-  const res=await api('POST','/api/ledger/opening-balance',{
-    emp_id:selectedLedgerEmp, date, amount, effect:type, note
-  });
-  if(res&&res.ok){
-    showToast('Opening balance posted!');
-    closeModal('modal-opening-balance');
-    renderLedgerPage();
-  } else showToast('Failed.',false);
-}
-
 async function addAdvance(){
   if(!selectedLedgerEmp){alert('Select an employee first.');return;}
-  const date=document.getElementById('adv-date').value,amount=document.getElementById('adv-amount').value;
-  if(!date||!amount){alert('Fill required fields.');return;}
-  const res=await api('POST','/api/ledger/advance',{
-    emp_id:selectedLedgerEmp,date,amount,
-    note:document.getElementById('adv-note').value||'Advance salary',
-    mode:document.getElementById('adv-mode').value
-  });
-  if(res&&res.ok){showToast('Advance posted!');closeModal('modal-add-advance');renderLedgerPage();}
+  const dt=document.getElementById('adv-date').value,amt=document.getElementById('adv-amount').value;
+  if(!dt||!amt){alert('Fill required fields.');return;}
+  const res=await api('POST','/api/ledger/advance',{emp_id:selectedLedgerEmp,date:dt,amount:amt,note:document.getElementById('adv-note').value||'Advance salary',mode:document.getElementById('adv-mode').value});
+  if(res&&res.ok){showToast('Advance posted!');closeModal('modal-add-advance');await renderLedgerPage();}
+}
+
+async function addOpeningBalance(){
+  if(!selectedLedgerEmp){alert('Select an employee first.');return;}
+  const dt=document.getElementById('ob-date').value,amt=document.getElementById('ob-amount').value;
+  if(!dt||!amt){alert('Fill required fields.');return;}
+  const res=await api('POST','/api/ledger/opening-balance',{emp_id:selectedLedgerEmp,date:dt,amount:amt,effect:document.getElementById('ob-type').value,note:document.getElementById('ob-note').value||'Opening Balance'});
+  if(res&&res.ok){showToast('Opening balance posted!');closeModal('modal-opening-balance');await renderLedgerPage();}
 }
 
 function initExpLines(){expLineCount=0;document.getElementById('exp-lines').innerHTML='';document.getElementById('lexp-total').textContent='₹0';addExpLine();}
 function addExpLine(){
   expLineCount++;
-  const id='expline-'+expLineCount,div=document.createElement('div');
+  const id='el'+expLineCount,div=document.createElement('div');
   div.className='exp-line';div.id=id;
-  div.innerHTML=`<input placeholder="e.g. Auto fare to site" class="exp-desc">
+  div.innerHTML=`<input placeholder="e.g. Auto fare" class="exp-desc">
     <select class="exp-type"><option>Conveyance</option><option>Petty Cash</option><option>Food</option><option>Site Expense</option><option>Other</option></select>
     <input type="number" placeholder="0" min="0" class="exp-amt">
-    <select class="exp-effect"><option value="reimburse">Reimburse (Debit)</option><option value="recover">Recover from Salary</option></select>
-    <button class="btn btn-sm btn-danger exp-remove" style="padding:4px 8px">✕</button>`;
-  document.getElementById('exp-lines').appendChild(div);
+    <select class="exp-effect"><option value="reimburse">Reimburse</option><option value="recover">Recover from Salary</option></select>
+    <button class="btn btn-sm btn-danger" style="padding:4px 8px">✕</button>`;
+  div.querySelector('button').addEventListener('click',()=>{div.remove();recalcExpTotal();});
   div.querySelector('.exp-amt').addEventListener('input',recalcExpTotal);
-  div.querySelector('.exp-remove').addEventListener('click',()=>{div.remove();recalcExpTotal();});
+  document.getElementById('exp-lines').appendChild(div);
 }
-function recalcExpTotal(){
-  let t=0;document.querySelectorAll('.exp-amt').forEach(i=>{t+=parseFloat(i.value)||0;});
-  document.getElementById('lexp-total').textContent=rupee(t);
-}
+function recalcExpTotal(){let t=0;document.querySelectorAll('.exp-amt').forEach(i=>{t+=parseFloat(i.value)||0;});document.getElementById('lexp-total').textContent=rupee(t);}
+
 async function submitLedgerExpenses(){
   if(!selectedLedgerEmp){alert('Select an employee first.');return;}
-  const date=document.getElementById('lexp-date').value;
-  const bill=document.getElementById('lexp-bill').value;
-  const site=document.getElementById('lexp-site').value.trim();
-  if(!date){alert('Enter a date.');return;}
+  const dt=document.getElementById('lexp-date').value,bill=document.getElementById('lexp-bill').value,site=document.getElementById('lexp-site').value;
+  if(!dt){alert('Enter a date.');return;}
   const lines=[];
   document.querySelectorAll('#exp-lines .exp-line').forEach(row=>{
-    const desc=row.querySelector('.exp-desc').value.trim();
-    const amt=parseFloat(row.querySelector('.exp-amt').value)||0;
+    const desc=row.querySelector('.exp-desc').value.trim(),amt=parseFloat(row.querySelector('.exp-amt').value)||0;
     if(!desc||!amt)return;
     lines.push({desc,type:row.querySelector('.exp-type').value,amount:amt,effect:row.querySelector('.exp-effect').value});
   });
   if(!lines.length){alert('Add at least one expense line.');return;}
-  const res=await api('POST','/api/ledger/expenses',{emp_id:selectedLedgerEmp,date,bill,site,lines});
+  const res=await api('POST','/api/ledger/expenses',{emp_id:selectedLedgerEmp,date:dt,bill,site,lines});
   if(res&&res.ok){
     showToast('Expenses posted!');
-    // offer to print expense slip
     const emp=employees.find(e=>e.id===selectedLedgerEmp);
     const total=lines.reduce((s,l)=>s+l.amount,0);
     closeModal('modal-add-ledger-exp');
-    renderLedgerPage();
-    if(confirm('Expenses posted! Print expense slip?')){
-      printExpenseSlip(emp,date,bill,site,lines,total);
-    }
+    await renderLedgerPage();
+    if(confirm('Expenses posted! Print expense slip?'))printExpenseSlip(emp,dt,bill,site,lines,total);
   }
 }
 
-function printExpenseSlip(emp,date,bill,site,lines,total){
-  const fmtDate=d=>{try{return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});}catch{return d;}};
-  const rows=lines.map(l=>`<tr>
-    <td style="padding:7px 10px;border-bottom:1px solid #f0ede5">${l.desc}</td>
-    <td style="padding:7px 10px;border-bottom:1px solid #f0ede5">${l.type}</td>
-    <td style="padding:7px 10px;border-bottom:1px solid #f0ede5;text-align:right">${l.effect==='reimburse'?'Reimburse':'Recover from Salary'}</td>
-    <td style="padding:7px 10px;border-bottom:1px solid #f0ede5;text-align:right;font-weight:600">₹${l.amount.toLocaleString('en-IN')}</td>
-  </tr>`).join('');
+function printLedger(){
+  if(!selectedLedgerEmp){showToast('Select an employee first.',false);return;}
+  const emp=employees.find(e=>e.id===selectedLedgerEmp);if(!emp)return;
+  const entries=ledgerCache[selectedLedgerEmp]||[];
+  const credits=entries.filter(e=>e.effect==='credit').reduce((s,e)=>s+e.amount,0);
+  const debits=entries.filter(e=>e.effect==='debit').reduce((s,e)=>s+e.amount,0);
+  const bal=credits-debits;
+  let running=0;
+  const rows=entries.map(e=>{
+    running+=e.effect==='credit'?e.amount:-e.amount;
+    return `<tr><td style="padding:6px 8px;border-bottom:1px solid #f0ede5">${new Date(e.date).toLocaleDateString('en-IN')}</td>
+      <td style="padding:6px 8px;border-bottom:1px solid #f0ede5">${e.label}</td>
+      <td style="padding:6px 8px;border-bottom:1px solid #f0ede5;text-align:right;color:${e.effect==='credit'?'#1d9e75':'#ccc'}">${e.effect==='credit'?rupee(e.amount):'—'}</td>
+      <td style="padding:6px 8px;border-bottom:1px solid #f0ede5;text-align:right;color:${e.effect==='debit'?'#e24b4a':'#ccc'}">${e.effect==='debit'?rupee(e.amount):'—'}</td>
+      <td style="padding:6px 8px;border-bottom:1px solid #f0ede5;text-align:right;font-weight:600;color:${running>=0?'#1d9e75':'#e24b4a'}">${running>=0?'+':'-'}${rupee(Math.abs(running))}</td></tr>`;
+  }).join('');
   const w=window.open('','_blank');
-  w.document.write(`<!DOCTYPE html><html><head><title>Expense Slip</title>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:Arial,sans-serif;font-size:12px;background:#fff}
-    .lh{background:#1a1a18;color:#fff;padding:14px 28px;display:flex;justify-content:space-between;align-items:center}
-    .lh-name{font-size:16px;font-weight:700;letter-spacing:1px}
-    .lh-sub{font-size:9px;color:#ccc;margin-top:2px}
-    .lh-right{text-align:right;font-size:9px;color:#ccc;line-height:1.6}
-    .gold{height:3px;background:#d4a843}
-    .body{padding:24px 28px}
-    .title{font-size:15px;font-weight:700;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #1a1a18;text-align:center}
-    .meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;font-size:12px}
-    .meta-item{padding:8px 12px;background:#faf9f5;border-radius:6px}
-    .meta-label{font-size:10px;color:#888;text-transform:uppercase;margin-bottom:2px}
-    table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:16px}
-    th{text-align:left;padding:7px 10px;background:#f5f5f0;border-bottom:2px solid #e0ddd5;font-size:10px;text-transform:uppercase;color:#666}
-    .total-row{display:flex;justify-content:space-between;padding:10px 12px;background:#1a1a18;color:#fff;border-radius:6px;font-weight:700;font-size:14px}
-    .footer{margin-top:40px;display:flex;justify-content:space-between;font-size:11px;color:#888;padding-top:12px;border-top:1px dashed #ddd}
-    @media print{@page{margin:0;size:A4}body{margin:0}}
-  </style></head><body>
-  <div class="lh">
-    <div><div class="lh-name">GRAPHICS & TRENDS SOLUTIONS</div><div class="lh-sub">Commercial Interior Fitout & Workspace Design</div></div>
-    <div class="lh-right">C 269, Sector-10, Noida, U.P.<br>+91-120-4322277 | graphicsandtrends@gmail.com<br>GST: 09AXBPA8060E1ZT</div>
-  </div>
+  w.document.write(`<!DOCTYPE html><html><head><title>Ledger — ${emp.name}</title><style>body{font-family:Arial,sans-serif;font-size:12px;margin:0}.lh{background:#1a1a18;color:#fff;padding:14px 28px;display:flex;justify-content:space-between}.gold{height:3px;background:#d4a843}.body{padding:20px 28px}table{width:100%;border-collapse:collapse}th{text-align:left;padding:6px 8px;background:#f5f5f0;border-bottom:2px solid #e0ddd5;font-size:10px;text-transform:uppercase;color:#666}@media print{@page{margin:0;size:A4}}</style></head><body>
+  <div class="lh"><div><div style="font-size:16px;font-weight:700">GRAPHICS & TRENDS SOLUTIONS</div><div style="font-size:9px;color:#ccc">Commercial Interior Fitout</div></div><div style="text-align:right;font-size:9px;color:#ccc">C 269, Sector-10, Noida<br>+91-120-4322277 | graphicsandtrends@gmail.com</div></div>
   <div class="gold"></div>
-  <div class="body">
-    <div class="title">EXPENSE SLIP</div>
-    <div class="meta">
-      <div class="meta-item"><div class="meta-label">Employee</div><strong>${emp?emp.name:'—'}</strong>${emp?' ('+emp.id+')':''}</div>
-      <div class="meta-item"><div class="meta-label">Date</div><strong>${fmtDate(date)}</strong></div>
-      ${bill?`<div class="meta-item"><div class="meta-label">Bill / Voucher No.</div><strong>${bill}</strong></div>`:''}
-      ${site?`<div class="meta-item"><div class="meta-label">Site / Project</div><strong>${site}</strong></div>`:''}
-    </div>
-    <table>
-      <thead><tr><th>Description</th><th>Type</th><th style="text-align:right">Settlement</th><th style="text-align:right">Amount</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
-    <div class="total-row"><span>Total Amount</span><span>₹${total.toLocaleString('en-IN')}</span></div>
-    <div class="footer">
-      <span>Generated: ${new Date().toLocaleString('en-IN')}</span>
-      <span>Authorised Signatory: ___________________</span>
-    </div>
+  <div class="body"><h2 style="margin-bottom:4px">Employee Ledger — ${emp.name}</h2>
+  <div style="font-size:11px;color:#666;margin-bottom:12px">${emp.id} | ${emp.desig} | Printed: ${new Date().toLocaleString('en-IN')}</div>
+  <div style="display:flex;gap:16px;margin-bottom:16px">
+    <div style="border:1px solid #e0ddd5;border-radius:6px;padding:8px 14px"><div style="font-size:10px;color:#888">Credits</div><div style="font-size:16px;font-weight:700;color:#1d9e75">${rupee(credits)}</div></div>
+    <div style="border:1px solid #e0ddd5;border-radius:6px;padding:8px 14px"><div style="font-size:10px;color:#888">Debits</div><div style="font-size:16px;font-weight:700;color:#e24b4a">${rupee(debits)}</div></div>
+    <div style="border:1px solid #e0ddd5;border-radius:6px;padding:8px 14px"><div style="font-size:10px;color:#888">Balance</div><div style="font-size:16px;font-weight:700;color:${bal>=0?'#1d9e75':'#e24b4a'}">${bal>=0?'+':'-'}${rupee(Math.abs(bal))}</div></div>
   </div>
-  <script>window.onload=()=>window.print();<\/script>
-  </body></html>`);
+  <table><thead><tr><th>Date</th><th>Description</th><th style="text-align:right">Credit</th><th style="text-align:right">Debit</th><th style="text-align:right">Balance</th></tr></thead><tbody>${rows}</tbody></table></div>
+  <script>window.onload=()=>window.print();<\/script></body></html>`);
   w.document.close();
 }
 
-// ── leaves ────────────────────────────────────────────────────────────────
+function printExpenseSlip(emp,dt,bill,site,lines,total){
+  const fmtD=d=>{try{return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});}catch{return d;}};
+  const rows=lines.map(l=>`<tr><td style="padding:7px 10px;border-bottom:1px solid #f0ede5">${l.desc}</td><td style="padding:7px 10px;border-bottom:1px solid #f0ede5">${l.type}</td><td style="padding:7px 10px;border-bottom:1px solid #f0ede5;text-align:right">${l.effect==='reimburse'?'Reimburse':'Recover'}</td><td style="padding:7px 10px;border-bottom:1px solid #f0ede5;text-align:right;font-weight:600">₹${l.amount.toLocaleString('en-IN')}</td></tr>`).join('');
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Expense Slip</title><style>body{font-family:Arial,sans-serif;font-size:12px;margin:0}.lh{background:#1a1a18;color:#fff;padding:14px 28px;display:flex;justify-content:space-between}.gold{height:3px;background:#d4a843}.body{padding:20px 28px}table{width:100%;border-collapse:collapse}th{text-align:left;padding:6px 8px;background:#f5f5f0;border-bottom:2px solid #e0ddd5;font-size:10px;text-transform:uppercase;color:#666}@media print{@page{margin:0;size:A4}}</style></head><body>
+  <div class="lh"><div><div style="font-size:16px;font-weight:700">GRAPHICS & TRENDS SOLUTIONS</div></div><div style="text-align:right;font-size:9px;color:#ccc">C 269, Sector-10, Noida<br>+91-120-4322277</div></div>
+  <div class="gold"></div>
+  <div class="body"><div style="text-align:center;font-size:15px;font-weight:700;margin-bottom:16px;padding-bottom:10px;border-bottom:2px solid #1a1a18">EXPENSE SLIP</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;font-size:12px">
+    <div style="padding:8px 12px;background:#faf9f5;border-radius:6px"><div style="font-size:10px;color:#888">Employee</div><strong>${emp?emp.name:'—'}</strong></div>
+    <div style="padding:8px 12px;background:#faf9f5;border-radius:6px"><div style="font-size:10px;color:#888">Date</div><strong>${fmtD(dt)}</strong></div>
+    ${bill?`<div style="padding:8px 12px;background:#faf9f5;border-radius:6px"><div style="font-size:10px;color:#888">Bill No.</div><strong>${bill}</strong></div>`:''}
+    ${site?`<div style="padding:8px 12px;background:#faf9f5;border-radius:6px"><div style="font-size:10px;color:#888">Site</div><strong>${site}</strong></div>`:''}
+  </div>
+  <table><thead><tr><th>Description</th><th>Type</th><th style="text-align:right">Settlement</th><th style="text-align:right">Amount</th></tr></thead><tbody>${rows}</tbody></table>
+  <div style="margin-top:12px;padding:10px 14px;background:#1a1a18;color:#fff;border-radius:6px;display:flex;justify-content:space-between;font-weight:700;font-size:14px"><span>Total</span><span>₹${total.toLocaleString('en-IN')}</span></div>
+  <div style="margin-top:40px;display:flex;justify-content:space-between;font-size:11px;color:#888;padding-top:12px;border-top:1px dashed #ddd"><span>Generated: ${new Date().toLocaleString('en-IN')}</span><span>Authorised Signatory: ___________________</span></div>
+  </div><script>window.onload=()=>window.print();<\/script></body></html>`);
+  w.document.close();
+}
+
+// ── leaves ────────────────────────────────────────────────────────────────────
 async function loadLeaves(){
   allLeaves=await api('GET','/api/leaves')||[];
   employees=await api('GET','/api/employees')||[];
   renderLeaveBalances();renderLeaveTable();
 }
 async function addLeave(){
-  const empId=document.getElementById('leave-emp').value;
-  const from=document.getElementById('leave-from').value,to=document.getElementById('leave-to').value;
+  const empId=document.getElementById('leave-emp').value,from=document.getElementById('leave-from').value,to=document.getElementById('leave-to').value;
   if(!empId||!from||!to){alert('Fill required fields.');return;}
-  const res=await api('POST','/api/leaves',{
-    emp_id:empId,from_date:from,to_date:to,
-    leave_type:document.getElementById('leave-type').value,
-    status:document.getElementById('leave-status').value,
-    reason:document.getElementById('leave-reason').value
-  });
+  const res=await api('POST','/api/leaves',{emp_id:empId,from_date:from,to_date:to,leave_type:document.getElementById('leave-type').value,status:document.getElementById('leave-status').value,reason:document.getElementById('leave-reason').value});
   if(res&&res.ok){showToast('Leave applied!');closeModal('modal-add-leave');await loadLeaves();}
 }
-async function deleteLeave(id){
-  const res=await api('DELETE',`/api/leaves/${id}`);
-  if(res&&res.ok){showToast('Leave deleted!');await loadLeaves();}
-}
+async function deleteLeave(id){const res=await api('DELETE',`/api/leaves/${id}`);if(res&&res.ok){showToast('Leave deleted!');await loadLeaves();}}
 function renderLeaveBalances(){
   const tb=document.getElementById('leave-balance-table'),emps=activeEmps();
   if(!emps.length){tb.innerHTML='<tr><td colspan="5" class="no-data">No active employees</td></tr>';return;}
-  tb.innerHTML=emps.map(e=>`<tr><td><strong>${e.name}</strong></td>
-    <td><span class="badge badge-green">${e.cl-e.cl_used}</span>/${e.cl}</td>
-    <td><span class="badge badge-amber">${e.sl-e.sl_used}</span>/${e.sl}</td>
-    <td><span class="badge badge-blue">${e.el-e.el_used}</span>/${e.el}</td>
-    <td>${e.cl_used+e.sl_used+e.el_used} days</td></tr>`).join('');
+  tb.innerHTML=emps.map(e=>`<tr><td><strong>${e.name}</strong></td><td><span class="badge badge-green">${e.cl-e.cl_used}</span>/${e.cl}</td><td><span class="badge badge-amber">${e.sl-e.sl_used}</span>/${e.sl}</td><td><span class="badge badge-blue">${e.el-e.el_used}</span>/${e.el}</td><td>${e.cl_used+e.sl_used+e.el_used} days</td></tr>`).join('');
 }
 function renderLeaveTable(){
   const tb=document.getElementById('leave-app-table');
@@ -1460,20 +989,62 @@ function renderLeaveTable(){
   tb.innerHTML=allLeaves.map(l=>{
     const emp=employees.find(e=>e.id===l.emp_id);
     const badge=l.status==='Approved'?'badge-green':l.status==='Rejected'?'badge-red':'badge-amber';
-    return `<tr><td>${emp?emp.name:'?'}</td><td>${l.leave_type}</td>
-      <td>${new Date(l.from_date).toLocaleDateString('en-IN')}</td>
-      <td>${new Date(l.to_date).toLocaleDateString('en-IN')}</td>
-      <td>${l.days}</td><td>${l.reason||'—'}</td>
-      <td><span class="badge ${badge}">${l.status}</span></td>
-      <td><button class="btn btn-sm btn-danger del-leave" data-id="${l.id}">Del</button></td></tr>`;
+    return `<tr><td>${emp?emp.name:'?'}</td><td>${l.leave_type}</td><td>${new Date(l.from_date).toLocaleDateString('en-IN')}</td><td>${new Date(l.to_date).toLocaleDateString('en-IN')}</td><td>${l.days}</td><td>${l.reason||'—'}</td><td><span class="badge ${badge}">${l.status}</span></td><td><button class="btn btn-sm btn-danger del-leave-btn" data-id="${l.id}">Del</button></td></tr>`;
   }).join('');
-  tb.querySelectorAll('.del-leave').forEach(b=>b.addEventListener('click',()=>deleteLeave(b.dataset.id)));
+  tb.querySelectorAll('.del-leave-btn').forEach(b=>b.addEventListener('click',()=>deleteLeave(b.dataset.id)));
 }
 
-// ── salary slip ───────────────────────────────────────────────────────────
+// ── salary report ─────────────────────────────────────────────────────────────
+async function loadSalaryReport(){
+  const mk=monthKey(repMonth),cont=document.getElementById('salary-report-container');
+  if(!employees.length){cont.innerHTML='<div class="no-data">No employees found.</div>';return;}
+  const [payRows,bals]=await Promise.all([api('GET',`/api/payroll/${mk}`),api('GET','/api/ledger/all-balances')]);
+  payrollData={};(payRows||[]).forEach(r=>payrollData[r.emp_id]=r);
+  const ledgerBals=bals||{};
+  let tGross=0,tDeduct=0,tNet=0,tFinal=0;
+  const rows=employees.map(e=>{
+    const pr=payrollData[e.id];
+    const gross=pr?pr.gross:0,deduct=pr?pr.ledger_deduct:0,net=pr?pr.net:0;
+    const lb=ledgerBals[e.id]||0,finalPay=Math.max(0,net-Math.max(0,lb));
+    const pd=pr?(pr.paid_days||(parseFloat(pr.present)+parseFloat(pr.sundays))):0;
+    tGross+=gross;tDeduct+=deduct;tNet+=net;tFinal+=finalPay;
+    return `<tr>
+      <td><strong>${e.name}</strong><br><span style="font-size:11px;color:#888">${e.id}</span></td>
+      <td>${e.desig}</td>
+      <td style="text-align:right">${rupee(e.salary)}</td>
+      <td style="text-align:right">${pr?`${pr.present}wd+${pr.sundays}S=<strong>${pd}</strong>/30`:'—'}</td>
+      <td style="text-align:right">${pr?pr.total_ot:'—'}</td>
+      <td style="text-align:right;font-weight:600">${gross?rupee(gross):'—'}</td>
+      <td style="text-align:right;color:#e24b4a">${deduct?'-'+rupee(deduct):'—'}</td>
+      <td style="text-align:right;font-weight:600">${net?rupee(net):'—'}</td>
+      <td style="text-align:right;color:${lb>=0?'#1d9e75':'#e24b4a'}">${lb>=0?'+':'-'}${rupee(Math.abs(lb))}</td>
+      <td style="text-align:right;font-weight:700">${rupee(finalPay)}</td>
+    </tr>`;
+  }).join('');
+  const hasData=employees.some(e=>payrollData[e.id]);
+  cont.innerHTML=hasData?`<table>
+    <thead><tr><th>Employee</th><th>Designation</th><th style="text-align:right">Base</th><th style="text-align:right">Paid Days</th><th style="text-align:right">OT</th><th style="text-align:right">Gross</th><th style="text-align:right">Deductions</th><th style="text-align:right">Net Pay</th><th style="text-align:right">Ledger Bal.</th><th style="text-align:right">Final Payable</th></tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr style="background:#f5f5f0;font-weight:700"><td colspan="5">TOTAL</td><td style="text-align:right">${rupee(tGross)}</td><td style="text-align:right;color:#e24b4a">${tDeduct?'-'+rupee(tDeduct):'—'}</td><td style="text-align:right">${rupee(tNet)}</td><td></td><td style="text-align:right">${rupee(tFinal)}</td></tr></tfoot>
+  </table>`:'<div class="no-data">No payroll data. Go to Payroll → Calculate Payroll first, then click "Calculate & Load".</div>';
+}
+
+function printSalaryReport(){
+  const table=document.querySelector('#salary-report-container table');
+  if(!table){showToast('Load the report first.',false);return;}
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Salary Report — ${fmtMonth(repMonth)}</title><style>body{font-family:Arial,sans-serif;font-size:11px;margin:0}.lh{background:#1a1a18;color:#fff;padding:12px 24px;display:flex;justify-content:space-between}.gold{height:3px;background:#d4a843}.body{padding:16px 24px}table{width:100%;border-collapse:collapse}th{text-align:left;padding:5px 8px;background:#f5f5f0;border-bottom:2px solid #e0ddd5;font-size:9px;text-transform:uppercase;color:#666}td{padding:5px 8px;border-bottom:1px solid #f0ede5}tfoot tr{background:#f5f5f0;font-weight:700}@media print{@page{margin:0;size:A4 landscape}}</style></head><body>
+  <div class="lh"><div><div style="font-size:15px;font-weight:700">GRAPHICS & TRENDS SOLUTIONS</div><div style="font-size:9px;color:#ccc">Salary Report — ${fmtMonth(repMonth)}</div></div><div style="text-align:right;font-size:9px;color:#ccc">+91-120-4322277 | graphicsandtrends@gmail.com<br>GST: 09AXBPA8060E1ZT</div></div>
+  <div class="gold"></div>
+  <div class="body"><h2 style="font-size:13px;margin-bottom:10px">Monthly Salary Report — ${fmtMonth(repMonth)} &nbsp; <span style="font-size:10px;color:#888;font-weight:400">Printed: ${new Date().toLocaleString('en-IN')}</span></h2>
+  ${table.outerHTML}</div>
+  <script>window.onload=()=>window.print();<\/script></body></html>`);
+  w.document.close();
+}
+
+// ── salary slip ───────────────────────────────────────────────────────────────
 function populateSlipSelect(){
-  document.getElementById('slip-emp-select').innerHTML='<option value="">Select Employee</option>'+
-    employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
+  document.getElementById('slip-emp-select').innerHTML='<option value="">Select Employee</option>'+employees.map(e=>`<option value="${e.id}">${e.name}</option>`).join('');
 }
 async function generateSlip(){
   const empId=document.getElementById('slip-emp-select').value,cont=document.getElementById('slip-container');
@@ -1482,9 +1053,10 @@ async function generateSlip(){
   const mk=monthKey(slipMonth);
   const rows=await api('GET',`/api/payroll/${mk}`)||[];
   const pr=rows.find(r=>r.emp_id===empId);
-  if(!pr){cont.innerHTML='<div class="no-data">No payroll calculated for this month. Go to Payroll → Calculate first.</div>';return;}
+  if(!pr){cont.innerHTML='<div class="no-data">No payroll for this month. Go to Payroll → Calculate Payroll first.</div>';return;}
   const recoverEntries=(await api('GET',`/api/ledger/${empId}`)||[]).filter(x=>x.type==='expense-recover'&&x.month_key===mk);
   const dailyRate=emp.salary/30;
+  const paidDays=pr.paid_days||(parseFloat(pr.present)+parseFloat(pr.sundays));
   cont.innerHTML=`<div class="slip" id="printable-slip">
     <div class="slip-header">
       <div class="slip-co">GRAPHICS & TRENDS SOLUTIONS</div>
@@ -1497,32 +1069,29 @@ async function generateSlip(){
         <div class="slip-section">Employee</div>
         <div><strong>${emp.name}</strong></div>
         <div style="color:#555">${emp.id} | ${emp.desig}</div>
-        <div style="color:#555">${emp.dept}</div>
+        <div style="color:#555">${emp.dept||''}</div>
         ${emp.phone?`<div style="color:#888;font-size:12px">${emp.phone}</div>`:''}
         ${emp.email?`<div style="color:#888;font-size:12px">${emp.email}</div>`:''}
       </div>
       <div>
         <div class="slip-section">Attendance</div>
-        <div>Salary basis: 30 days (fixed)</div>
-        <div>Sundays in month: ${pr.sundays} (paid holidays)</div>
+        <div>Salary basis: 30 days</div>
+        <div>Sundays in month: ${pr.sundays} (paid)</div>
         <div>Weekdays present: ${pr.present} / ${pr.weekdays}</div>
-        <div>Paid days: ${(parseFloat(pr.paid_days||0)||(parseFloat(pr.present)+parseFloat(pr.sundays)))} / 30</div>
+        <div>Paid days: ${paidDays} / 30</div>
         <div>Sunday OT: ${pr.sunday_ot} | Extra OT: ${pr.extra_ot}</div>
       </div>
     </div>
     <div class="slip-section">Earnings</div>
     <div class="slip-row"><span>Base Salary (30-day basis)</span><span>${rupee(emp.salary)}</span></div>
-    <div class="slip-row"><span>Earned Pay (${(parseFloat(pr.paid_days||0)||(parseFloat(pr.present)+parseFloat(pr.sundays)))}/30 × ${rupee(emp.salary)})</span><span>${rupee(pr.earned_pay)}</span></div>
+    <div class="slip-row"><span>Earned Pay (${paidDays}/30 × ${rupee(emp.salary)})</span><span>${rupee(pr.earned_pay)}</span></div>
     ${pr.sunday_ot>0?`<div class="slip-row"><span>Sunday OT (${pr.sunday_ot} × ${rupee(dailyRate)})</span><span>${rupee(pr.sunday_ot*dailyRate)}</span></div>`:''}
     ${pr.extra_ot>0?`<div class="slip-row"><span>Extra OT (${pr.extra_ot} × ${rupee(dailyRate)})</span><span>${rupee(pr.extra_ot*dailyRate)}</span></div>`:''}
     <div class="slip-row" style="font-weight:600"><span>Gross Earnings</span><span>${rupee(pr.gross)}</span></div>
-    ${pr.ledger_deduct>0?`
-      <div class="slip-section">Deductions</div>
-      ${recoverEntries.map(x=>`<div class="slip-row"><span>${x.label}</span><span style="color:#e24b4a">-${rupee(x.amount)}</span></div>`).join('')}
-      <div class="slip-row" style="font-weight:500"><span>Total Deductions</span><span style="color:#e24b4a">-${rupee(pr.ledger_deduct)}</span></div>`:''}
+    ${pr.ledger_deduct>0?`<div class="slip-section">Deductions</div>${recoverEntries.map(x=>`<div class="slip-row"><span>${x.label}</span><span style="color:#e24b4a">-${rupee(x.amount)}</span></div>`).join('')}<div class="slip-row" style="font-weight:500"><span>Total Deductions</span><span style="color:#e24b4a">-${rupee(pr.ledger_deduct)}</span></div>`:''}
     <div class="slip-row total"><span>NET PAYABLE</span><span style="color:#1d9e75">${rupee(pr.net)}</span></div>
     ${emp.bank||emp.ifsc?`<div style="margin-top:10px;padding:8px 12px;background:#faf9f5;border-radius:6px;font-size:12px">
-      <div style="font-weight:600;margin-bottom:3px;color:#555">Bank Details</div>
+      <div style="font-weight:600;margin-bottom:3px">Bank Details</div>
       ${emp.acc_name?`<div>A/C Holder: <strong>${emp.acc_name}</strong></div>`:''}
       ${emp.bank_name?`<div>Bank: ${emp.bank_name}</div>`:''}
       ${emp.bank?`<div>A/C No: ${emp.bank}</div>`:''}
@@ -1535,10 +1104,10 @@ async function generateSlip(){
           <svg viewBox="0 0 90 90" width="86" height="86" xmlns="http://www.w3.org/2000/svg" style="opacity:0.82">
             <circle cx="45" cy="45" r="42" fill="none" stroke="#1a3a8a" stroke-width="1.8"/>
             <circle cx="45" cy="45" r="36" fill="none" stroke="#1a3a8a" stroke-width="0.8"/>
-            <path id="topArc" d="M 9,45 A 36,36 0 0,1 81,45" fill="none"/>
-            <path id="botArc" d="M 12,52 A 36,36 0 0,0 78,52" fill="none"/>
-            <text font-family="serif" font-size="7.2" fill="#1a3a8a" font-weight="600" letter-spacing="1.2"><textPath href="#topArc" startOffset="50%" text-anchor="middle">GRAPHICS &amp; TRENDS SOLUTIONS</textPath></text>
-            <text font-family="serif" font-size="6.5" fill="#1a3a8a" letter-spacing="0.8"><textPath href="#botArc" startOffset="50%" text-anchor="middle">NOIDA · U.P. · INDIA</textPath></text>
+            <path id="tA" d="M 9,45 A 36,36 0 0,1 81,45" fill="none"/>
+            <path id="bA" d="M 12,52 A 36,36 0 0,0 78,52" fill="none"/>
+            <text font-family="serif" font-size="7.2" fill="#1a3a8a" font-weight="600" letter-spacing="1.2"><textPath href="#tA" startOffset="50%" text-anchor="middle">GRAPHICS &amp; TRENDS SOLUTIONS</textPath></text>
+            <text font-family="serif" font-size="6.5" fill="#1a3a8a" letter-spacing="0.8"><textPath href="#bA" startOffset="50%" text-anchor="middle">NOIDA · U.P. · INDIA</textPath></text>
             <text x="45" y="40" font-family="serif" font-size="8" fill="#1a3a8a" font-weight="700" text-anchor="middle">GNT</text>
             <text x="45" y="51" font-family="serif" font-size="5.5" fill="#1a3a8a" text-anchor="middle">EST. 2010</text>
             <line x1="22" y1="56" x2="68" y2="56" stroke="#1a3a8a" stroke-width="0.7"/>
@@ -1559,11 +1128,88 @@ function printSlip(){
   const slip=document.getElementById('printable-slip');
   if(!slip){alert('Generate a slip first.');return;}
   const w=window.open('','_blank');
-  w.document.write('<html><head><title>Salary Slip</title><style>body{font-family:system-ui,sans-serif;font-size:13px;padding:20px}.slip-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed #eee}.total{border-top:2px solid #000;font-weight:700;font-size:14px;border-bottom:none}.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}svg{display:inline-block}</style></head><body>'+slip.outerHTML+'</body></html>');
+  w.document.write('<html><head><title>Salary Slip</title><style>body{font-family:Arial,sans-serif;font-size:13px;padding:20px}.slip-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed #eee}.total{border-top:2px solid #000;font-weight:700;font-size:14px;border-bottom:none}.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}svg{display:inline-block}@media print{@page{margin:0;size:A4}}</style></head><body>'+slip.outerHTML+'</body></html>');
   w.document.close();w.print();
 }
 
-// ── dashboard ─────────────────────────────────────────────────────────────
+// ── offer letter ──────────────────────────────────────────────────────────────
+function openOfferModal(id){
+  const e=employees.find(x=>x.id===id);if(!e)return;
+  document.getElementById('offer-emp-id').value=e.id;
+  document.getElementById('offer-emp-name').value=e.name;
+  document.getElementById('offer-emp-desig').value=e.desig;
+  document.getElementById('offer-salary').value=rupee(e.salary);
+  document.getElementById('offer-ref').value=e.id;
+  document.getElementById('offer-joining-date').value=e.doj||'';
+  document.getElementById('offer-address').value=e.address||'';
+  document.getElementById('offer-city').value=e.city||'';
+  document.getElementById('offer-pin').value=e.pin||'';
+  openModal('modal-offer-letter');
+}
+function printOfferLetter(){
+  const id=document.getElementById('offer-emp-id').value;
+  const emp=employees.find(e=>e.id===id);if(!emp)return;
+  const joiningDate=document.getElementById('offer-joining-date').value;
+  const address=document.getElementById('offer-address').value||'_________________';
+  const city=document.getElementById('offer-city').value||'__________';
+  const pin=document.getElementById('offer-pin').value||'______';
+  const ref=document.getElementById('offer-ref').value||emp.id;
+  const fmtD=d=>{if(!d)return'__________';try{return new Date(d).toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});}catch{return d;}};
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Offer Letter — ${emp.name}</title><style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Times New Roman',serif;font-size:13pt}.page{width:210mm;min-height:297mm;margin:0 auto}.lh{background:#1a1a18;color:#fff;padding:18px 36px;display:flex;justify-content:space-between;align-items:center;font-family:Arial,sans-serif}.lh-name{font-size:20pt;font-weight:700;letter-spacing:1px}.gold{height:4px;background:#d4a843}.body{padding:36px 40px}.content p{margin-bottom:12px;line-height:1.9;text-align:justify}.sign-block{margin-top:40px}.acceptance{margin-top:50px;border-top:1px solid #aaa;padding-top:20px}.acceptance p{margin-bottom:10px;line-height:2}.field{display:inline-block;border-bottom:1px solid #000;min-width:180px;margin-left:8px}@media print{@page{margin:0;size:A4}}</style></head><body>
+  <div class="page">
+    <div class="lh"><div><div class="lh-name">GRAPHICS & TRENDS SOLUTIONS</div><div style="font-size:9pt;color:#ccc;margin-top:3px">Commercial Interior Fitout & Workspace Design</div></div>
+    <div style="text-align:right;font-size:9pt;color:#ccc;line-height:1.7">C 269, Sector-10, Noida, U.P.<br>+91-120-4322277 | +91-9560098148<br>graphicsandtrends@gmail.com<br>GST: 09AXBPA8060E1ZT</div></div>
+    <div class="gold"></div>
+    <div class="body">
+      <table width="100%" style="margin-bottom:20px"><tr><td><strong>Ref:</strong> ${ref}</td><td style="text-align:right"><strong>Date:</strong> ${fmtD(joiningDate)}</td></tr></table>
+      <div style="margin-bottom:18px">To<br><strong>${emp.name}</strong><br>${address}<br>${city}${pin?' – '+pin:''}</div>
+      <div style="margin-bottom:14px"><strong>Sub: Offer Letter</strong></div>
+      <div style="margin-bottom:12px">Dear <strong>${emp.name}</strong>,</div>
+      <div class="content">
+        <p>We are pleased to offer you the post of <strong>${emp.desig}</strong> based at <strong>Noida, Gautam Budh Nagar.</strong> Your joining salary will be <strong>Rs. ${Number(emp.salary).toLocaleString('en-IN')} per month</strong> inclusive all in hand. Appraisal for the same will be performance based.</p>
+        <p>Your employment with G&T Solutions will be subject to strict adherence to the policies and procedures of G&T Solutions. You will be on probation for one month. This offer is subject to background verification.</p>
+        <p>On acceptance of the terms and conditions as per this offer letter, you will be able to terminate your employment with G&T Solutions by giving one month notice to G&T Solutions and vice versa. You shall not be eligible to avail leave during the notice period.</p>
+        <p>We welcome you to join G&T Solutions and would be happy if you can sign the duplicate copy of this letter in token of your acceptance of the offer of employment with G&T Solutions.</p>
+        <p>You will be reporting to <strong>Mr. Aman Garg (+91-9560098148)</strong> on <strong>${fmtD(joiningDate)}</strong> at <strong>9:30 am at C 269, Ground Floor, Sector 10, Gautam Budh Nagar (U.P.)</strong></p>
+        <p>We wish you all the best and look forward to having you with us.</p>
+      </div>
+      <div class="sign-block">
+        <p><strong>With regards,</strong></p><br><br>
+        <div style="position:relative;display:inline-block;width:90px;height:90px">
+          <svg viewBox="0 0 90 90" width="90" height="90" xmlns="http://www.w3.org/2000/svg" style="opacity:0.82">
+            <circle cx="45" cy="45" r="42" fill="none" stroke="#1a3a8a" stroke-width="1.8"/>
+            <circle cx="45" cy="45" r="36" fill="none" stroke="#1a3a8a" stroke-width="0.8"/>
+            <path id="tA2" d="M 9,45 A 36,36 0 0,1 81,45" fill="none"/>
+            <path id="bA2" d="M 12,52 A 36,36 0 0,0 78,52" fill="none"/>
+            <text font-family="serif" font-size="7.2" fill="#1a3a8a" font-weight="600" letter-spacing="1.2"><textPath href="#tA2" startOffset="50%" text-anchor="middle">GRAPHICS &amp; TRENDS SOLUTIONS</textPath></text>
+            <text font-family="serif" font-size="6.5" fill="#1a3a8a" letter-spacing="0.8"><textPath href="#bA2" startOffset="50%" text-anchor="middle">NOIDA · U.P. · INDIA</textPath></text>
+            <text x="45" y="40" font-family="serif" font-size="8" fill="#1a3a8a" font-weight="700" text-anchor="middle">GNT</text>
+            <text x="45" y="51" font-family="serif" font-size="5.5" fill="#1a3a8a" text-anchor="middle">EST. 2010</text>
+            <line x1="22" y1="56" x2="68" y2="56" stroke="#1a3a8a" stroke-width="0.7"/>
+          </svg>
+          <svg viewBox="0 0 90 90" width="90" height="90" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;opacity:0.75">
+            <path d="M 30 68 Q 32 58 36 62 Q 40 66 38 55 Q 37 50 42 52" stroke="#1a3a8a" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 42 52 Q 46 54 44 62 Q 43 66 48 64" stroke="#1a3a8a" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 26 70 Q 52 72 58 68" stroke="#1a3a8a" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.5"/>
+          </svg>
+        </div>
+        <div style="margin-top:8px"><strong>Aman Garg</strong><br>Proprietor, Graphics & Trends Solutions</div>
+      </div>
+      <div class="acceptance">
+        <p>I accept the aforesaid terms & conditions and this offer of employment.</p>
+        <p>I will join on <span class="field"></span></p>
+        <p>Name: <span class="field"></span></p>
+        <p>Signature: <span class="field"></span></p>
+        <p>Date: <span class="field"></span></p>
+      </div>
+    </div>
+  </div>
+  <script>window.onload=()=>window.print();<\/script></body></html>`);
+  w.document.close();
+}
+
+// ── dashboard ─────────────────────────────────────────────────────────────────
 async function renderDashboard(){
   const emps=activeEmps();
   document.getElementById('dash-total').textContent=emps.length;
@@ -1580,7 +1226,7 @@ async function renderDashboard(){
   document.getElementById('dash-pending').textContent=pending;
   document.getElementById('dash-payable').textContent=rupee(totalPay);
   const tb=document.getElementById('dash-emp-table');
-  if(!emps.length)tb.innerHTML='<tr><td colspan="3" class="no-data">No employees yet</td></tr>';
+  if(!emps.length){tb.innerHTML='<tr><td colspan="3" class="no-data">No employees yet</td></tr>';}
   else tb.innerHTML=emps.slice(0,6).map(e=>`<tr><td>${e.name}</td><td>${e.desig}</td><td><span class="badge badge-green">Active</span></td></tr>`).join('');
   const psEl=document.getElementById('dash-payroll-summary');
   const paid=emps.filter(e=>payrollData[e.id]&&payrollData[e.id].paid==='Paid').length;
@@ -1596,220 +1242,99 @@ async function renderDashboard(){
   </div>`;
 }
 
-// ── wire up ALL events here (no inline handlers) ──────────────────────────
-document.addEventListener('DOMContentLoaded',()=>{
-  // guard: skip if element missing
-  function safeOn(id,evt,fn){const el=document.getElementById(id);if(el)el.addEventListener(evt,fn);}
+// ── init ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  function S(id, ev, fn){ const el=document.getElementById(id); if(el) el.addEventListener(ev, fn); }
 
-  // Login
-  safeOn('login-btn','click',doLogin);
-  safeOn('login-pass','keydown',e=>{if(e.key==='Enter')doLogin();});
-  safeOn('logout-btn','click',doLogout);
+  S('login-btn','click', doLogin);
+  S('login-pass','keydown', e=>{ if(e.key==='Enter') doLogin(); });
+  S('logout-btn','click', doLogout);
 
-  // Nav
-  pages.forEach(p=>safeOn('nav-'+p,'click',()=>showPage(p)));
+  pages.forEach(p => S('nav-'+p, 'click', ()=>showPage(p)));
 
-  // Employees
-  safeOn('btn-add-emp','click',()=>openModal('modal-add-emp'));
-  safeOn('close-emp-modal','click',()=>closeModal('modal-add-emp'));
-  safeOn('cancel-emp-modal','click',()=>closeModal('modal-add-emp'));
-  safeOn('submit-emp','click',addEmployee);
-  safeOn('emp-search','input',e=>renderEmployees(e.target.value));
-  safeOn('emp-name','input',function(){
-    const f=document.getElementById('emp-accname');
-    if(f&&!f.dataset.edited)f.value=this.value;
-  });
-  safeOn('emp-accname','input',function(){this.dataset.edited=this.value?'1':'';});
+  S('btn-add-emp','click', ()=>openModal('modal-add-emp'));
+  S('close-emp-modal','click', ()=>closeModal('modal-add-emp'));
+  S('cancel-emp-modal','click', ()=>closeModal('modal-add-emp'));
+  S('submit-emp','click', addEmployee);
+  S('emp-search','input', e=>renderEmployees(e.target.value));
+  S('emp-name','input', function(){ const f=document.getElementById('emp-accname'); if(f&&!f.dataset.edited) f.value=this.value; });
+  S('emp-accname','input', function(){ this.dataset.edited=this.value?'1':''; });
 
-  // Edit employee
-  safeOn('close-edit-emp-modal','click',()=>closeModal('modal-edit-emp'));
-  safeOn('cancel-edit-emp-modal','click',()=>closeModal('modal-edit-emp'));
-  safeOn('submit-edit-emp','click',saveEditEmployee);
-  safeOn('modal-edit-emp','click',function(e){if(e.target===this)closeModal('modal-edit-emp');});
+  S('close-edit-emp-modal','click', ()=>closeModal('modal-edit-emp'));
+  S('cancel-edit-emp-modal','click', ()=>closeModal('modal-edit-emp'));
+  S('submit-edit-emp','click', saveEditEmployee);
 
-  // Attendance
-  safeOn('att-prev','click',()=>{attMonth.setMonth(attMonth.getMonth()-1);renderAttMonth();loadAttendance();});
-  safeOn('att-next','click',()=>{attMonth.setMonth(attMonth.getMonth()+1);renderAttMonth();loadAttendance();});
-  safeOn('btn-mark-all','click',markAllPresent);
-  safeOn('btn-save-att','click',saveAttendance);
+  S('att-prev','click', ()=>{ attMonth.setMonth(attMonth.getMonth()-1); renderAttMonth(); loadAttendance(); });
+  S('att-next','click', ()=>{ attMonth.setMonth(attMonth.getMonth()+1); renderAttMonth(); loadAttendance(); });
+  S('btn-mark-all','click', markAllPresent);
+  S('btn-save-att','click', saveAttendance);
 
-  // Payroll
-  safeOn('pay-prev','click',()=>{payMonth.setMonth(payMonth.getMonth()-1);renderPayMonth();loadPayroll();});
-  safeOn('pay-next','click',()=>{payMonth.setMonth(payMonth.getMonth()+1);renderPayMonth();loadPayroll();});
-  safeOn('btn-calc-payroll','click',generatePayroll);
+  S('pay-prev','click', ()=>{ payMonth.setMonth(payMonth.getMonth()-1); renderPayMonth(); loadPayroll(); });
+  S('pay-next','click', ()=>{ payMonth.setMonth(payMonth.getMonth()+1); renderPayMonth(); loadPayroll(); });
+  S('btn-calc-payroll','click', generatePayroll);
 
-  // Leaves
-  safeOn('btn-add-leave','click',()=>{populateLeaveDropdown();openModal('modal-add-leave');});
-  safeOn('close-leave-modal','click',()=>closeModal('modal-add-leave'));
-  safeOn('cancel-leave-modal','click',()=>closeModal('modal-add-leave'));
-  safeOn('submit-leave','click',addLeave);
+  S('btn-add-leave','click', ()=>{ populateLeaveDropdown(); openModal('modal-add-leave'); });
+  S('close-leave-modal','click', ()=>closeModal('modal-add-leave'));
+  S('cancel-leave-modal','click', ()=>closeModal('modal-add-leave'));
+  S('submit-leave','click', addLeave);
 
-  // Ledger
-  safeOn('btn-print-ledger','click',printLedger);
-  safeOn('btn-opening-balance','click',()=>{
-    if(!selectedLedgerEmp){showToast('Select an employee first.',false);return;}
+  S('btn-print-ledger','click', printLedger);
+  S('btn-opening-balance','click', ()=>{
+    if(!selectedLedgerEmp){ showToast('Select an employee first.',false); return; }
     document.getElementById('ob-date').value=todayStr();
     document.getElementById('ob-amount').value='';
     document.getElementById('ob-note').value='';
     openModal('modal-opening-balance');
   });
-  safeOn('close-ob-modal','click',()=>closeModal('modal-opening-balance'));
-  safeOn('cancel-ob-modal','click',()=>closeModal('modal-opening-balance'));
-  safeOn('submit-ob','click',addOpeningBalance);
-  safeOn('modal-opening-balance','click',function(e){if(e.target===this)closeModal('modal-opening-balance');});
-  safeOn('btn-add-advance','click',()=>{
-    if(!selectedLedgerEmp){showToast('Select an employee first.',false);return;}
+  S('close-ob-modal','click', ()=>closeModal('modal-opening-balance'));
+  S('cancel-ob-modal','click', ()=>closeModal('modal-opening-balance'));
+  S('submit-ob','click', addOpeningBalance);
+
+  S('btn-add-advance','click', ()=>{
+    if(!selectedLedgerEmp){ showToast('Select an employee first.',false); return; }
     document.getElementById('adv-date').value=todayStr();
     openModal('modal-add-advance');
   });
-  safeOn('close-advance-modal','click',()=>closeModal('modal-add-advance'));
-  safeOn('cancel-advance-modal','click',()=>closeModal('modal-add-advance'));
-  safeOn('submit-advance','click',addAdvance);
-  safeOn('btn-add-exp','click',()=>{
-    if(!selectedLedgerEmp){showToast('Select an employee first.',false);return;}
+  S('close-advance-modal','click', ()=>closeModal('modal-add-advance'));
+  S('cancel-advance-modal','click', ()=>closeModal('modal-add-advance'));
+  S('submit-advance','click', addAdvance);
+
+  S('btn-add-exp','click', ()=>{
+    if(!selectedLedgerEmp){ showToast('Select an employee first.',false); return; }
     initExpLines();
     document.getElementById('lexp-date').value=todayStr();
     document.getElementById('lexp-bill').value='';
     document.getElementById('lexp-site').value='';
     openModal('modal-add-ledger-exp');
   });
-  safeOn('close-exp-modal','click',()=>closeModal('modal-add-ledger-exp'));
-  safeOn('cancel-exp-modal','click',()=>closeModal('modal-add-ledger-exp'));
-  safeOn('submit-exp','click',submitLedgerExpenses);
-  safeOn('btn-add-exp-line','click',addExpLine);
+  S('close-exp-modal','click', ()=>closeModal('modal-add-ledger-exp'));
+  S('cancel-exp-modal','click', ()=>closeModal('modal-add-ledger-exp'));
+  S('submit-exp','click', submitLedgerExpenses);
+  S('btn-add-exp-line','click', addExpLine);
 
-  // Offer letter
-  safeOn('btn-print-offer','click',printOfferLetter);
-  safeOn('close-offer-modal','click',()=>closeModal('modal-offer-letter'));
-  safeOn('cancel-offer-modal','click',()=>closeModal('modal-offer-letter'));
-  safeOn('modal-offer-letter','click',function(e){if(e.target===this)closeModal('modal-offer-letter');});
+  S('btn-print-offer','click', printOfferLetter);
+  S('close-offer-modal','click', ()=>closeModal('modal-offer-letter'));
+  S('cancel-offer-modal','click', ()=>closeModal('modal-offer-letter'));
 
-  // Reports
-  safeOn('rep-prev','click',()=>{repMonth.setMonth(repMonth.getMonth()-1);renderRepMonth();});
-  safeOn('rep-next','click',()=>{repMonth.setMonth(repMonth.getMonth()+1);renderRepMonth();});
-  safeOn('btn-load-report','click',async()=>{
-    const cont=document.getElementById('salary-report-container');
-    cont.innerHTML='<div class="no-data">Recalculating...</div>';
+  S('rep-prev','click', ()=>{ repMonth.setMonth(repMonth.getMonth()-1); renderRepMonth(); });
+  S('rep-next','click', ()=>{ repMonth.setMonth(repMonth.getMonth()+1); renderRepMonth(); });
+  S('btn-load-report','click', async()=>{
+    document.getElementById('salary-report-container').innerHTML='<div class="no-data">Recalculating...</div>';
     await api('POST','/api/payroll/calculate',{month_key:monthKey(repMonth)});
     await loadSalaryReport();
   });
-  safeOn('btn-print-salary-report','click',printSalaryReport);
+  S('btn-print-salary-report','click', printSalaryReport);
 
-  // Slips
-  safeOn('slip-prev','click',()=>{slipMonth.setMonth(slipMonth.getMonth()-1);renderSlipMonth();generateSlip();});
-  safeOn('slip-next','click',()=>{slipMonth.setMonth(slipMonth.getMonth()+1);renderSlipMonth();generateSlip();});
-  safeOn('btn-gen-slip','click',generateSlip);
-  safeOn('btn-print-slip','click',printSlip);
-  safeOn('slip-emp-select','change',generateSlip);
+  S('slip-prev','click', ()=>{ slipMonth.setMonth(slipMonth.getMonth()-1); renderSlipMonth(); generateSlip(); });
+  S('slip-next','click', ()=>{ slipMonth.setMonth(slipMonth.getMonth()+1); renderSlipMonth(); generateSlip(); });
+  S('btn-gen-slip','click', generateSlip);
+  S('btn-print-slip','click', printSlip);
+  S('slip-emp-select','change', generateSlip);
 
-  // Modal overlay close
-  ['modal-add-emp','modal-add-leave','modal-add-advance','modal-add-ledger-exp'].forEach(id=>{
-    safeOn(id,'click',function(e){if(e.target===this)closeModal(id);});
+  ['modal-add-emp','modal-add-leave','modal-add-advance','modal-add-ledger-exp','modal-offer-letter','modal-opening-balance','modal-edit-emp'].forEach(id=>{
+    S(id,'click', function(e){ if(e.target===this) closeModal(id); });
   });
 
-  // Init
-  checkAuth();
-});
-  // Login
-  document.getElementById('login-btn').addEventListener('click',doLogin);
-  document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
-  document.getElementById('logout-btn').addEventListener('click',doLogout);
-
-  // Nav
-  pages.forEach(p=>document.getElementById('nav-'+p).addEventListener('click',()=>showPage(p)));
-
-  // Edit employee modal
-  document.getElementById('close-edit-emp-modal').addEventListener('click',()=>closeModal('modal-edit-emp'));
-  document.getElementById('cancel-edit-emp-modal').addEventListener('click',()=>closeModal('modal-edit-emp'));
-  document.getElementById('submit-edit-emp').addEventListener('click',saveEditEmployee);
-  document.getElementById('modal-edit-emp').addEventListener('click',function(e){if(e.target===this)closeModal('modal-edit-emp');});
-
-  // Employees
-  document.getElementById('btn-add-emp').addEventListener('click',()=>openModal('modal-add-emp'));
-  document.getElementById('close-emp-modal').addEventListener('click',()=>closeModal('modal-add-emp'));
-  document.getElementById('cancel-emp-modal').addEventListener('click',()=>closeModal('modal-add-emp'));
-  document.getElementById('submit-emp').addEventListener('click',addEmployee);
-  document.getElementById('emp-search').addEventListener('input',e=>renderEmployees(e.target.value));
-  document.getElementById('emp-name').addEventListener('input',function(){
-    const f=document.getElementById('emp-accname');if(!f.dataset.edited)f.value=this.value;
-  });
-  document.getElementById('emp-accname').addEventListener('input',function(){this.dataset.edited=this.value?'1':'';});
-
-  // Attendance
-  document.getElementById('att-prev').addEventListener('click',()=>{attMonth.setMonth(attMonth.getMonth()-1);renderAttMonth();loadAttendance();});
-  document.getElementById('att-next').addEventListener('click',()=>{attMonth.setMonth(attMonth.getMonth()+1);renderAttMonth();loadAttendance();});
-  document.getElementById('btn-mark-all').addEventListener('click',markAllPresent);
-  document.getElementById('btn-save-att').addEventListener('click',saveAttendance);
-
-  // Payroll
-  document.getElementById('pay-prev').addEventListener('click',()=>{payMonth.setMonth(payMonth.getMonth()-1);renderPayMonth();loadPayroll();});
-  document.getElementById('pay-next').addEventListener('click',()=>{payMonth.setMonth(payMonth.getMonth()+1);renderPayMonth();loadPayroll();});
-  document.getElementById('btn-calc-payroll').addEventListener('click',generatePayroll);
-
-  // Leaves
-  document.getElementById('btn-add-leave').addEventListener('click',()=>{populateLeaveDropdown();openModal('modal-add-leave');});
-  document.getElementById('close-leave-modal').addEventListener('click',()=>closeModal('modal-add-leave'));
-  document.getElementById('cancel-leave-modal').addEventListener('click',()=>closeModal('modal-add-leave'));
-  document.getElementById('submit-leave').addEventListener('click',addLeave);
-
-  // Offer letter
-  document.getElementById('close-offer-modal').addEventListener('click',()=>closeModal('modal-offer-letter'));
-  document.getElementById('cancel-offer-modal').addEventListener('click',()=>closeModal('modal-offer-letter'));
-  document.getElementById('btn-print-offer').addEventListener('click',printOfferLetter);
-  document.getElementById('modal-offer-letter').addEventListener('click',function(e){if(e.target===this)closeModal('modal-offer-letter');});
-
-  // Reports
-  document.getElementById('rep-prev').addEventListener('click',()=>{repMonth.setMonth(repMonth.getMonth()-1);renderRepMonth();loadSalaryReport();});
-  // Reports
-  safeOn('rep-prev','click',()=>{repMonth.setMonth(repMonth.getMonth()-1);renderRepMonth();});
-  safeOn('rep-next','click',()=>{repMonth.setMonth(repMonth.getMonth()+1);renderRepMonth();});
-  safeOn('btn-load-report','click',async()=>{
-    const cont=document.getElementById('salary-report-container');
-    cont.innerHTML='<div class="no-data">Recalculating...</div>';
-    await api('POST','/api/payroll/calculate',{month_key:monthKey(repMonth)});
-    await loadSalaryReport();
-  });
-  safeOn('btn-print-salary-report','click',printSalaryReport);
-  safeOn('btn-print-ledger','click',printLedger);
-  safeOn('btn-opening-balance','click',()=>{
-    if(!selectedLedgerEmp){showToast('Select an employee first.',false);return;}
-    document.getElementById('ob-date').value=todayStr();
-    document.getElementById('ob-amount').value='';
-    document.getElementById('ob-note').value='';
-    openModal('modal-opening-balance');
-  });
-  safeOn('close-ob-modal','click',()=>closeModal('modal-opening-balance'));
-  safeOn('cancel-ob-modal','click',()=>closeModal('modal-opening-balance'));
-  safeOn('submit-ob','click',addOpeningBalance);
-  safeOn('modal-opening-balance','click',function(e){if(e.target===this)closeModal('modal-opening-balance');});
-  safeOn('btn-add-advance','click',()=>{
-    if(!selectedLedgerEmp){showToast('Select an employee first.',false);return;}
-    document.getElementById('adv-date').value=todayStr();
-    openModal('modal-add-advance');
-  });
-  safeOn('close-advance-modal','click',()=>closeModal('modal-add-advance'));
-  safeOn('cancel-advance-modal','click',()=>closeModal('modal-add-advance'));
-  safeOn('submit-advance','click',addAdvance);
-  safeOn('btn-add-exp','click',()=>{
-    if(!selectedLedgerEmp){showToast('Select an employee first.',false);return;}
-    initExpLines();
-    document.getElementById('lexp-date').value=todayStr();
-    document.getElementById('lexp-bill').value='';
-    document.getElementById('lexp-site').value='';
-    openModal('modal-add-ledger-exp');
-  });
-  safeOn('close-exp-modal','click',()=>closeModal('modal-add-ledger-exp'));
-  safeOn('cancel-exp-modal','click',()=>closeModal('modal-add-ledger-exp'));
-  safeOn('submit-exp','click',submitLedgerExpenses);
-  safeOn('btn-add-exp-line','click',addExpLine);
-  safeOn('slip-prev','click',()=>{slipMonth.setMonth(slipMonth.getMonth()-1);renderSlipMonth();generateSlip();});
-  safeOn('slip-next','click',()=>{slipMonth.setMonth(slipMonth.getMonth()+1);renderSlipMonth();generateSlip();});
-  safeOn('btn-gen-slip','click',generateSlip);
-  safeOn('btn-print-slip','click',printSlip);
-  safeOn('slip-emp-select','change',generateSlip);
-  ['modal-add-emp','modal-add-leave','modal-add-advance','modal-add-ledger-exp'].forEach(id=>{
-    safeOn(id,'click',function(e){if(e.target===this)closeModal(id);});
-  });
   checkAuth();
 });
 </script>
