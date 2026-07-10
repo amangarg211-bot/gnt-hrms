@@ -77,7 +77,7 @@ def calc_pay(emp_id, month_key):
         else:
             if s == 'P':   present += 1
             elif s == 'H': present += 0.5
-            elif s == 'L': present += 1
+            # L = unpaid leave / absent = 0 (deducted from salary)
     ot_row = db.execute(
         "SELECT ot_days FROM ot_days WHERE emp_id=? AND month_key=?",
         (emp_id, month_key)).fetchone()
