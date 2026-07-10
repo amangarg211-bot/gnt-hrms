@@ -1597,8 +1597,119 @@ async function renderDashboard(){
 }
 
 // ── wire up ALL events here (no inline handlers) ──────────────────────────
-function safeOn(id, evt, fn){const el=document.getElementById(id);if(el)el.addEventListener(evt,fn);}
 document.addEventListener('DOMContentLoaded',()=>{
+  // guard: skip if element missing
+  function safeOn(id,evt,fn){const el=document.getElementById(id);if(el)el.addEventListener(evt,fn);}
+
+  // Login
+  safeOn('login-btn','click',doLogin);
+  safeOn('login-pass','keydown',e=>{if(e.key==='Enter')doLogin();});
+  safeOn('logout-btn','click',doLogout);
+
+  // Nav
+  pages.forEach(p=>safeOn('nav-'+p,'click',()=>showPage(p)));
+
+  // Employees
+  safeOn('btn-add-emp','click',()=>openModal('modal-add-emp'));
+  safeOn('close-emp-modal','click',()=>closeModal('modal-add-emp'));
+  safeOn('cancel-emp-modal','click',()=>closeModal('modal-add-emp'));
+  safeOn('submit-emp','click',addEmployee);
+  safeOn('emp-search','input',e=>renderEmployees(e.target.value));
+  safeOn('emp-name','input',function(){
+    const f=document.getElementById('emp-accname');
+    if(f&&!f.dataset.edited)f.value=this.value;
+  });
+  safeOn('emp-accname','input',function(){this.dataset.edited=this.value?'1':'';});
+
+  // Edit employee
+  safeOn('close-edit-emp-modal','click',()=>closeModal('modal-edit-emp'));
+  safeOn('cancel-edit-emp-modal','click',()=>closeModal('modal-edit-emp'));
+  safeOn('submit-edit-emp','click',saveEditEmployee);
+  safeOn('modal-edit-emp','click',function(e){if(e.target===this)closeModal('modal-edit-emp');});
+
+  // Attendance
+  safeOn('att-prev','click',()=>{attMonth.setMonth(attMonth.getMonth()-1);renderAttMonth();loadAttendance();});
+  safeOn('att-next','click',()=>{attMonth.setMonth(attMonth.getMonth()+1);renderAttMonth();loadAttendance();});
+  safeOn('btn-mark-all','click',markAllPresent);
+  safeOn('btn-save-att','click',saveAttendance);
+
+  // Payroll
+  safeOn('pay-prev','click',()=>{payMonth.setMonth(payMonth.getMonth()-1);renderPayMonth();loadPayroll();});
+  safeOn('pay-next','click',()=>{payMonth.setMonth(payMonth.getMonth()+1);renderPayMonth();loadPayroll();});
+  safeOn('btn-calc-payroll','click',generatePayroll);
+
+  // Leaves
+  safeOn('btn-add-leave','click',()=>{populateLeaveDropdown();openModal('modal-add-leave');});
+  safeOn('close-leave-modal','click',()=>closeModal('modal-add-leave'));
+  safeOn('cancel-leave-modal','click',()=>closeModal('modal-add-leave'));
+  safeOn('submit-leave','click',addLeave);
+
+  // Ledger
+  safeOn('btn-print-ledger','click',printLedger);
+  safeOn('btn-opening-balance','click',()=>{
+    if(!selectedLedgerEmp){showToast('Select an employee first.',false);return;}
+    document.getElementById('ob-date').value=todayStr();
+    document.getElementById('ob-amount').value='';
+    document.getElementById('ob-note').value='';
+    openModal('modal-opening-balance');
+  });
+  safeOn('close-ob-modal','click',()=>closeModal('modal-opening-balance'));
+  safeOn('cancel-ob-modal','click',()=>closeModal('modal-opening-balance'));
+  safeOn('submit-ob','click',addOpeningBalance);
+  safeOn('modal-opening-balance','click',function(e){if(e.target===this)closeModal('modal-opening-balance');});
+  safeOn('btn-add-advance','click',()=>{
+    if(!selectedLedgerEmp){showToast('Select an employee first.',false);return;}
+    document.getElementById('adv-date').value=todayStr();
+    openModal('modal-add-advance');
+  });
+  safeOn('close-advance-modal','click',()=>closeModal('modal-add-advance'));
+  safeOn('cancel-advance-modal','click',()=>closeModal('modal-add-advance'));
+  safeOn('submit-advance','click',addAdvance);
+  safeOn('btn-add-exp','click',()=>{
+    if(!selectedLedgerEmp){showToast('Select an employee first.',false);return;}
+    initExpLines();
+    document.getElementById('lexp-date').value=todayStr();
+    document.getElementById('lexp-bill').value='';
+    document.getElementById('lexp-site').value='';
+    openModal('modal-add-ledger-exp');
+  });
+  safeOn('close-exp-modal','click',()=>closeModal('modal-add-ledger-exp'));
+  safeOn('cancel-exp-modal','click',()=>closeModal('modal-add-ledger-exp'));
+  safeOn('submit-exp','click',submitLedgerExpenses);
+  safeOn('btn-add-exp-line','click',addExpLine);
+
+  // Offer letter
+  safeOn('btn-print-offer','click',printOfferLetter);
+  safeOn('close-offer-modal','click',()=>closeModal('modal-offer-letter'));
+  safeOn('cancel-offer-modal','click',()=>closeModal('modal-offer-letter'));
+  safeOn('modal-offer-letter','click',function(e){if(e.target===this)closeModal('modal-offer-letter');});
+
+  // Reports
+  safeOn('rep-prev','click',()=>{repMonth.setMonth(repMonth.getMonth()-1);renderRepMonth();});
+  safeOn('rep-next','click',()=>{repMonth.setMonth(repMonth.getMonth()+1);renderRepMonth();});
+  safeOn('btn-load-report','click',async()=>{
+    const cont=document.getElementById('salary-report-container');
+    cont.innerHTML='<div class="no-data">Recalculating...</div>';
+    await api('POST','/api/payroll/calculate',{month_key:monthKey(repMonth)});
+    await loadSalaryReport();
+  });
+  safeOn('btn-print-salary-report','click',printSalaryReport);
+
+  // Slips
+  safeOn('slip-prev','click',()=>{slipMonth.setMonth(slipMonth.getMonth()-1);renderSlipMonth();generateSlip();});
+  safeOn('slip-next','click',()=>{slipMonth.setMonth(slipMonth.getMonth()+1);renderSlipMonth();generateSlip();});
+  safeOn('btn-gen-slip','click',generateSlip);
+  safeOn('btn-print-slip','click',printSlip);
+  safeOn('slip-emp-select','change',generateSlip);
+
+  // Modal overlay close
+  ['modal-add-emp','modal-add-leave','modal-add-advance','modal-add-ledger-exp'].forEach(id=>{
+    safeOn(id,'click',function(e){if(e.target===this)closeModal(id);});
+  });
+
+  // Init
+  checkAuth();
+});
   // Login
   document.getElementById('login-btn').addEventListener('click',doLogin);
   document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
