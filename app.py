@@ -84,7 +84,11 @@ def calc_pay(emp_id, month_key):
     extra_ot = float(ot_row['ot_days']) if ot_row else 0.0
     total_ot = sunday_ot + extra_ot
     paid_days = present + sundays
-    earned_pay = (paid_days / 30) * salary
+    # Salary capped at base: full attendance = all weekdays present = full salary
+    # Formula: earned = (present / weekdays) * salary
+    # Sundays are included in the 30-day basis so a full month = weekdays + sundays = 30 days
+    # We scale present days against weekdays to get the earned fraction
+    earned_pay = (present / weekdays) * salary if weekdays else 0
     ot_pay = total_ot * daily_rate
     deduct_rows = db.execute(
         "SELECT SUM(amount) as total FROM ledger "
