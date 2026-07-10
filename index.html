@@ -1760,50 +1760,56 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   // Reports
   document.getElementById('rep-prev').addEventListener('click',()=>{repMonth.setMonth(repMonth.getMonth()-1);renderRepMonth();loadSalaryReport();});
-  document.getElementById('rep-next').addEventListener('click',()=>{repMonth.setMonth(repMonth.getMonth()+1);renderRepMonth();loadSalaryReport();});
-  document.getElementById('btn-print-salary-report').addEventListener('click',printSalaryReport);
-
-  // Ledger print
-  document.getElementById('btn-print-ledger').addEventListener('click',printLedger);
-
-  // Opening balance
-  document.getElementById('btn-opening-balance').addEventListener('click',()=>{
+  // Reports
+  safeOn('rep-prev','click',()=>{repMonth.setMonth(repMonth.getMonth()-1);renderRepMonth();});
+  safeOn('rep-next','click',()=>{repMonth.setMonth(repMonth.getMonth()+1);renderRepMonth();});
+  safeOn('btn-load-report','click',async()=>{
+    const cont=document.getElementById('salary-report-container');
+    cont.innerHTML='<div class="no-data">Recalculating...</div>';
+    await api('POST','/api/payroll/calculate',{month_key:monthKey(repMonth)});
+    await loadSalaryReport();
+  });
+  safeOn('btn-print-salary-report','click',printSalaryReport);
+  safeOn('btn-print-ledger','click',printLedger);
+  safeOn('btn-opening-balance','click',()=>{
     if(!selectedLedgerEmp){showToast('Select an employee first.',false);return;}
     document.getElementById('ob-date').value=todayStr();
     document.getElementById('ob-amount').value='';
     document.getElementById('ob-note').value='';
     openModal('modal-opening-balance');
   });
-  document.getElementById('close-ob-modal').addEventListener('click',()=>closeModal('modal-opening-balance'));
-  document.getElementById('cancel-ob-modal').addEventListener('click',()=>closeModal('modal-opening-balance'));
-  document.getElementById('submit-ob').addEventListener('click',addOpeningBalance);
-  document.getElementById('modal-opening-balance').addEventListener('click',function(e){if(e.target===this)closeModal('modal-opening-balance');});
-
-  // Ledger
-  document.getElementById('btn-add-advance').addEventListener('click',()=>{document.getElementById('adv-date').value=todayStr();openModal('modal-add-advance');});
-  document.getElementById('close-advance-modal').addEventListener('click',()=>closeModal('modal-add-advance'));
-  document.getElementById('cancel-advance-modal').addEventListener('click',()=>closeModal('modal-add-advance'));
-  document.getElementById('submit-advance').addEventListener('click',addAdvance);
-  document.getElementById('btn-add-exp').addEventListener('click',()=>{initExpLines();document.getElementById('lexp-date').value=todayStr();openModal('modal-add-ledger-exp');});
-  document.getElementById('close-exp-modal').addEventListener('click',()=>closeModal('modal-add-ledger-exp'));
-  document.getElementById('cancel-exp-modal').addEventListener('click',()=>closeModal('modal-add-ledger-exp'));
-  document.getElementById('submit-exp').addEventListener('click',submitLedgerExpenses);
-  document.getElementById('btn-add-exp-line').addEventListener('click',addExpLine);
-
-  // Slips
-  document.getElementById('slip-prev').addEventListener('click',()=>{slipMonth.setMonth(slipMonth.getMonth()-1);renderSlipMonth();generateSlip();});
-  document.getElementById('slip-next').addEventListener('click',()=>{slipMonth.setMonth(slipMonth.getMonth()+1);renderSlipMonth();generateSlip();});
-  document.getElementById('btn-gen-slip').addEventListener('click',generateSlip);
-  document.getElementById('btn-email-slip').addEventListener('click',emailSalarySlip);
-  document.getElementById('btn-print-slip').addEventListener('click',printSlip);
-  document.getElementById('slip-emp-select').addEventListener('change',generateSlip);
-
-  // Modal overlay close
-  ['modal-add-emp','modal-add-leave','modal-bulk-pay','modal-add-advance','modal-add-ledger-exp'].forEach(id=>{
-    document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeModal(id);});
+  safeOn('close-ob-modal','click',()=>closeModal('modal-opening-balance'));
+  safeOn('cancel-ob-modal','click',()=>closeModal('modal-opening-balance'));
+  safeOn('submit-ob','click',addOpeningBalance);
+  safeOn('modal-opening-balance','click',function(e){if(e.target===this)closeModal('modal-opening-balance');});
+  safeOn('btn-add-advance','click',()=>{
+    if(!selectedLedgerEmp){showToast('Select an employee first.',false);return;}
+    document.getElementById('adv-date').value=todayStr();
+    openModal('modal-add-advance');
   });
-
-  // Init
+  safeOn('close-advance-modal','click',()=>closeModal('modal-add-advance'));
+  safeOn('cancel-advance-modal','click',()=>closeModal('modal-add-advance'));
+  safeOn('submit-advance','click',addAdvance);
+  safeOn('btn-add-exp','click',()=>{
+    if(!selectedLedgerEmp){showToast('Select an employee first.',false);return;}
+    initExpLines();
+    document.getElementById('lexp-date').value=todayStr();
+    document.getElementById('lexp-bill').value='';
+    document.getElementById('lexp-site').value='';
+    openModal('modal-add-ledger-exp');
+  });
+  safeOn('close-exp-modal','click',()=>closeModal('modal-add-ledger-exp'));
+  safeOn('cancel-exp-modal','click',()=>closeModal('modal-add-ledger-exp'));
+  safeOn('submit-exp','click',submitLedgerExpenses);
+  safeOn('btn-add-exp-line','click',addExpLine);
+  safeOn('slip-prev','click',()=>{slipMonth.setMonth(slipMonth.getMonth()-1);renderSlipMonth();generateSlip();});
+  safeOn('slip-next','click',()=>{slipMonth.setMonth(slipMonth.getMonth()+1);renderSlipMonth();generateSlip();});
+  safeOn('btn-gen-slip','click',generateSlip);
+  safeOn('btn-print-slip','click',printSlip);
+  safeOn('slip-emp-select','change',generateSlip);
+  ['modal-add-emp','modal-add-leave','modal-add-advance','modal-add-ledger-exp'].forEach(id=>{
+    safeOn(id,'click',function(e){if(e.target===this)closeModal(id);});
+  });
   checkAuth();
 });
 </script>
