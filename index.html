@@ -233,8 +233,8 @@ input:focus,select:focus,textarea:focus{border-color:#888}
       <button class="btn btn-primary" id="btn-calc-payroll">Calculate Payroll</button>
     </div>
     <div class="card" style="padding:0;overflow-x:auto">
-      <table><thead><tr><th>Employee</th><th>Base</th><th>Paid Days</th><th>Sun OT</th><th>Extra OT</th><th>Gross</th><th>Deductions</th><th>Net Pay</th><th>Ledger</th></tr></thead>
-      <tbody id="payroll-table"><tr><td colspan="9" class="no-data">Click "Calculate Payroll" to generate</td></tr></tbody></table>
+      <table><thead><tr><th>Employee</th><th>Base</th><th>Present</th><th>Absent</th><th>Sun OT</th><th>Extra OT</th><th>Deduction</th><th>OT Pay</th><th>Gross</th><th>Ledger Adj.</th><th>Net Pay</th><th>Ledger</th></tr></thead>
+      <tbody id="payroll-table"><tr><td colspan="12" class="no-data">Click "Calculate Payroll" to generate</td></tr></tbody></table>
     </div>
     <div class="att-note" style="margin-top:10px"><strong>Formula:</strong> Paid Days = Weekdays Present + Sundays. Gross = (Paid Days / 30) × Base Salary + OT pay.</div>
   </div>
@@ -768,16 +768,18 @@ function renderPayroll(){
   if(!emps.length){tb.innerHTML='<tr><td colspan="9" class="no-data">No active employees</td></tr>';return;}
   tb.innerHTML=emps.map(emp=>{
     const pr=payrollData[emp.id];
-    if(!pr)return `<tr><td>${emp.name}</td><td>${rupee(emp.salary)}</td><td colspan="7" style="color:#aaa">Not calculated</td></tr>`;
-    const paidDays=pr.paid_days||(parseFloat(pr.present)+parseFloat(pr.sundays));
+    if(!pr)return `<tr><td>${emp.name}</td><td>${rupee(emp.salary)}</td><td colspan="10" style="color:#aaa">Not calculated</td></tr>`;
     const ledgerBtn=pr.posted_to_ledger?'<span class="badge badge-green">Posted</span>':`<button class="btn btn-sm btn-success post-btn" data-id="${emp.id}">Post</button>`;
     return `<tr>
       <td><strong>${emp.name}</strong><br><span style="font-size:11px;color:#888">${emp.id}</span></td>
       <td>${rupee(emp.salary)}</td>
-      <td>${pr.present}wd+${pr.sundays}S=<strong>${paidDays}</strong>/30</td>
+      <td>${pr.present}</td>
+      <td style="color:#e24b4a">${pr.absent||0}</td>
       <td style="color:#534ab7">${pr.sunday_ot}</td>
       <td>${pr.extra_ot}</td>
-      <td>${rupee(pr.gross)}</td>
+      <td style="color:#e24b4a">${pr.deduction>0?'-'+rupee(pr.deduction):'—'}</td>
+      <td style="color:#1d9e75">${pr.ot_pay>0?'+'+rupee(pr.ot_pay):'—'}</td>
+      <td><strong>${rupee(pr.gross)}</strong></td>
       <td style="color:#e24b4a">${pr.ledger_deduct>0?'-'+rupee(pr.ledger_deduct):'—'}</td>
       <td><strong>${rupee(pr.net)}</strong></td>
       <td>${ledgerBtn}</td>
@@ -1075,18 +1077,18 @@ async function generateSlip(){
       </div>
       <div>
         <div class="slip-section">Attendance</div>
-        <div>Salary basis: 30 days</div>
-        <div>Sundays in month: ${pr.sundays} (paid)</div>
+        <div>Daily rate: ${rupee(pr.daily_rate)} (salary ÷ 30)</div>
         <div>Weekdays present: ${pr.present} / ${pr.weekdays}</div>
-        <div>Paid days: ${paidDays} / 30</div>
+        <div>Sundays: ${pr.sundays} (paid holidays)</div>
+        <div>Absent days: ${pr.absent||0} (deducted)</div>
         <div>Sunday OT: ${pr.sunday_ot} | Extra OT: ${pr.extra_ot}</div>
       </div>
     </div>
     <div class="slip-section">Earnings</div>
     <div class="slip-row"><span>Base Salary (30-day basis)</span><span>${rupee(emp.salary)}</span></div>
-    <div class="slip-row"><span>Earned Pay (${paidDays}/30 × ${rupee(emp.salary)})</span><span>${rupee(pr.earned_pay)}</span></div>
-    ${pr.sunday_ot>0?`<div class="slip-row"><span>Sunday OT (${pr.sunday_ot} × ${rupee(dailyRate)})</span><span>${rupee(pr.sunday_ot*dailyRate)}</span></div>`:''}
-    ${pr.extra_ot>0?`<div class="slip-row"><span>Extra OT (${pr.extra_ot} × ${rupee(dailyRate)})</span><span>${rupee(pr.extra_ot*dailyRate)}</span></div>`:''}
+    ${pr.absent>0?`<div class="slip-row"><span>Absent Deduction (${pr.absent} day${pr.absent>1?'s':''} × ${rupee(pr.daily_rate)})</span><span style="color:#e24b4a">-${rupee(pr.deduction)}</span></div>`:''}
+    ${pr.sunday_ot>0?`<div class="slip-row"><span>Sunday OT (${pr.sunday_ot} × ${rupee(pr.daily_rate)})</span><span style="color:#1d9e75">+${rupee(pr.sunday_ot*pr.daily_rate)}</span></div>`:''}
+    ${pr.extra_ot>0?`<div class="slip-row"><span>Extra OT (${pr.extra_ot} × ${rupee(pr.daily_rate)})</span><span style="color:#1d9e75">+${rupee(pr.extra_ot*pr.daily_rate)}</span></div>`:''}
     <div class="slip-row" style="font-weight:600"><span>Gross Earnings</span><span>${rupee(pr.gross)}</span></div>
     ${pr.ledger_deduct>0?`<div class="slip-section">Deductions</div>${recoverEntries.map(x=>`<div class="slip-row"><span>${x.label}</span><span style="color:#e24b4a">-${rupee(x.amount)}</span></div>`).join('')}<div class="slip-row" style="font-weight:500"><span>Total Deductions</span><span style="color:#e24b4a">-${rupee(pr.ledger_deduct)}</span></div>`:''}
     <div class="slip-row total"><span>NET PAYABLE</span><span style="color:#1d9e75">${rupee(pr.net)}</span></div>

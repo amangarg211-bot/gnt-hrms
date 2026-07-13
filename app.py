@@ -61,35 +61,38 @@ def calc_pay(emp_id, month_key):
         db.close()
         return None
     salary = emp['salary']
-    # Daily rate based on actual days in month
-    daily_rate = salary / days_in_month
+    daily_rate = salary / 30  # always fixed at 30
     att_rows = db.execute(
         "SELECT day, status FROM attendance WHERE emp_id=? AND month_key=?",
         (emp_id, month_key)).fetchall()
     att = {int(r['day']): r['status'] for r in att_rows}
-    present = 0.0
+    absent = 0.0
     sunday_ot = 0
+    present = 0.0
     for day in range(1, days_in_month + 1):
         is_sunday = date(yr, mo, day).weekday() == 6
         s = att.get(day, 'A')
         if is_sunday:
             if s == 'OT':
                 sunday_ot += 1
-            # All Sundays are paid — counted in paid_days below
+            # Sundays not marked OT = paid holiday, no deduction, no addition
         else:
             if s == 'P':   present += 1
-            elif s == 'H': present += 0.5
-            # A or L = absent, not counted
+            elif s == 'H':
+                present += 0.5
+                absent += 0.5  # half day = half deduction
+            elif s == 'L' or s == 'A':
+                absent += 1    # absent or leave = 1 day deduction
     ot_row = db.execute(
         "SELECT ot_days FROM ot_days WHERE emp_id=? AND month_key=?",
         (emp_id, month_key)).fetchone()
     extra_ot = float(ot_row['ot_days']) if ot_row else 0.0
     total_ot = sunday_ot + extra_ot
-    # Paid days = weekdays present + all sundays (always paid) + sunday OT
-    paid_days = present + sundays + sunday_ot
-    # Earned = paid_days / days_in_month * salary
-    earned_pay = (paid_days / days_in_month) * salary
-    ot_pay = 0  # OT already included in paid_days above
+    # Formula: full salary - deductions + OT additions
+    deduction = absent * daily_rate
+    ot_pay = total_ot * daily_rate
+    earned_pay = salary - deduction + ot_pay
+    paid_days = present + sundays + total_ot
     deduct_rows = db.execute(
         "SELECT SUM(amount) as total FROM ledger "
         "WHERE emp_id=? AND type='expense-recover' AND month_key=?",
@@ -98,13 +101,16 @@ def calc_pay(emp_id, month_key):
     gross = earned_pay
     net = gross - ledger_deduct
     db.close()
-    return dict(present=present, weekdays=weekdays, sundays=sundays,
-                paid_days=round(paid_days, 1),
-                sunday_ot=sunday_ot, extra_ot=extra_ot, total_ot=total_ot,
-                earned_pay=round(earned_pay, 2), ot_pay=0,
-                ledger_deduct=round(ledger_deduct, 2),
-                gross=round(gross, 2), net=round(net, 2),
-                daily_rate=round(daily_rate, 2))
+    return dict(
+        present=present, weekdays=weekdays, sundays=sundays,
+        absent=round(absent, 1), paid_days=round(paid_days, 1),
+        sunday_ot=sunday_ot, extra_ot=extra_ot, total_ot=total_ot,
+        deduction=round(deduction, 2),
+        earned_pay=round(earned_pay, 2), ot_pay=round(ot_pay, 2),
+        ledger_deduct=round(ledger_deduct, 2),
+        gross=round(gross, 2), net=round(net, 2),
+        daily_rate=round(daily_rate, 2)
+    )
 
 def login_required(f):
     from functools import wraps
@@ -286,8 +292,8 @@ def calculate_payroll():
         db.execute('''INSERT INTO payroll
             (emp_id,month_key,present,weekdays,sundays,sunday_ot,extra_ot,
              total_ot,earned_pay,ot_pay,ledger_deduct,gross,net,daily_rate,
-             paid_days,paid,paid_date,posted_to_ledger)
-            VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+             paid_days,absent,deduction,paid,paid_date,posted_to_ledger)
+            VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
             ON CONFLICT(emp_id,month_key) DO UPDATE SET
             present=excluded.present, weekdays=excluded.weekdays,
             sundays=excluded.sundays, sunday_ot=excluded.sunday_ot,
@@ -295,11 +301,13 @@ def calculate_payroll():
             earned_pay=excluded.earned_pay, ot_pay=excluded.ot_pay,
             ledger_deduct=excluded.ledger_deduct, gross=excluded.gross,
             net=excluded.net, daily_rate=excluded.daily_rate,
-            paid_days=excluded.paid_days''',
+            paid_days=excluded.paid_days, absent=excluded.absent,
+            deduction=excluded.deduction''',
             (emp['id'], month_key, calc['present'], calc['weekdays'], calc['sundays'],
              calc['sunday_ot'], calc['extra_ot'], calc['total_ot'], calc['earned_pay'],
              calc['ot_pay'], calc['ledger_deduct'], calc['gross'], calc['net'],
-             calc['daily_rate'], calc['paid_days'], paid, paid_date, posted))
+             calc['daily_rate'], calc['paid_days'], calc['absent'], calc['deduction'],
+             paid, paid_date, posted))
     db.commit()
     db.close()
     return jsonify({'ok': True})
