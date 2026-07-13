@@ -22,6 +22,8 @@ def migrate_db():
         ("employees", "pin",     "TEXT", "''"),
         ("ledger",    "site",    "TEXT", "''"),
         ("payroll",   "paid_days","REAL","0"),
+        ("payroll",   "absent",   "REAL","0"),
+        ("payroll",   "deduction","REAL","0"),
     ]
     for table, col, typ, default in migrations:
         try:
