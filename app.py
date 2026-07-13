@@ -61,7 +61,8 @@ def calc_pay(emp_id, month_key):
         db.close()
         return None
     salary = emp['salary']
-    daily_rate = salary / 30
+    # Daily rate based on actual days in month
+    daily_rate = salary / days_in_month
     att_rows = db.execute(
         "SELECT day, status FROM attendance WHERE emp_id=? AND month_key=?",
         (emp_id, month_key)).fetchall()
@@ -74,34 +75,33 @@ def calc_pay(emp_id, month_key):
         if is_sunday:
             if s == 'OT':
                 sunday_ot += 1
+            # All Sundays are paid — counted in paid_days below
         else:
             if s == 'P':   present += 1
             elif s == 'H': present += 0.5
-            # L = unpaid leave / absent = 0 (deducted from salary)
+            # A or L = absent, not counted
     ot_row = db.execute(
         "SELECT ot_days FROM ot_days WHERE emp_id=? AND month_key=?",
         (emp_id, month_key)).fetchone()
     extra_ot = float(ot_row['ot_days']) if ot_row else 0.0
     total_ot = sunday_ot + extra_ot
-    paid_days = present + sundays
-    # Salary capped at base: full attendance = all weekdays present = full salary
-    # Formula: earned = (present / weekdays) * salary
-    # Sundays are included in the 30-day basis so a full month = weekdays + sundays = 30 days
-    # We scale present days against weekdays to get the earned fraction
-    earned_pay = (present / weekdays) * salary if weekdays else 0
-    ot_pay = total_ot * daily_rate
+    # Paid days = weekdays present + all sundays (always paid) + sunday OT
+    paid_days = present + sundays + sunday_ot
+    # Earned = paid_days / days_in_month * salary
+    earned_pay = (paid_days / days_in_month) * salary
+    ot_pay = 0  # OT already included in paid_days above
     deduct_rows = db.execute(
         "SELECT SUM(amount) as total FROM ledger "
         "WHERE emp_id=? AND type='expense-recover' AND month_key=?",
         (emp_id, month_key)).fetchone()
     ledger_deduct = float(deduct_rows['total'] or 0)
-    gross = earned_pay + ot_pay
+    gross = earned_pay
     net = gross - ledger_deduct
     db.close()
     return dict(present=present, weekdays=weekdays, sundays=sundays,
                 paid_days=round(paid_days, 1),
                 sunday_ot=sunday_ot, extra_ot=extra_ot, total_ot=total_ot,
-                earned_pay=round(earned_pay, 2), ot_pay=round(ot_pay, 2),
+                earned_pay=round(earned_pay, 2), ot_pay=0,
                 ledger_deduct=round(ledger_deduct, 2),
                 gross=round(gross, 2), net=round(net, 2),
                 daily_rate=round(daily_rate, 2))
